@@ -1,0 +1,108 @@
+.weekend_scale {
+	background: #f4f7f4;
+}
+
+.weekend_task {
+	background: #f4f7f4;
+}
+
+.gantt_task_cell.week_end {
+	background-color: #EFF5FD;
+}
+
+.gantt_selected .gantt_task_cell.week_end {
+	background-color: #f0e493;
+}
+
+.o_gantt_button_dates {
+	display: inline-block;
+}
+
+.gantt_task_link.start_to_start .gantt_line_wrapper div {
+	background-color: #dd5640;
+}
+
+.gantt_task_link.start_to_start:hover .gantt_line_wrapper div {
+	box-shadow: 0 0 5px 0px #dd5640;
+}
+
+.gantt_task_link.start_to_start .gantt_link_arrow_right {
+	border-left-color: #dd5640;
+}
+
+.gantt_task_link.finish_to_start .gantt_line_wrapper div {
+	background-color: #7576ba;
+}
+
+.gantt_task_link.finish_to_start:hover .gantt_line_wrapper div {
+	box-shadow: 0 0 5px 0px #7576ba;
+}
+
+.gantt_task_link.finish_to_start .gantt_link_arrow_right {
+	border-left-color: #7576ba;
+}
+
+.gantt_task_link.finish_to_finish .gantt_line_wrapper div {
+	background-color: #55d822;
+}
+
+.gantt_task_link.finish_to_finish:hover .gantt_line_wrapper div {
+	box-shadow: 0 0 5px 0px #55d822;
+}
+
+.gantt_task_link.finish_to_finish .gantt_link_arrow_left {
+	border-right-color: #55d822;
+}
+
+.gantt_task_line {
+	border-radius: 10px !important;
+}
+
+.gantt_bar_milestone {
+	border-radius: 2px !important;
+}
+
+.gantt_task_progress {
+	text-align: right !important;
+	padding-left: 0px;
+	font-weight: normal;
+	font-size: 10px;
+	color: black !important;
+	height: 5px !important;
+}
+
+.deadline_alert {
+	width: 20px;
+	display: inline-table;
+	-moz-box-sizing: border-box;
+	line-height: 20px;
+	text-align: center;
+	position: relative;
+	font: normal normal normal 14px/1 FontAwesome;
+	font-size: inherit;
+	color: #ff0000;
+}
+
+.progress_alert {
+	width: 20px;
+	display: inline-table;
+	-moz-box-sizing: border-box;
+	line-height: 20px;
+	text-align: center;
+	position: relative;
+	font: normal normal normal 14px/1 FontAwesome;
+	font-size: inherit;
+	color: #28a745;
+}
+
+.priority_high {
+	border-left: #e71d07 3px solid;
+}
+
+.priority_low {
+	border-left: #feb92e 3px solid;
+}
+
+.priority_normal {
+	border-left: #b1d43a 3px solid;
+}

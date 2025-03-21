@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_hr_expense_sheet_form_inherit_expense_request_advance">
+        <field name="name">hr.expense.sheet.form.inherit.expense.request.advance</field>
+        <field name="model">hr.expense.sheet</field>
+        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
+        <field name="arch" type="xml">
+            <group name="expense_total" position="inside">
+                <field name="request_amount"/>
+                <field name="request_currency_id" invisible="1"/>
+                <field name="return_to_employee" invisible="1" />
+                <field name="advance_amount" />
+                <field name="advance_currency_id" invisible="1"/>
+                <field name="return_amount" string="Return to Employee" attrs="{'invisible': [('return_to_employee', '=', False)]}"/>
+                <field name="return_amount" string="Return to Company" attrs="{'invisible': [('return_to_employee', '=', True)]}"/>
+            </group>
+            <button name="%(hr_expense.hr_expense_sheet_register_payment_wizard_action)d" position="replace">
+                <button name="%(hr_expense.hr_expense_sheet_register_payment_wizard_action)d" type="action"
+                        string="Register Payment" class="oe_highlight o_expense_sheet_pay"
+                        attrs="{'invisible': [('state', '!=', 'post')]}" context="{'default_amount': return_amount, 'partner_id': address_id}"
+                        groups="account.group_account_manager"/>
+            </button>
+            <xpath expr="//sheet/group" position="replace">
+                <group>
+                    <group>
+                        <field name="employee_id"/>
+                        <field name="payment_mode"/>
+                        <field name="expense_request_id"/>
+                        <field name="expense_advance_id"/>
+                    </group>
+                    <group>
+                        <field name="user_id"/>
+                        <field name="address_id" invisible="1"/>
+                        <field name="department_id" invisible="1"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="notes" placeholder="Expense report description ..." colspan="4"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!--overwrite he_expense My Expense Report to show records with state='cancel'-->
+    <record id="hr_expense.action_hr_expense_sheet_my_all" model="ir.actions.act_window">
+        <field name="name">My Expense Reports</field>
+        <field name="res_model">hr.expense.sheet</field>
+        <field name="view_mode">tree,kanban,form,pivot,graph,activity</field>
+        <field name="search_view_id" ref="hr_expense.view_hr_expense_sheet_filter"/>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+        <field name="context">{'search_default_my_reports': 1}</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new expense report
+          </p><p>
+            Once you have created your expense, submit it to your manager who will validate it.
+          </p>
+        </field>
+    </record>
+</odoo>

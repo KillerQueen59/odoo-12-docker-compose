@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="product_add_view" model="ir.ui.view">
+            <field name="name">account.asset.asset.custom.form.inherit</field>
+            <field name="model">account.asset.asset.custom</field>
+            <field name="inherit_id" ref="odoo_account_asset.view_account_asset_asset_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@class='oe_button_box']" position="inside">
+                    <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                        <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                    </button>
+                </xpath>
+                <xpath expr="//field[@name='category_id']" position="before">
+                    <field name="custom_number"/>
+                </xpath>
+                <xpath expr = "//field[@name = 'invoice_id']" position="after">
+                        <field name="custom_purchase_id"/>
+                </xpath>
+                <xpath expr="//notebook/page[last()]" position="after">
+                    <page string="Additional Information">
+                        <group>
+                            <group string="Warranty Details">
+                                <field name="custom_warranty_information"/>
+                                <field name="custom_warranty_expire_date"/>
+                                <field name="custom_warranty_service_provider"/>
+                            </group>
+                            <group string="Asset Details">
+                                <field name="custom_manufacturer_id"/>
+                                <field name="custom_record_brand"/>
+                                <field name="custom_model_number"/>
+                                <field name="custom_serial_number"/>
+                                <field name="custom_receive_date"/>
+                            </group>
+                            <group string="Transfer Details">
+                                <field name="custom_source_partner_id"/>
+                                <field name="custom_source_department_id"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Description">
+                        <field name="custom_description"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="asset_description_search_view" model="ir.ui.view">
+            <field name="name">account.asset.asset.custom.search.inherit</field>
+            <field name="model">account.asset.asset.custom</field>
+            <field name="inherit_id" ref="odoo_account_asset.view_account_asset_search"/>
+            <field name="arch" type="xml">
+                <xpath expr = "//search" position="inside">
+                    <field name="custom_description"/>
+                </xpath>
+                <xpath expr = "//group[@expand='0']" position="inside">
+                    <filter string="Purchase Order" name="purchase_order" domain="[]" context="{'group_by':'custom_purchase_id'}"/>
+                    <filter string="Vendor" name="vendor" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter string="Manufacturer" name="manufacturer" domain="[]" context="{'group_by':'custom_manufacturer_id'}"/>
+                    <filter string="Invoice" name="invoice" domain="[]" context="{'group_by':'invoice_id'}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

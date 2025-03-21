@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem 
+            id="asset_top_menu" 
+            name="Assets" 
+            groups="odoo_account_asset_extend_ce.group_asset_employee,odoo_account_asset_extend_ce.group_asset_user,odoo_account_asset_extend_ce.group_asset_manager"/>
+
+        <!-- Asset main menu -->
+        <menuitem 
+            id="asset_sub_top_menu"
+            name="Assets"
+            parent="odoo_account_asset_extend_ce.asset_top_menu" 
+            groups="odoo_account_asset_extend_ce.group_asset_user,odoo_account_asset_extend_ce.group_asset_manager"
+            sequence="1"/>
+
+        <menuitem 
+            id="asset_sub_menu"
+            name="Assets" 
+            parent="odoo_account_asset_extend_ce.asset_sub_top_menu" 
+            action="odoo_account_asset.action_account_asset_asset_form" 
+            groups="odoo_account_asset_extend_ce.group_asset_user,odoo_account_asset_extend_ce.group_asset_manager"/>
+
+        <!-- Asset report menu -->
+        <menuitem 
+            id="asset_report_sub_top_menu"
+            name="Reports"
+            parent="odoo_account_asset_extend_ce.asset_top_menu" 
+            groups="odoo_account_asset_extend_ce.group_asset_manager" 
+            sequence="4"/>
+
+        <menuitem 
+            id="asset_report_sub_menu"
+            name="Assets" 
+            parent="odoo_account_asset_extend_ce.asset_report_sub_top_menu"
+            action="odoo_account_asset.action_asset_asset_report"
+            groups="odoo_account_asset_extend_ce.group_asset_manager"/>
+
+        <!--Asset Configation Menu -->
+        <menuitem 
+            id="asset_configuration_sub_top_menu" 
+            name="Configuration" 
+            parent="odoo_account_asset_extend_ce.asset_top_menu"/>
+
+        <menuitem
+            id="asset_Configuration_sub_maintenance_teams"
+            name="Maintenance Teams"
+            parent="asset_configuration_sub_top_menu"
+            action="maintenance.maintenance_team_action_settings"
+            groups="maintenance.group_equipment_manager,odoo_account_asset_extend_ce.group_asset_manager" 
+            sequence="1"/>
+
+        <menuitem
+            id="asset_Configuration_sub_maintenance_cat" 
+            name="Equipment Categories"
+            parent="asset_configuration_sub_top_menu" 
+            action="maintenance.hr_equipment_category_action"
+            groups="odoo_account_asset_extend_ce.group_asset_manager" 
+            sequence="2"/>
+
+        <menuitem
+            id="asset_Configuration_sub_maintenance_stage_configuration"
+            name="Maintenance Stages"
+            parent="asset_configuration_sub_top_menu" 
+            action="maintenance.hr_equipment_stage_action"
+            groups="odoo_account_asset_extend_ce.group_asset_manager"
+            sequence="3" />
+   </data>
+</odoo>

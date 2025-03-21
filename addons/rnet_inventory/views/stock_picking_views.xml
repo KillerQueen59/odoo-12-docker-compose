@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="stock.stock_picking_type_action" model="ir.actions.act_window">
+            <field name="name">Inventory Overview</field>
+            <field name="res_model">stock.picking.type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="domain">[('user_ids','in',[context.get('uid')])]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new operation type
+                </p>
+                <p>
+                    The operation type system allows you to assign each stock
+                    operation a specific type which will alter its views accordingly.
+                    On the operation type you could e.g. specify if packing is needed by default,
+                    if it should show the customer.
+                </p>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rnet_operation_type_form_view">
+            <field name="name">rnet.operation.type.form</field>
+            <field name="model">stock.picking.type</field>
+            <field name="inherit_id" ref="stock.view_picking_type_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group/group[3]" position="replace">
+                    <group string="Locations" groups="stock.group_stock_multi_locations">
+                        <field name="default_location_src_id" />
+                        <field name="default_location_dest_id" />
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="action_picking_tree_all" model="ir.actions.act_window">
+            <field name="name">Transfers</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain"></field>
+            <field name="context">{
+                    'contact_display': 'partner_address',
+                    'view_type': 'all_transfer',
+            }
+            </field>
+        </record>
+        <menuitem id="all_picking" name="All Transfers" parent="stock.menu_stock_warehouse_mgmt" sequence="5" action="action_picking_tree_all" groups="stock.group_stock_manager,stock.group_stock_user"/>
+
+        <record id="stock_picking_action_picking_type" model="ir.actions.act_window">
+            <field name="name">All Transfers</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain"></field>
+            <field name="context">{
+                    'search_default_picking_type_id': [active_id],
+                    'default_picking_type_id': active_id,
+                    'contact_display': 'partner_address',
+                    'type': 'receipt',
+            }
+            </field>
+        </record>
+        
+
+        <record id="action_picking_tree_draft" model="ir.actions.act_window">
+            <field name="name">Draft Transfers</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain"></field>
+            <field name="context">{
+                    'search_default_picking_type_id': [active_id],
+                    'default_picking_type_id': active_id,
+                    'contact_display': 'partner_address',
+                    'search_default_draft': 1,
+                    'type': 'receipt',
+            }
+            </field>
+        </record>
+
+        <record id="action_picking_tree_waiting" model="ir.actions.act_window">
+            <field name="name">Waiting Transfers</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain"></field>
+            <field name="context">{
+                    'search_default_picking_type_id': [active_id],
+                    'default_picking_type_id': active_id,
+                    'contact_display': 'partner_address',
+                    'search_default_waiting': 1,
+                    'type': 'receipt',
+            }
+            </field>
+        </record>
+
+
+        <record id="action_picking_tree_confirmed" model="ir.actions.act_window">
+            <field name="name">Confirmed Transfers</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+           <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain"></field>
+            <field name="context">{
+                    'search_default_picking_type_id': [active_id],
+                    'default_picking_type_id': active_id,
+                    'contact_display': 'partner_address',
+                    'search_default_confirmed': 1,
+                    'type': 'receipt',
+            }
+            </field>
+        </record>
+
+        <record id="action_picking_tree_ready" model="ir.actions.act_window">
+            <field name="name">To Do</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain"></field>
+            <field name="context">{
+                    'search_default_picking_type_id': [active_id],
+                    'default_picking_type_id': active_id,
+                    'contact_display': 'partner_address',
+                    'search_default_assigned': 1,
+                    'type': 'receipt',
+            }
+            </field>
+       </record>
+
+        <record model="ir.ui.view" id="rnet_operation_type_kanban_view">
+            <field name="name">rnet.operation.type.kanban.view</field>
+            <field name="model">stock.picking.type</field>
+            <field name="inherit_id" ref="stock.stock_picking_type_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban/templates" position="replace">
+
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-if="['incoming', 'outgoing', 'internal'].indexOf(record.code.raw_value) &gt; -1" t-attf-class="#{kanban_color(record.color.raw_value)}" name="stock_picking">
+                                <div>
+                                    <div t-attf-class="o_kanban_card_header ">
+                                        <div class="o_kanban_card_header_title">
+                                            <div class="o_primary">
+                                                <a type="object" name="get_stock_picking_action_picking_type">
+                                                    <field name="name"/>
+                                                </a>
+                                            </div>
+                                            <div class="o_secondary"><field class="o_secondary" name="warehouse_id" readonly="1"/></div>
+                                        </div>
+                                        <div class="o_kanban_manage_button_section">
+                                            <a class="o_kanban_manage_toggle_button" href="#"><i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/></a>
+                                        </div>
+                                    </div>
+                                    <div class="container o_kanban_card_content">
+                                        <div class="row">
+                                            <div class="col-6 o_kanban_primary_left">
+                                                <button class="btn btn-primary" name="get_action_picking_tree_draft" type="object">
+                                                    <span t-if="record.code.raw_value =='incoming'"><t t-esc="record.count_picking_draft.value"/> To Submit</span>
+                                                    <span t-if="record.code.raw_value =='outgoing'"><t t-esc="record.count_picking_draft.value"/> To Submit</span>
+                                                    <span t-if="record.code.raw_value =='internal'"><t t-esc="record.count_picking_draft.value"/> To Submit</span>
+                                                </button>
+                                            </div>
+                                            <div class="col-6 o_kanban_primary_right">
+                                                <div t-if="record.count_picking_draft.raw_value &gt; 0" class="row">
+                                                </div>
+
+                                                <div t-if="record.count_picking_waiting.raw_value &gt; 0" class="row">
+                                                    <div class="col-9">
+                                                        <a name="get_action_picking_tree_waiting" type="object">
+                                                            Waiting Approval
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-3 text-warning">
+                                                        <field name="count_picking_waiting"/>
+                                                    </div>
+                                                </div>
+                                                <div t-if="record.count_picking_ready.raw_value &gt; 0" class="row">
+                                                    <div class="col-9">
+                                                        <a name="get_action_picking_tree_ready" type="object">
+                                                            Waiting Submit
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-3 text-info">
+                                                        <field name="count_picking_ready"/>
+                                                    </div>
+                                                </div>
+                                                <div t-if="record.count_picking_confirmed.raw_value &gt; 0" class="row">
+                                                    <div class="col-9">
+                                                        <a name="get_action_picking_tree_confirmed" type="object">
+                                                            Need Validate
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-3 text-info">
+                                                        <field name="count_picking_confirmed"/>
+                                                    </div>
+                                                </div>
+
+
+                                                <div t-if="record.count_picking_late.raw_value &gt; 0" class="row">
+                                                    <div class="col-xs-9">
+                                                        <a class="oe_kanban_stock_picking_type_list" name="get_action_picking_tree_late" type="object">
+                                                            Late
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-xs-3 text-danger">
+                                                        <field name="count_picking_late"/>
+                                                    </div>
+                                                </div>
+
+
+                                                <div t-if="record.count_picking_backorders.raw_value &gt; 0" class="row">
+                                                    <div class="col-9">
+                                                        <a class="oe_kanban_stock_picking_type_list" name="get_action_picking_tree_backorder" type="object">
+                                                            Back Orders
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-3 text-secondary">
+                                                        <field name="count_picking_backorders"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><div class="container o_kanban_card_manage_pane dropdown-menu" role="menu">
+                                        <div class="row">
+                                            <div class="col-6 o_kanban_card_manage_section o_kanban_manage_view">
+                                                <div role="menuitem" class="o_kanban_card_manage_title">
+                                                    <span>View</span>
+                                                </div>
+                                                <div role="menuitem">
+                                                    <a name="get_stock_picking_action_picking_type" type="object">All</a>
+                                                </div>
+                                                <div role="menuitem">
+                                                    <a name="295" type="action">Ready</a>
+                                                </div>
+                                                <div role="menuitem">
+                                                    <a name="get_action_picking_tree_waiting" type="object">Waiting</a>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 o_kanban_card_manage_section o_kanban_manage_new">
+                                                <div role="menuitem" class="o_kanban_card_manage_title">
+                                                    <span>New</span>
+                                                </div>
+                                                <div role="menuitem">
+                                                    <a name="301" type="action" context="{'default_immediate_transfer': True}">Immediate Transfer</a>
+                                                </div>
+                                                <div role="menuitem">
+                                                    <a name="301" type="action">Planned Transfer</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div t-if="widget.editable" class="o_kanban_card_manage_settings row">
+                                            <div class="col-8" role="menuitem" aria-haspopup="true">
+                                                <ul class="oe_kanban_colorpicker" data-field="color" role="menu"/>
+                                            </div>
+                                            <div role="menuitem" class="col-4 text-center">
+                                                <a type="edit">Settings</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+                    </templates>
+                </xpath>
+            </field>
+        </record>
+
+ 
+
+</odoo>

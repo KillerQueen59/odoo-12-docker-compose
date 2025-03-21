@@ -1,0 +1,48 @@
+<odoo>
+    <data noupdate="True">
+        <!-- <record id="sequence_expense" model="ir.sequence">
+            <field name="name">Expense No</field>
+            <field name="code">expense.no</field>
+            <field name="active">TRUE</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record> -->
+
+        <!-- <record id="seq_expense_advance" model="ir.sequence">
+            <field name="name">hr expense advance sequence</field>
+            <field name="code">hr.expense.advance</field>
+            <field name="prefix">s/BAR/%(month)s/%(year)</field>
+            <field name="padding">5</field>
+        </record> -->
+
+        <record id="seq_expense_advance_new" model="ir.sequence">
+            <field name="name">hr expense advance sequence new</field>
+            <field name="code">hr.expense.advance.new</field>
+            <!-- <field name="prefix">s/</field> -->
+            <field name="suffix">/BAR/</field>
+            <field name="padding">4</field>
+        </record>
+<!--         
+        <record id="seq_expense_sheet" model="ir.sequence">
+                <field name="name">hr expense sheet sequence</field>
+                <field name="code">hr.expense.sheet</field>
+                <field name="prefix">CVR/%(year)s/%(month)s/</field>
+                <field name="padding">5</field>
+        </record> -->
+
+        <record id="seq_expense_sheet_new" model="ir.sequence">
+                <field name="name">hr expense sheet sequence new</field>
+                <field name="code">hr.expense.sheet.new</field>
+                <field name="prefix">%(y)s</field>
+                <field name="padding">4</field>
+        </record>
+
+        <record id="seq_expense" model="ir.sequence">
+                <field name="name">hr expense sequence</field>
+                <field name="code">hr.expense</field>
+                <field name="padding">5</field>
+        </record>
+    </data>
+</odoo>

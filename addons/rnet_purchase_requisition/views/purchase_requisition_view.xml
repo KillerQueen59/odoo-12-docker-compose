@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="material_purchase_requisition_form_view" model="ir.ui.view">
+            <field name="name">Purchase Requisition Form View</field>
+            <field name="model">material.purchase.requisition</field>
+            <field name="inherit_id" ref="material_purchase_requisitions.material_purchase_requisition_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet[1]/group[1]/group[1]/field[@name='company_id']" position="after">
+                    <field name="project" string="Job Order No." attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                 </xpath>
+                 <xpath expr="//sheet[1]/group[1]/group[2]/field[@name='request_date']" position="before">
+                    <field name="req_no" attrs="{'invisible': [('req_no','=',False)], 'readonly': [('state', 'not in', ['draft'])]}"/>
+                 </xpath>
+                <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="current_user_is_employee" invisible="1" />
+                </xpath>
+                <xpath expr="//button[@name='requisition_confirm']" position="replace">
+                    <button name="requisition_confirm" type="object" string="Submit" states="draft" class="btn-primary" groups="base.group_user"/>
+                </xpath>
+                <xpath expr="//button[@name='request_stock']" position="replace">
+                    <button name="request_stock" type="object" string="Create Purchase Order" class="btn-primary" groups="purchase.group_purchase_user" attrs="{'invisible': [('state', 'not in', ['approve'])]}"/>
+                </xpath>
+                <xpath expr="//button[@name='reset_draft']" position="replace">
+                    <button name="reset_draft" type="object" string="Reset to Draft" class="btn-primary" groups="material_purchase_requisitions.group_purchase_requisition_user" states="cancel,reject"/>
+                </xpath>
+                <xpath expr="//button[@name='manager_approve']" position="replace">
+                    <button name="manager_approve" type="object" string="Department Approve" class="btn-primary" groups="material_purchase_requisitions.group_purchase_requisition_department" states="dept_confirm" confirm="Are you sure you want to confirm?"/>
+                </xpath>
+                <xpath expr="//button[@name='show_picking']" position="replace">
+                    <button name="show_picking" invisible="1" type="object" icon="fa-truck" string="Internal Picking"  class="oe_stat_button" groups="stock.group_stock_user" states="stock" attrs="{'invisible': [('state', 'not in', ['stock'])]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_show_po']" position="replace">
+                    <button name="action_show_po" type="object" icon="fa-book"  string="Purchase Order" class="oe_stat_button" groups="purchase.group_purchase_user" states="stock" attrs="{'invisible': [('state', 'not in', ['stock'])]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="replace">
+                    <button name="action_cancel" type="object" states="draft, reject" string="Cancel" attrs="{'invisible': ['|', ('current_user_is_employee', '=', False),('state', 'not in', ['draft','reject'])]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_received']" position="replace">
+                    <button name="action_received" invisible="1" type="object" string="Received" class="btn-primary" attrs="{'invisible': ['|', ('current_user_is_employee', '=', False),('state', 'not in', ['stock'])]}"/>
+                </xpath>
+                <xpath expr="////sheet[1]/group[1]/group[2]/field[@name='receive_date']" position="replace">
+                    <field name="receive_date" string="Delivery Date" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]], 'invisible': [('state', 'in', ['receive'])]}"/>
+                </xpath>
+                <xpath expr="//group[2]/field[@name='date_end']" position="replace">
+                      <field name="date_end" invisible="1" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                </xpath>
+                <xpath expr="//group[2]/field[@name='analytic_account_id']" position="replace">
+                     <field name="analytic_account_id" groups="analytic.group_analytic_accounting" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="///field[@name='reason']" position="replace">
+                      <field name="reason" attrs="{'readonly': [('state', 'not in', ['draft'])]}" placeholder="Add Reason for Internal Requistion ...."/>
+                </xpath>
+                <xpath expr="//sheet/notebook/page[1]/field[@name='requisition_line_ids']" position="replace">
+                    <field name="requisition_line_ids" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                        <tree editable="bottom">
+                            <field name="requisition_type" invisible="1" groups="material_purchase_requisitions.group_purchase_requisition_user,purchase.group_purchase_user,material_purchase_requisitions.group_purchase_requisition_manager,material_purchase_requisitions.group_purchase_requisition_department"/>
+                            <field name="product_id"/>
+                            <field name="description"/>
+                            <field name="brand" options="{'no_create':True, 'no_quick_create':True}" readonly="1"/>
+                            <field name="brand_note" string="Type"/>
+                            <field name="qty"/>
+                            <field name="uom"  options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="partner_id" groups="material_purchase_requisitions.group_purchase_requisition_user,purchase.group_purchase_user,material_purchase_requisitions.group_purchase_requisition_manager,material_purchase_requisitions.group_purchase_requisition_department" attrs="{'readonly': [('requisition_type', '!=', 'purchase')]}" widget="many2many_tags"  options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                            <field name="remark"/>
+                        </tree>
+                    </field>
+                </xpath>
+                <xpath expr="//sheet/notebook/page[2]" position="replace">
+                    <page groups="base.group_erp_manager" string="Picking Details" attrs="{'readonly': [['state', 'in', ['done']]]}">
+                        <group>
+                            <group>
+                                <field name="location_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" domain="[('usage','!=', 'view')]" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>
+                            </group>
+                            <group>
+                                <field name="dest_location_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>
+                                <field name="delivery_picking_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user"/>
+                                <field name="custom_picking_type_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="///field[@name='location_id']" position="replace">
+                    <field name="location_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" domain="[('usage','!=', 'view')]" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="///field[@name='dest_location_id']" position="replace">
+                     <field name="dest_location_id" string="Delivery To" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="///field[@name='delivery_picking_id']" position="replace">
+                    <field name="delivery_picking_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="///field[@name='custom_picking_type_id']" position="replace">
+                    <field name="custom_picking_type_id" groups="material_purchase_requisitions.group_purchase_requisition_user,stock.group_stock_user" attrs="{'readonly': [('state', 'not in', ['draft'])]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="//group[1]/field[@name='employee_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_edit' : True, 'no_open' : True}</attribute>
+                    <attribute name="string">Applicant</attribute>
+                </xpath>
+                <xpath expr="//group[1]/field[@name='department_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_edit' : True, 'no_open' : True}</attribute>
+                </xpath>
+                <xpath expr="//group[1]/field[@name='requisiton_responsible_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_edit' : True, 'no_open' : True}</attribute>
+                    <attribute name="string">Manager</attribute>
+                </xpath>
+                <xpath expr="//field[@name='employee_confirm_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_edit' : True, 'no_open' : True}</attribute>
+                    <attribute name="string">Submitted by</attribute>
+                </xpath>
+                <xpath expr="//field[@name='approve_manager_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_edit' : True, 'no_open' : True}</attribute>
+                    <attribute name="string">Approved by</attribute>
+                </xpath>
+                <xpath expr="//field[@name='approve_employee_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_edit' : True, 'no_open' : True}</attribute>
+                     <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='reject_employee_id']" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_edit' : True, 'no_open' : True}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='confirm_date']" position="attributes">
+                    <attribute name="string">Submitted Date</attribute>
+                </xpath>
+                <xpath expr="//field[@name='managerapp_date']" position="attributes">
+                    <attribute name="string">Approved Date</attribute>
+                </xpath>
+                <xpath expr="//field[@name='userrapp_date']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="///field[@name='receive_date']" position="after">
+                     <field name="dest_location_id" position="move"/>
+                </xpath>
+                <xpath expr="//notebook/page[3]" position="attributes">
+                    <attribute name="string">
+                     Approval
+                    </attribute>
+                </xpath>
+                <xpath expr="//notebook/page[3]" position="attributes">
+                    <attribute name="attrs">
+                      {'invisible': [('state', 'in', 'draft')]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//notebook/page[2]" position="attributes">
+                    <attribute name="invisible">
+                      True
+                    </attribute>
+                </xpath>
+                <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+                    <attribute name="invisible">
+                     True
+                    </attribute>
+                </xpath>
+                <xpath expr="//div[@name='button_box']" position="inside">
+					<button name="action_get_attachment_view" class="oe_stat_button" icon="fa-book" type="object" attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                        <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                    </button>
+				</xpath>
+                <xpath expr="//header" position="inside">
+                    <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': [ ('state', 'not in', ['draft'])]}"/>
+                     <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': [ ('state', 'not in', ['dept_confirm'])]}"/>
+				</xpath>
+                <!--
+                <xpath expr="//field[@name='state']" position="before">
+                    <button name="button_make_revision" states="draft,dept_confirm,ir_approve,approve" string="Make Revision" type="object"/>
+                </xpath>
+                <xpath expr="//button[@name='action_show_po'][@class='oe_stat_button']" position="after">
+                    <button type="object" class="oe_stat_button" icon="fa-clipboard"
+                            name="open_pr_revision_list" context="{'original_id': id,}" attrs="{'invisible':['|', ('pr_revision_count', '=', 0)]}">
+                        <field string="Revision" name="pr_revision_count" widget="statinfo"/>
+                    </button>
+                </xpath>
+                -->
+            </field>
+        </record>
+
+        <record id="material_purchase_requisition_search_view" model="ir.ui.view">
+            <field name="name">Purchase Requisition Search View</field>
+            <field name="model">material.purchase.requisition</field>
+            <field name="inherit_id" ref="material_purchase_requisitions.material_purchase_requisition_search_view"/>
+            <field name="arch" type="xml">
+                <field name="employee_id" position="after">
+                    <field name="product_id"/>
+                    <field name="project"/>
+                </field>
+                <field name="employee_id" position="before">
+                    <field name="name"/>
+                </field>
+                <filter name="employee_id" position="after">
+                    <filter string="Project" name="project" domain="[]" context="{'group_by': 'project'}" />
+                    <filter name="draft" string="Status: Draft" domain="[('state','=', 'draft')]" />
+                    <filter name="waiing_approve" string="Status: Waiting Department Approval" domain="[('state','=', 'dept_confirm')]" />
+                    <filter name="approved" string="Status: Approved" domain="[('state','=', 'approve')]" />
+                    <filter name="Po_create" string="Status: Purchase Order Created" domain="[('state','=', 'stock')]" />
+                    <filter name="cancel" string="Status: Cancelled" domain="[('state','=', 'cancel')]" />
+                    <filter name="reject" string="Status: Rejected" domain="[('state','=', 'reject')]" />
+                </filter>
+            </field>
+        </record>
+
+        <record id="material_purchase_requisition_tree_view" model="ir.ui.view">
+            <field name="name">Purchase Requisition Tree View</field>
+            <field name="model">material.purchase.requisition</field>
+            <field name="inherit_id" ref="material_purchase_requisitions.material_purchase_requisition_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="department_id" position="after">
+                    <field name="requisiton_responsible_id"/>
+                    <field name="project"/>
+                </field>
+                <field name="company_id" position="attributes">
+                     <attribute name="invisible">1</attribute>
+                </field>
+                <field name="department_id" position="attributes">
+                     <attribute name="invisible">1</attribute>
+                </field>
+                <field name="date_end" position="attributes">
+                     <attribute name="invisible">1</attribute>
+                </field>
+                <field name="name" position="after">
+                    <field name="state" position="move"/>
+                </field>
+                <field name="state" position="replace">
+                    <field name="state" string="Status" widget="label_selection" options="{'classes': {'draft': 'secondary', 'cancel': 'danger', 'dept_confirm': 'info', 'ir_approve': 'info', 'stock': 'success', 'reject': 'warning'}}"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>

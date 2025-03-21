@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_cashbook">
+        <t t-call="web.html_container">
+            <t t-set="data_report_margin_top" t-value="12"/>
+            <t t-set="data_report_header_spacing" t-value="9"/>
+            <t t-set="data_report_dpi" t-value="110"/>
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <h2>Account Cash Book</h2>
+                </div>
+                <div class="row mt32">
+                    <div class="col-4">
+                        <strong>Journals:</strong>
+                        <p t-esc="', '.join([ lt or '' for lt in print_journal ])"/>
+                    </div>
+
+                    <div class="col-2">
+                        <strong>Start Date:</strong>
+                        <p t-esc="data['date_from']"/>
+                    </div>
+                    <div class="col-2">
+                        <strong>End Date:</strong>
+                        <p t-esc="data['date_to']"/>
+                    </div>
+                    <div class="col-2">
+                        <div style="width:70%;">
+                            <strong>Sorted By:</strong>
+                            <p t-if="data['sortby'] == 'sort_date'">Date</p>
+                            <p t-if="data['sortby'] == 'sort_journal_partner'">Journal and Partner</p>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <strong>Target Moves:</strong>
+                        <p t-if="data['target_move'] == 'all'">All Entries</p>
+                        <p t-if="data['target_move'] == 'posted'">Posted Entries</p>
+                    </div>
+                </div>
+                <br/>
+
+                <table class="table table-sm">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Date</th>
+                            <!-- <th>JRNL</th> -->
+                            <!-- <th>Partner</th> -->
+                            <th>Ref</th>
+                            <th>Journal Entry</th>
+                            <!-- <th>Label</th> -->
+                            <th>Debit</th>
+                            <th>Credit</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    
+                        <t t-foreach="Accounts" t-as="account">
+                            <tr t-foreach="account['move_lines']" t-as="line">
+                             <!-- <t t-if=" line['debit'] "> -->
+                                <td>
+                                    <span t-esc="line['ldate']"/>
+                                </td>
+                                <!-- <td>
+                                    <span t-esc="line['partner_name']"/>
+                                </td> -->
+                                <td>
+                                    <span t-if="line['lref']" t-esc="line['lref']"/>
+                                </td>
+                                <td>
+                                    <span t-esc="line['move_name']"/>
+                                </td>
+                                <!-- <td>
+                                    <span t-esc="line['lname']"/>
+                                </td> -->
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(line['debit']))" />
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(line['credit']))" />
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(line['balance']))" />
+                                </td>
+                            <!-- </t> -->
+
+                            </tr>
+                             <tr>
+                                
+                                
+                                <!-- <td>
+                                    <t t-set="docs" t-value="env['account.move'].search([], limit=1)"/>
+                                        <t t-foreach="docs" t-as="line">
+                                            <t t-set="docs" t-value="docs['date']"/>
+                                        </t>
+                                        <t t-esc="docs"/>
+                                </td>
+                                <td >&amp;nbsp;</td>
+
+                                <td>
+                                    <t t-set="docs" t-value="env['account.move'].search([], limit=1)"/>
+                                        <t t-foreach="docs" t-as="line">
+                                            <t t-set="docs" t-value="docs['ref']"/>
+                                        </t>
+                                        <t t-esc="docs"/>
+                                </td>
+                                <td>
+                                    <t t-set="docs" t-value="env['account.move'].search([], limit=1)"/>
+                                        <t t-foreach="docs" t-as="line">
+                                            <t t-set="docs" t-value="docs['journal_id']"/>
+                                        </t>
+                                        <t t-esc="docs"/>
+                                </td> 
+                                <td >&amp;nbsp;</td>
+                                <td >0.00</td>
+                                <td>
+                                    <t t-set="sum_credit" t-value="0"/>
+                                        <t t-foreach="account['move_lines']" t-as="line">
+                                            <t t-set="sum_credit" t-value="sum_credit+line['credit']"/>
+                                        </t>
+                                        <t t-esc="sum_credit"/>
+                                </td>
+                                <td >0.00</td>
+                                -->
+                            </tr>
+                             <t t-if=" data['initial_balance'] == False ">
+                            <tr style="font-weight: bold;">
+                                <td colspan="3">
+                                    &amp;nbsp;
+                                </td>
+                                 <td>
+                                    Total
+                                </td>
+                                <td>
+                                    <t t-set="sum_debit" t-value="0"/>
+                                        <t t-foreach="account['move_lines']" t-as="line">
+                                            <t t-set="sum_debit" t-value="sum_debit+line['debit']"/>
+                                        </t>
+                                    <t t-esc="'{0:,.0f}'.format(int(sum_debit))"/>
+                                
+                                </td>
+                                <td>
+                                    <t t-set="sum_credit" t-value="0"/>
+                                        <t t-foreach="account['move_lines']" t-as="line">
+                                            <t t-set="sum_credit" t-value="sum_credit+line['credit']"/>
+                                        </t>
+                                    <t t-esc="'{0:,.0f}'.format(int(sum_credit))"/>
+                                </td>
+                                <td>
+                                    <t t-set="sum_debit" t-value="0"/>
+                                    <t t-set="sum_credit" t-value="0"/>
+                                        <t t-foreach="account['move_lines']" t-as="line">
+                                            <t t-set="sum_credit" t-value="sum_credit+line['credit']"/>
+                                            <t t-set="sum_debit" t-value="sum_debit+line['debit']"/>
+                                        </t>
+                                    <t t-esc="'{0:,.0f}'.format(int(sum_debit - sum_credit))"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td >&amp;nbsp;</td>
+                                <td>&amp;nbsp;</td>
+                            </tr>
+                            </t> 
+
+                            <t t-if=" data['initial_balance'] == True ">
+                            <tr style="font-weight: bold;">
+                                <td colspan="2">
+                                    &amp;nbsp;
+                                </td>
+                                 <td>
+                                    Ending Balance
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(account['debit']))" />
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(account['credit']))" />
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(account['balance']))" />
+                                </td>
+                                
+                            </tr>
+                            </t>                      
+                        </t>
+                    </tbody>
+                </table>
+            </t>
+        </t>
+    </template>
+
+</odoo>

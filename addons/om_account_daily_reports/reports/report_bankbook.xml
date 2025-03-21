@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_bankbook">
+        <t t-call="web.html_container">
+            <t t-set="data_report_margin_top" t-value="12"/>
+            <t t-set="data_report_header_spacing" t-value="9"/>
+            <t t-set="data_report_dpi" t-value="110"/>
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <h2>Account Bank Book</h2>
+                </div>
+                <div class="row mt32">
+                    <div class="col-4">
+                        <strong>Journals:</strong>
+                        <p t-esc="', '.join([ lt or '' for lt in print_journal ])"/>
+                    </div>
+
+                    <div class="col-2">
+                        <strong>Start Date:</strong>
+                        <p t-esc="data['date_from']"/>
+                    </div>
+                    <div class="col-2">
+                        <strong>End Date:</strong>
+                        <p t-esc="data['date_to']"/>
+                    </div>
+                    <div class="col-2">
+                        <div style="width:70%;">
+                            <strong>Sorted By:</strong>
+                            <p t-if="data['sortby'] == 'sort_date'">Date</p>
+                            <p t-if="data['sortby'] == 'sort_journal_partner'">Journal and Partner</p>
+                        </div>
+
+                    </div>
+                    <div class="col-2">
+                        <strong>Target Moves:</strong>
+                        <p t-if="data['target_move'] == 'all'">All Entries</p>
+                        <p t-if="data['target_move'] == 'posted'">Posted Entries</p>
+                    </div>
+                </div>
+                <br/>
+
+                <table class="table table-sm table-reports">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Date</th>
+                            <!-- <th>JRNL</th> -->
+                            <!-- <th>Partner</th> -->
+                            <th>Ref</th>
+                            <th>Move</th>
+                            <th>Label</th>
+                            <th>Debit</th>
+                            <th>Credit</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="Accounts" t-as="account">
+                            
+                            <tr t-foreach="account['move_lines']" t-as="line">
+                                <td>
+                                    <span t-esc="line['ldate']"/>
+                                </td>
+                                <!-- <td>
+                                    <span t-esc="line['lcode']"/>
+                                </td> -->
+                                <!-- <td>
+                                    <span t-esc="line['partner_name']"/>
+                                </td> -->
+                                <td>
+                                    <span t-if="line['lref']" t-esc="line['lref']"/>
+                                </td>
+                                <td>
+                                    <span t-esc="line['move_name']"/>
+                                </td>
+                                <td>
+                                    <span t-esc="line['lname']"/>
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(line['debit']))" />
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(line['credit']))" />
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(line['balance']))" />
+                                </td>
+                                <td t-if="line['amount_currency']" class="text-right"
+                                    groups="base.group_multi_currency">
+                                    <span t-esc="line['amount_currency'] if line['amount_currency'] > 0.00 else ''"/>
+                                    <span t-esc="line['currency_code'] if line['amount_currency'] > 0.00 else ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td >&amp;nbsp;</td>
+                                <td>&amp;nbsp;</td>
+                            </tr>
+                            <tr style="font-weight: bold;">
+                                <td colspan="4">
+                                   Ending Balance
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(account['debit']))" />
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(account['credit']))" />
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="'{0:,.0f}'.format(int(account['balance']))" />
+                                </td>
+                                <td groups="base.group_multi_currency"/>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </t>
+        </t>
+    </template>
+
+</odoo>

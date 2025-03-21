@@ -1,0 +1,12 @@
+<odoo>
+    <data noupdate="True">
+        <report id="report_jo_registration_project"
+                model="project.project"
+                string="JO Registration"
+                name="rnet_project.report_jo_registration"
+                file="rnet_project.report_jo_registration"
+                report_type="qweb-html"
+                print_report_name="'JO Registration - %s' % (object.name)"
+        />
+    </data>
+</odoo>

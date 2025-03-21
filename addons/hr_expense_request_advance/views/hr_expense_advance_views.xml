@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="hr_expense_advance_tree_view" model="ir.ui.view">
+            <field name="name">hr.expense.advance.tree.view</field>
+            <field name="model">hr.expense.advance</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="HR Expense Advance">
+                    <field name="name"/>
+                    <field name="employee_id" />
+                    <field name="department_id" />
+                    <field name="job_id" />
+                    <field name="requested_date" />
+                    <field name="requested_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="state" />
+                    <field name="currency_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="hr_expense_advance_form_view" model="ir.ui.view">
+            <field name="name">hr.expense.request.form.view</field>
+            <field name="model">hr.expense.advance</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="HR Expense Advance">
+                    <header>
+                        <field name="current_user_is_requester" invisible="True" />
+                        <!-- <button name="action_draft" type="object" string="Reset to draft" states="submitted"/> -->
+                        <button name="action_submit" type="object" string="Submit" states="draft" class="oe_highlight"/>
+                        <button name="action_approve" type="object" string="Approve"  states="submitted" class="oe_highlight" groups="hr_expense.group_hr_expense_user"/>
+                        <button name="%(hr_expense_advance_refuse_wizard_action)d" states="submitted" string="Refuse" type="action" groups="hr_expense.group_hr_expense_user"/>
+                        <button name="action_draft" type="object" string="Reset To Draft" attrs="{'invisible': ['|', ('current_user_is_requester', '!=', True), ('state', 'not in', ['approved','rejected'])]}"/>
+                        <button name="%(hr_expense_advance_register_payment_wizard_action)d" type="action"  string="Register Payment"
+                                states="approved" class="oe_highlight" context="{'default_amount': paid_amount, 'partner_id': address_id,
+                                'default_journal_id': journal_id, 'default_currency_id': currency_id, 'default_communication': seq_num}"
+                                groups="account.group_account_manager"/>
+
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title" attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <h2><field name="seq_num"/></h2>
+                        </div>
+                        <div class="oe_title">
+                            <h2><field name="name" placeholder="Expense Purpose..."/></h2>
+                        </div>
+
+                        <group col="4">
+                            <field name="employee_id" />
+                            <field name="department_id" />
+                            <field name="job_id" />
+                            <field name="requested_date" />
+                            <field name="company_id"/>
+                            <field name="user_id"/>
+                            <label for="requested_amount"/>
+                            <div name="amount_div" class="o_row">
+                                <field name="requested_amount" />
+                                <field name="currency_id" options="{'no_create': True, 'no_open': True}" groups="base.group_multi_currency"/>
+                            </div>
+                            <field name="address_id" invisible="1"/>
+                        </group>
+                        <notebook >
+                            <page string="Accounting Information" groups="hr_expense.group_hr_expense_manager">
+                                <group col="4">
+                                    <field name="journal_id"/>
+                                    <label for="paid_amount"/>
+                                    <div name="amount_div" class="o_row">
+                                        <field name="paid_amount" />
+                                        <field name="currency_id" options="{'no_create': True, 'no_open': True}" groups="base.group_multi_currency"/>
+                                    </div>
+                                    <field name="payment_date"/>
+                                    <field name="payment_id" readonly="1"/>
+                                    <field name="description"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="hr_expense_advance_filter_view" model="ir.ui.view">
+            <field name="name">hr.expense.advance.filter.view</field>
+            <field name="model">hr.expense.advance</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="HR Expense Advance">
+                    <field name="name" />
+                    <field name="seq_num"/>
+                    <field name="requested_date"/>
+                    <field name="employee_id" string="Employee" filter_domain="['|',('employee_id','ilike',self),('name','ilike',self)]"/>
+                    <!-- <filter string="My Requests" name="my_expense_advance" domain="[('employee_id.user_id', '=', uid)]"/> -->
+                    <filter string="Advance To Approve" name="my_expense_advance_to_approve" domain="[('state', '=', 'submitted')]"/>
+                    <filter string="To Pay" name="advance_to_approve" domain="[('state', '=', 'approved')]" />
+                    <separator />
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                        <filter string="Department" name="department" domain="[]" context="{'group_by': 'department_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_my_expense_advance" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">BAR</field>
+            <field name="res_model">hr.expense.advance</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="hr_expense_advance_filter_view"/>
+            <field name="context">{'search_default_my_expense_advance': 1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to add new Documents
+                </p>
+            </field>
+        </record>
+        <record id="action_expense_advance_to_approve" model="ir.actions.act_window">
+              <field name="name">Advance To Approve</field>
+              <field name="type">ir.actions.act_window</field>
+              <field name="res_model">hr.expense.advance</field>
+              <field name="view_type">form</field>
+              <field name="view_mode">tree,form</field>
+              <field name="search_view_id" ref="hr_expense_advance_filter_view"/>
+              <field name="domain">[('state', '=', 'submitted'), '|', ('user_id.id', '=', uid), ('user_id', '=', False)]</field>
+              <field name="context">{'search_default_my_expense_advance_to_approve': 1}</field>
+              <field name="help" type="html">
+                <p class="oe_view_nocontent_create"> </p>
+                <p></p>
+              </field>
+        </record>
+
+        <record id="action_hr_expense_advance_all_to_pay" model="ir.actions.act_window">
+            <field name="name">Advance To Pay</field>
+            <field name="res_model">hr.expense.advance</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="hr_expense_advance_filter_view"/>
+            <field name="domain">[]</field>
+            <field name="context">{'search_default_advance_to_approve': 1}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new expense advance
+              </p><p>
+                Once you have created your expense, submit it to your manager who will validate it.
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_hr_expense_advance" name="Expense Advance" sequence="0" parent="hr_expense.menu_hr_expense_root" groups="base.group_user"/>
+        <menuitem id="menu_hr_expense_advance_my_requests" name="My Advance Requests" sequence="1" parent="menu_hr_expense_advance" action="action_my_expense_advance"/>
+        <menuitem id="menu_hr_expense_advance_to_approve" name="Advance To Approve" sequence="3" parent="menu_hr_expense_advance" action="action_expense_advance_to_approve" groups="hr_expense.group_hr_expense_user"/>
+        <menuitem id="menu_hr_expense_advance_to_pay" name="Advance To Pay" sequence="5" parent="menu_hr_expense_advance" action="action_hr_expense_advance_all_to_pay" groups="account.group_account_manager"/>
+    </data>
+</odoo>

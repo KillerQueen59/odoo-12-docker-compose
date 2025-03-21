@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_expense_sheet_PCR_report_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+			<t t-call="web.basic_layout">
+				<!-- page -->
+				<div class="page">
+					<style type="text/css">
+						.highlight  {
+						background-color: #D3D3D3 !important;
+						}
+						table.table-bordered > thead > tr > th {
+						border:1px solid;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+					<div class="row">
+						<div class="col">
+							<img src="/web/binary/company_logo" alt="Logo" style="max-height: 70px;" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h5 class="text-center m-1">
+								<strong>
+									PROJECT CASH REPORT
+								</strong>
+							</h5>
+						</div>
+					</div>
+					<p>
+						Report Made at Head Office/Site Office
+					</p>
+					<div class="row">
+						<div class="col-8">
+							<table class="table table-borderless table-sm small">
+								<tbody>
+									<tr>
+										<td width="20%">
+											Project
+										</td>
+										<td>
+											:&#160;
+											<span t-field="o.project.name" />
+										</td>
+									</tr>
+									<tr>
+										<td>
+											Job Order No
+										</td>
+										<td>
+											:&#160;
+											<span t-field="o.project.no" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="col-4">
+							<table class="table table-borderless table-sm small">
+								<tbody>
+									<tr>
+										<td>
+											No Laporan
+										</td>
+										<td>
+											:&#160;
+											<span t-field="o.name" />
+										</td>
+									</tr>
+									<tr>
+										<td>
+											Bulan
+										</td>
+										<td>
+											:&#160;
+											<span t-field="o.created_date" t-options="{'format': 'MMMM yyyy'}" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col">
+							<table class="table table-bordered table-sm small">
+								<thead>
+									<tr class="highlight" style="">
+										<th class="text-center" style="font-weight:normal;" width="10%">
+											Cost Category
+										</th>
+										<th class="text-center" style="font-weight:normal;" width="40%">
+											Remark
+										</th>
+										<th class="text-center" style="font-weight:normal;" width="20%">
+											Total CVR
+										</th>
+										<th class="text-center" style="font-weight:normal;" width="20%">
+											Sub Total
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<style type="text/css">
+										.highlight  {
+										background-color: #D3D3D3 !important;
+										}
+									</style>
+									<t t-foreach="o.get_expense_line_cost_category_group()" t-as="pro">
+										<tr>
+											<td class="text-center">
+												<span t-esc="pro['code']" />
+											</td>
+											<td class="text-left">
+												<span t-esc="pro['label']" />
+											</td>
+											<td class="text-right">
+												<t t-esc="'{0:,.0f}'.format(int(pro['total']))" />
+											</td>
+											<td class="text-right">
+												<t t-esc="'{0:,.0f}'.format(int(pro['total']))" />
+											</td>
+										</tr>
+									</t>
+									<tr class="highlight">
+										<td class="text-center" colspan="2" style="font-weight: bold;">
+											Sub Total
+										</td>
+										<td class="text-right" style="font-weight: bold;">
+											<t t-esc="'{0:,.0f}'.format(int(o.total_amount))" />
+										</td>
+										<td class="text-right" style="font-weight: bold;">
+											<t t-esc="'{0:,.0f}'.format(int(o.total_amount))" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+                    <br/>
+					<div class="row">
+						<div class="col-7">
+                            &amp;ensp;
+						</div>
+						<div class="col-5">
+							<table class="table table-borderless table-sm small">
+								<tbody>
+									<tr>
+										<td colspan="3">
+											&amp;ensp;
+										</td>
+										<td>
+											Disusun Oleh,
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td>
+											Disetujui Oleh,
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+                                    <tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+											&amp;ensp;
+										</td>
+										<td style="border-top: solid 1px">
+											Project Commercial
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td style="border-top: solid 1px">
+											Site Manager
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="report_expense_sheet_PCR_report">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_expense.report_expense_sheet_PCR_report_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+         <record id="hr_expense_request_sequence" model="ir.sequence">
+            <field name="name">HR Expense Request Sequence</field>
+            <field name="code">hr.expense.request.sequence</field>
+            <field name="prefix">EXREQ/%(year)s/%(month)s/</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="True" name="use_date_range"/>
+            <field eval="False" name="company_id"/>
+            <field name="padding">4</field>
+        </record>
+
+        <record id="hr_expense_advance_sequence" model="ir.sequence">
+            <field name="name">HR Expense Advance Sequence</field>
+            <field name="code">hr.expense.advance.sequence</field>
+            <field name="prefix">EXADV/%(year)s/%(month)s/</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="True" name="use_date_range"/>
+            <field eval="False" name="company_id"/>
+            <field name="padding">4</field>
+        </record>
+
+    </data>
+</odoo>

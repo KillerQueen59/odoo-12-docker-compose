@@ -1,0 +1,398 @@
+<odoo>
+	<template id="report_debit_note_no_vat_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+			<t t-call="web.basic_layout">
+				<!-- header -->
+				<!-- <div class="header" style="margin-left: 8%;margin-right: 3%;">
+					<div class="row">
+						<div class="col-7">
+							<img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 80px;" />
+						</div>
+						<div class="col-5  text-right small">
+							<img t-att-src="'/ogut_asset/static/src/img/logo-smk3.png'" style="max-height: 70px;" />
+							<img t-att-src="'/ogut_asset/static/src/img/dqs-logo.png'" style="max-height: 70px;" />
+							<img t-att-src="'/ogut_asset/static/src/img/iqnet-logo.png'" style="max-height: 70px;" />
+							<br />
+							<p class="text-right" style="vertical-align : middle;text-align:center;margin-left:auto;
+                                margin-right:auto;font-size:10px;">
+								ISO 9001 : 2008 Cert no: 422970 QM08
+							</p>
+							<br />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12 mt-2">
+							<style type="text/css">
+								table.table-bordered > thead > tr > th {
+								border:1px ;
+								}
+								table.table-bordered > tbody > tr > td {
+								border:1px solid;
+								}
+							</style>
+							<table class="table table-bordered table-sm small">
+								<tbody>
+									<tr class="border border-dark">
+										<td style="width: 20%">
+											<h5 class="text-center" style="font-weight: bold;">
+												DEBIT NOTE
+											</h5>
+											<p style="font-weight: bold;" class="text-center">
+												No: &#160;
+												<span t-field="o.number_debit_note" />
+											</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<br /> -->
+
+				<!-- <div class="header" >
+					<div class="row">
+						<div class="col">
+							<img t-att-src="'/rnet_invoice/static/src/img/kop-header.jpg'" style="width:100%" />
+						</div>
+					</div>
+				</div> -->
+
+				<!-- page -->
+				<style type="text/css">
+					.highlight  {
+					background-color: #D3D3D3 !important;
+					}
+					table.table-bordered > thead > tr > th {
+					border:1px ;
+					}
+					table.table-bordered > tbody > tr > td {
+					border:1px solid;
+					}
+				</style>
+				<div class="page" style="margin-left: 8%;margin-right: 3%;">
+					<div class="row">
+						<div class="col-12">
+							<table class="table table-bordered table-sm small">
+								<tbody>
+									<tr class="border border-dark">
+										<td style="width: 20%">
+											<h5 class="text-center"  style="font-weight: bold; font-size: 18px;">
+												DEBIT NOTE
+											</h5>
+											<p style="font-weight: bold;" class="text-center">
+												No:
+												<span t-field="o.number_debit_note" />
+											</p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6">
+							<table class="table table-borderless table-sm small">
+								<tbody>
+									<tr>
+										<td style="width: 20%">
+											Invoiced to:
+											<br />
+											<span t-field="o.partner_id.name" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="col-6">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-7">
+							<table class="table table-borderless table-sm small">
+								<tbody>
+									<tr>
+										<td>
+											<span t-field="o.partner_id.street" />
+											<br />
+											<span t-field="o.partner_id.city" />
+											&#160;
+											<span t-field="o.partner_id.country_id" />
+											<br />
+											Phone &#160;:&#160;
+											<span t-field="o.partner_id.phone" />
+											<br />
+											Fax &#160;&#160;&#160;&#160;&#160;:
+											<br />
+											Attn &#160;&#160;&#160;&#160;: Account Payable
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="col-5">
+							<table class="table table-borderless table-sm small">
+								<tbody>
+									<tr>
+										<td style="width: 40%">
+											Invoice Date
+										</td>
+										<td>
+											:&#160;
+											<span t-field="o.date_invoice" t-options="{'format': 'd-MMM-YY'}" />
+										</td>
+									</tr>
+									<tr>
+										<td>
+											Terms of Payment
+										</td>
+										<td>
+											:&#160;
+											<t t-if="o.payment_term_id.name == 'Immediate Payment'">
+												Immediate Payment
+											</t>
+											<t t-elif="'Back to Back' in o.payment_term_id.name">
+												<span t-field="o.date_due" t-options="{'format': 'd-MMM-YY'}" />
+												(Back to Back)
+											</t>
+											<t t-else="">
+												<span t-field="o.date_due" t-options="{'format': 'd-MMM-YY'}" />
+											</t>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											PO No
+										</td>
+										<td>
+											:&#160;
+											<span t-field="o.po_no" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12">
+							<table class="table table-bordered table-sm small">
+								<thead class="border border-dark">
+									<tr>
+										<td style="width: 7%" class="border border-dark text-center">
+											Item
+										</td>
+										<td colspan="2" style="width: 50%" class=" border border-dark text-center">
+											Description
+										</td>
+										<td style="width: 12%" class="border border-dark text-center">
+											PO Item
+										</td>
+										<td style="width: 15%" class="border border-dark text-center">
+											Amount
+										</td>
+									</tr>
+								</thead>
+								<tbody class="border border-dark">
+									<t t-set="i" t-value="1" />
+									<tr t-foreach="o.invoice_line_ids" t-as="line">
+										<td class="border border-dark text-center">
+											<span t-esc="i" />
+											<t t-set="i" t-value="i+1" />
+										</td>
+										<td class="border border-dark">
+											<span t-field="line.name" />
+										</td>
+										<td class="border border-dark">
+											<span t-field="o.project.kind_of_work" />
+										</td>
+										<td class="border border-dark text-center">
+											<span t-esc="'%.0f'% line.quantity" />
+										</td>
+										<td class="border border-dark text-right">
+											<span t-esc="'{0:,.0f}'.format(line.price_subtotal)" />
+										</td>
+									</tr>
+									<tr>
+										<td style="border:none;">
+											Remarks :
+										</td>
+										<td style="border:none;" colspan="2">
+											&amp;ensp;
+										</td>
+										<td style="border:none;" class=" text-left">
+											Total
+										</td>
+										<td class="text-right">
+											<span t-esc="'{0:,.0f}'.format(o.amount_untaxed)" />
+										</td>
+									</tr>
+									<tr>
+										<td style="border:none;" colspan="3">
+											<span t-field="o.gut_invoice_remark" />
+										</td>
+										<td class="text-left" style="border:none;font-style:bold">
+											GRAND TOTAL
+										</td>
+										<td class=" text-right" style="font-style:bold">
+											<span t-esc="'{0:,.0f}'.format(o.amount_untaxed_signed)" />
+										</td>
+									</tr>
+									<tr>
+										<td style="border:none;" colspan="5">
+											Bank Account :
+											<br />
+											<span t-field="o.partner_bank_id.bank_id.name" />
+										</td>
+									</tr>
+									<tr>
+										<td style="border:none;" colspan="5">
+											Branch :&amp;ensp;
+											<span t-field="o.partner_bank_id.bank_id.bank_branch" />
+											<br />
+											<span t-field="o.partner_bank_id.bank_id.street" />
+											&amp;ensp;
+											<span t-field="o.partner_bank_id.bank_id.city" />
+											&amp;ensp;
+											<span t-field="o.partner_bank_id.bank_id.state" />
+											&amp;ensp;Telp.
+											<span t-field="o.partner_bank_id.bank_id.phone" />
+											&amp;ensp;
+											<span t-field="o.partner_bank_id.bank_id.country" />
+											&amp;ensp;
+											<br />
+											For :&amp;ensp;
+											<span t-field="o.partner_bank_id.partner_id.name" />
+											&amp;ensp; A/C No. :
+											<span t-field="o.partner_bank_id.acc_number" />
+											&amp;ensp;(
+											<span t-field="o.partner_bank_id.currency_id.name" />
+											)
+											<br />
+											Swift Code :&amp;ensp;
+											<span t-field="o.partner_bank_id.bank_id.bic" />
+										</td>
+									</tr>
+									<tr>
+										<td class=" text-center; highlight" colspan="5">
+											In Words:&amp;ensp;
+											<span t-field="o.num_word_without_tax">
+											</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<br />
+					<div class="row">
+						<div class="col-7">
+						</div>
+						<div class="col-5">
+							<table class="table table-borderless table-sm small">
+								<tbody>
+									<tr>
+										<td colspan="5">
+											&amp;ensp;
+										</td>
+										<td>
+											Jakarta,
+										</td>
+									</tr>
+									<tr>
+										<td colspan="5">
+											&amp;ensp;
+										</td>
+										<td>
+											<strong>
+												PT GRAHA USAHA TEKNIK
+											</strong>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td colspan="5">
+											&amp;ensp;
+										</td>
+										<td style="font-style:bold ; text-decoration:underline">
+											<strong>
+												kuswanto Rahayu
+											</strong>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="5">
+											&amp;ensp;
+										</td>
+										<td>
+											Director
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- <div class="footer">
+					<img t-att-src="'/rnet_invoice/static/src/img/footer2.jpg'" style="width:100%;"/>	
+				</div> -->
+				
+				<!-- <div class="row footer" style="font-size: small ;">
+					<div class="col-6" style="width: 50% ; color:white; background-color:orange ; justify-content: center">
+						<p>
+							http://www.ptgut.co.id
+						</p>
+					</div>
+					<div class="col-6" style="width: 50%; color:white; background-color:green">
+						<div class="row">
+							<div class="col-6 small">
+								<div class="text-right">
+									Tel: +62 21 8378 7333&amp;nbsp;
+									<br />
+									Fax: +62 21 8378 7222&amp;nbsp;
+								</div>
+							</div>
+							<div class="col-6 small">
+								<span t-field="o.company_id.partner_id.street" />
+								&amp;nbsp;
+								<span t-field="o.company_id.partner_id.street2" />
+							</div>
+						</div>
+					</div>
+				</div> -->
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="report_debit_note_no_vat">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_invoice.report_debit_note_no_vat_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

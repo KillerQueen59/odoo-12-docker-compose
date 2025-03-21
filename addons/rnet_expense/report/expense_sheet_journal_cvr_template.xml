@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_expense_sheet_journal_cvr_report_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+			<t t-call="web.basic_layout">
+				<!-- page -->
+				<div class="page">
+					<style type="text/css">
+						.highlight  {
+						background-color: #D3D3D3 !important;
+						}
+						table.table-bordered > thead > tr > th {
+						border:1px solid;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+					<div class="row ">
+						<div class="col">
+							<table class="table table-bordered table-sm small ">
+								<tbody>
+									<tr>
+										<td style="vertical-align: middle;text-align:center;" t-att-rowspan="4" colspan="4">
+											<h3 style="vertical-align: middle;text-align:center;">
+												PT GRAHA USAHA TEKNIK
+											</h3>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											Doc No  :&#160; 06.01.16
+										</td>
+									</tr>
+									<tr>
+										<td>
+											Revision :&#160; 01
+										</td>
+									</tr>
+									<tr>
+										<td>
+											Release Date :&#160; 18.03.19
+										</td>
+									</tr>
+									<tr>
+										<td style="font-weight: bold;" class="text-center" colspan="5">
+											<h6 style="font-weight: bold;">
+												JOURNAL CVR
+												<span t-esc="o.name" />
+											</h6>
+										</td>
+									</tr>
+									<tr>
+										<td style="font-weight: bold;" class="text-center" colspan="5">
+											<span t-field="o.create_date" t-options="{'format': 'MMMM yyyy'}" />
+										</td>
+									</tr>
+									<tr>
+										<td class="text-left" colspan="5">
+											Project
+											:&#160;&#160;&#160;
+											<span t-field="o.project.name" />
+										</td>
+									</tr>
+									<tr>
+										<td class="text-left" colspan="5">
+											Job Order No
+											:&#160;&#160;
+											<span t-field="o.project.no" />
+										</td>
+									</tr>
+									<tr>
+										<td style="font-weight: bold;" class="text-left" colspan="5">
+											<span t-field="o.bank_journal_id.name" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row ">
+						<div class="col">
+							<table class="table table-bordered table-sm small">
+								<thead>
+									<tr class="highlight" style="">
+										<th class="text-center" style="font-weight:normal;" width="5%">
+											No
+										</th>
+										<th class="text-center" style="font-weight:normal;" width="20%">
+											Account No
+										</th>
+										<th class="text-center" style="font-weight:normal;" width="30%">
+											Account Name
+										</th>
+										<th class="text-center" style="font-weight:normal;" width="20%">
+											Debit
+										</th>
+										<th class="text-center" style="font-weight:normal;" width="20%">
+											Credit
+										</th>
+									</tr>
+								</thead>
+								<t t-if="o.state == 'post'">
+									<tbody>
+										<style type="text/css">
+											.highlight  {
+											background-color: #D3D3D3 !important;
+											}
+										</style>
+										<t t-set="counter" t-value="1" />
+										<t t-foreach="o.get_expense_line_account_name_group()" t-as="pro">
+											<tr>
+												<td style="text-align:center;">
+													<span t-esc="counter" />
+													<t t-set="counter" t-value="counter+1" />
+												</td>
+												<td class="text-left">
+													<span t-esc="pro['code']" />
+												</td>
+												<td class="text-left">
+													<span t-esc="pro['label']" />
+												</td>
+												<td class="text-right">
+													<t t-esc="'{0:,.0f}'.format(int(pro['debit']))" />
+												</td>
+												<td class="text-right">
+													<t t-esc="'{0:,.0f}'.format(int(pro['credit']))" />
+												</td>
+											</tr>
+										</t>
+										<tr>
+											<td colspan="5">
+												Remarks :
+												<br />
+												<span t-esc="o.notes" />
+											</td>
+										</tr>
+									</tbody>
+								</t>
+								<t t-else="">
+									<tbody>
+										<tr>
+											<td class="text-center" colspan="5">
+												<h4>
+													No Data
+												</h4>
+												<br />
+												<h4>
+													You can only print for Posted CVR.
+												</h4>
+											</td>
+										</tr>
+									</tbody>
+								</t>
+							</table>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col last-page">
+							<table class="table table-bordered table-sm small">
+								<tbody>
+									<tr>
+										<td width="25%">
+											<div class="text-center">
+												Prepared By
+											</div>
+										</td>
+										<td width="25%">
+											<div class="text-center">
+												BA
+											</div>
+										</td>
+										<td width="25%">
+											<div class="text-center">
+												Technical
+											</div>
+										</td>
+										<td width="25%">
+											<div class="text-center">
+												Posted By
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+										</td>
+										<td>
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+										</td>
+										<td>
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+										</td>
+										<td>
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+										</td>
+									</tr>
+									<tr>
+										<td class="border border-dark">
+											Name :
+											<t t-esc="o.employee_id.name" />
+										</td>
+										<td class="font-smaller">
+											Name :&#160;
+										</td>
+										<td class="font-smaller">
+											Name :&#160;
+										</td>
+										<td class="font-smaller">
+											Name :&#160;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											Date :&#160;
+											<span t-field="o.created_date" t-options="{'format': 'dd-MM-yyyy'}" />
+										</td>
+										<td>
+											Date :&#160;
+										</td>
+										<td>
+											Date :&#160;
+										</td>
+										<td>
+											Date :&#160;
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-6 small">
+							<div class="text-left">
+								<span t-field="o.name" />
+							</div>
+						</div>
+						<div class="col-6 small">
+							<div class="text-right">
+								Page
+								<span class="page" />
+								of
+								<span class="topage" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="report_expense_sheet_journal_cvr_report">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_expense.report_expense_sheet_journal_cvr_report_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

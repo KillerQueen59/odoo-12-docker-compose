@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_type,access_project_type,model_project_type,,1,1,1,1
+access_project_status,access_project_status,model_project_status,,1,1,1,1
+access_project_po_line,access_project_po_line,model_project_po_line,,1,1,1,1
+access_project_project,access_project_project,model_project_project,project.group_project_user,1,1,1,0

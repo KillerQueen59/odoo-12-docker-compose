@@ -1,0 +1,127 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="purchase_requisition_history_tree">
+            <field name="name">Purchase Requisition History Tree</field>
+            <field name="model">purchase.requisition.history</field>
+            <field name="arch" type="xml">
+                <tree string="Revision History" default_order="revision desc" create="0">
+                    <field name="revision"/>
+                    <field name="revision_date"/>
+                    <field name="name" modifiers="{'readonly':true}"/>
+                    <field name="employee_id" on_change="1" can_create="true" can_write="true" modifiers="{'required':true}"/>
+                    <field name="department_id" can_create="true" can_write="true" modifiers="{'required':true}"/>
+                    <field name="project" on_change="1" can_create="true" can_write="true" modifiers="{}"/>
+                    <field name="analytic_account_id" can_create="true" can_write="true" modifiers="{}"/>
+                    <field name="request_date" modifiers="{'required':true}"/>
+                    <field name="receive_date" modifiers="{'readonly':true}"/>
+                    <field name="state" modifiers="{}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="purchase_requisition_history_form">
+            <field name="name">Purchase Requisition History Form</field>
+            <field name="model">purchase.requisition.history</field>
+            <field name="arch" type="xml">
+                <form create="false" edit="false" modifiers="{}">
+                    <header modifiers="{}">
+                        <!--
+                        <button name="requisition_confirm" type="object" string="Confirm" states="draft" class="btn-primary" confirm="Are you sure you want to confirm?" modifiers="{'invisible':[['state','not in',['draft']]]}" options="{}"/>
+                        <button name="manager_approve" type="object" string="Department Approve" class="btn-primary" states="dept_confirm" confirm="Are you sure you want to confirm?" modifiers="{'invisible':[['state','not in',['dept_confirm']]]}" options="{}"/>
+                        <button name="user_approve" type="object" string="Approve" states="ir_approve" class="btn-primary" modifiers="{'invisible':[['state','not in',['ir_approve']]]}" options="{}"/>
+                        <button name="request_stock" type="object" string="Create Picking and PO" class="btn-primary" states="approve" modifiers="{'invisible':[['state','not in',['approve']]]}" options="{}"/>
+                        <button name="action_received" type="object" string="Received" states="stock" class="btn-primary" invisible="1" modifiers="{'invisible':true}" options="{}"/>
+                        <button name="requisition_reject" type="object" string="Reject" states="dept_confirm" modifiers="{'invisible':[['state','not in',['dept_confirm']]]}" options="{}"/>
+                        <button name="action_cancel" type="object" states="draft" string="Cancel" modifiers="{'invisible':[['state','not in',['draft']]]}" options="{}"/>
+                        <button name="reset_draft" type="object" string="Reset to Draft" class="btn-primary" states="cancel,reject,receive" modifiers="{'invisible':[['state','not in',['cancel','reject','receive']]]}" options="{}"/>
+                        -->
+                        <field name="state" widget="statusbar" string="confirm" statusbar_visible="draft,dept_confirm,ir_approve,approve,stock,receive" modifiers="{}"/>
+                    </header>
+                    <sheet modifiers="{}">
+                        <div class="oe_button_box" name="button_box" modifiers="{}">
+                            <!--
+                            <button class="oe_stat_button" type="object" icon="fa-truck" name="show_picking" string="Internal Picking" modifiers="{}" options="{}"/>
+                            <button class="oe_stat_button" type="object" icon="fa-book" name="action_show_po" string="Purchase Order" modifiers="{}" options="{}"/>
+                            -->
+                        </div>
+                        <div class="oe_title" modifiers="{}">
+                            <div class="oe_title" modifiers="{}">
+                                <h1 modifiers="{}">
+                                    <field name="name" readonly="1"/> (rev. <field name="revision" readonly="1"/>)
+                                </h1>
+                                <span class="o_form_label">Revision Date: <field name="revision_date"/></span>
+                            </div>
+                        </div>
+                        <group modifiers="{}">
+                            <group modifiers="{}">
+                                <field name="employee_id" attrs="{'readonly': [('state', '!=', 'draft')]}" on_change="1" can_create="true" can_write="true" modifiers="{'required':true,'readonly':[['state','!=','draft']]}"/>
+                                <field name="department_id" attrs="{'readonly': [('state', '!=', 'draft')]}" can_create="true" can_write="true" modifiers="{'required':true,'readonly':[['state','!=','draft']]}"/>
+                                <field name="company_id" attrs="{'readonly': [('state', '!=', 'draft')]}" can_create="true" can_write="true" modifiers="{'required':true,'readonly':[['state','!=','draft']]}"/>
+                                <field name="requisiton_responsible_id" attrs="{'readonly': [('state', '!=', 'draft')]}" can_create="true" can_write="true" modifiers="{'readonly':[['state','!=','draft']]}"/>
+                                <field name="project" options="{'no_create':True, 'no_quick_create':True}" string="Job Order No." on_change="1" can_create="true" can_write="true" modifiers="{}"/>
+                            </group>
+                            <group modifiers="{}">
+                                <field name="request_date" attrs="{'readonly': [('state', '!=', 'draft')]}" modifiers="{'required':true,'readonly':[['state','!=','draft']]}"/>
+                                <field name="receive_date" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}" modifiers="{'readonly':[['state','in',['reject','cancel','receive']]]}"/>
+                                <field name="date_end" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}" modifiers="{'readonly':[['state','in',['reject','cancel','receive']]]}"/>
+                                <field name="analytic_account_id" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}" can_create="true" can_write="true" modifiers="{'readonly':[['state','in',['reject','cancel','receive']]]}"/>
+                            </group>
+                        </group>
+
+                        <notebook modifiers="{}">
+                            <page string="Requisitions Lines" modifiers="{}">
+                                <field name="requisition_line_ids" attrs="{'readonly': [('state', 'in', ['cancel','receive'])]}">
+                                    <tree editable="bottom">
+                                        <!--<field name="requisition_type" groups="material_purchase_requisitions.group_purchase_requisition_user,purchase.group_purchase_user,material_purchase_requisitions.group_purchase_requisition_manager,material_purchase_requisitions.group_purchase_requisition_department"/>-->
+                                        <field name="requisition_type"/>
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="qty"/>
+                                        <field name="uom"/>
+                                        <field name="partner_id" groups="material_purchase_requisitions.group_purchase_requisition_user,purchase.group_purchase_user,material_purchase_requisitions.group_purchase_requisition_manager,material_purchase_requisitions.group_purchase_requisition_department" attrs="{'readonly': [('requisition_type', '!=', 'purchase')]}" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
+                                <group modifiers="{}">
+                                    <field name="reason" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}" placeholder="Add Reason for Internal Requistion ...." modifiers="{'readonly':[['state','in',['reject','cancel','receive']]]}"/>
+                                </group>
+                            </page>
+                            <page string="Picking Details" attrs="{'readonly': [['state', 'in', ['done']]]}" modifiers="{'readonly':[['state','in',['done']]]}">
+                                <group modifiers="{}">
+                                    <group modifiers="{}">
+                                        <field name="location_id" domain="[('usage','!=', 'view')]" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}" can_create="true" can_write="true" modifiers="{'readonly':[['state','in',['reject','cancel','receive']]]}"/>
+                                    </group>
+                                    <group modifiers="{}">
+                                        <field name="dest_location_id" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}" can_create="true" can_write="true" modifiers="{'readonly':[['state','in',['reject','cancel','receive']]]}"/>
+                                        <field name="delivery_picking_id" can_create="true" can_write="true" modifiers="{'readonly':true}"/>
+                                        <field name="custom_picking_type_id" attrs="{'readonly': [['state', 'in', ['reject','cancel','receive']]]}" can_create="true" can_write="true" modifiers="{'readonly':[['state','in',['reject','cancel','receive']]]}"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Other Information" modifiers="{}">
+                                <group modifiers="{}">
+                                    <group modifiers="{}">
+                                        <field name="employee_confirm_id" can_create="true" can_write="true" modifiers="{'readonly':true}"/>
+                                        <field name="approve_manager_id" can_create="true" can_write="true" modifiers="{'readonly':true}"/>
+                                        <field name="approve_employee_id" can_create="true" can_write="true" modifiers="{'readonly':true}"/>
+                                        <field name="reject_employee_id" can_create="true" can_write="true" modifiers="{'readonly':true}"/>
+                                        <!--<field name="reject_reason" modifiers="{'readonly':true}"/>-->
+                                    </group>
+                                    <group modifiers="{}">
+                                        <field name="confirm_date" modifiers="{'readonly':true}"/>
+                                        <field name="managerapp_date" modifiers="{'readonly':true}"/>
+                                        <field name="userrapp_date" modifiers="{'readonly':true}"/>
+                                        <field name="userreject_date" modifiers="{'readonly':true}"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter" modifiers="{}">
+                        <field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
+                        <field name="message_ids" widget="mail_thread" modifiers="{}" options="{'display_log_button': True}"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

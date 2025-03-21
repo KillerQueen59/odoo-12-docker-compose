@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    <menuitem id="menu_finance_daily_reports"
+                  name="Daily Reports"
+                  sequence="5"
+                  parent="hr_expense.menu_hr_expense_reports"/>
+
+    <record id="action_account_bankbook_menu" model="ir.actions.act_window">
+        <field name="name">Bank Book</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.bankbook.report</field>
+        <field name="view_mode">form</field>
+        <field name="inherit_id" ref="om_account_daily_reports.account_report_bankbook_view" />
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_account_cashbook_menu" model="ir.actions.act_window">
+        <field name="name">Cash Book</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.cashbook.report</field>
+        <field name="view_mode">form</field>
+        <field name="inherit_id" ref="om_account_daily_reports.account_report_cashbook_view" />
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_account_daybook_menu" model="ir.actions.act_window">
+        <field name="name">Day Book</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.daybook.report</field>
+        <field name="view_mode">form</field>
+        <field name="inherit_id" ref="om_account_daily_reports.account_report_daybook_view" />
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+            id="menu_bankbook"
+            name="Bank Book"
+            sequence="10"
+            parent="hr_expense.menu_hr_expense_reports"
+            action="action_account_bankbook_menu"
+            groups="account.group_account_user,account.group_account_manager"/>
+
+    <menuitem
+            id="menu_cashbook"
+            name="Cash Book"
+            sequence="10"
+            parent="hr_expense.menu_hr_expense_reports"
+            action="action_account_cashbook_menu"
+            groups="account.group_account_user,account.group_account_manager,hr_expense.group_hr_expense_user"/>
+<!-- 
+    <menuitem
+            id="menu_daybook"
+            name="Day Book"
+            sequence="10"
+            parent="hr_expense.menu_hr_expense_reports"
+            action="action_account_daybook_menu"
+            groups="account.group_account_user,account.group_account_manager"/> -->
+
+    </data>
+</odoo>
+

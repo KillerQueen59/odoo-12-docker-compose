@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"account_asset_category_asset_employee","account_asset_category_asset_employee","odoo_account_asset.model_account_asset_category_custom","odoo_account_asset_extend_ce.group_asset_employee",1,1,1,0
+"acces_account_asset_asset_employee","acc_account_asset_asset_employee","odoo_account_asset.model_account_asset_asset_custom","odoo_account_asset_extend_ce.group_asset_user",1,0,0,0
+"acces_res_company_asset_user","acc_res_compnay_asset_user","base.model_res_company","odoo_account_asset_extend_ce.group_asset_user",1,1,1,0
+"acces_res_company_asset_manager","acc_res_compnay_asset_manager","base.model_res_company","odoo_account_asset_extend_ce.group_asset_manager",1,1,1,0

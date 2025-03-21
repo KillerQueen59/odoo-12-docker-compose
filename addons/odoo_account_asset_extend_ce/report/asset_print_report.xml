@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+       <template id="report_asset_print" inherit_id="asset_print_report.asset_print_report_id">
+                     <!--  <xpath expr="//table[hasclass('table table-responsive')]//tr[4]//td[2]" position="after"> -->
+                     <xpath expr="//h3[2]" position="before">
+                     <br/><br/>
+                      <h3>Additional Information</h3> <br/>
+                     	<table class="table col-12">
+                          <tr>
+                          	<td><strong>Record Brand:</strong></td><td><span t-field="doc.custom_record_brand"/></td>
+                            <td><strong>Model Number:</strong></td>
+                            <td><span t-field="doc.custom_model_number"/></td>
+                          </tr>
+                           <tr>
+                           	<td><strong>Serial Number:</strong></td>
+                           	<td><span t-field="doc.custom_serial_number"/></td>
+                           	<td><strong>Manufacturer:</strong></td>
+                           	<td><span t-field="doc.custom_manufacturer_id"/></td>
+                           </tr>
+                          <tr>
+                          	<td><strong>Receive Date:</strong></td>
+                          	<td><span t-field="doc.custom_receive_date"/></td>
+                          	<td><strong>Purchase Order:</strong></td>
+                          	<td><span t-field="doc.custom_purchase_id"/></td>
+                          </tr>
+                          <tr>
+                          	<td><strong>Invoice:</strong></td>
+                          	<td><span t-field="doc.invoice_id"/></td>
+                          	<td><strong>Warranty Information:</strong></td>
+                          	<td><span t-field="doc.custom_warranty_information"/></td>
+                          </tr>
+                          <tr>
+                          	<td><strong>Warranty Date:</strong></td>
+                          	<td><span t-field="doc.custom_warranty_expire_date"/></td>
+                          	<td><strong>Warranty Service Provider:</strong></td>
+                          	<td><span t-field="doc.custom_warranty_service_provider"/></td>
+                          </tr>
+                            <tr>
+                            	<td><strong>Invoice:</strong></td>
+                            	<td><span t-field="doc.invoice_id"/></td>
+                            	<td></td><td></td>
+                            </tr>
+                        </table>
+                     </xpath>  
+
+
+       </template>
+</odoo>

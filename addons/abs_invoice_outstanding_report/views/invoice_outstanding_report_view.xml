@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Create menu to open wizard for report-->
+    <menuitem
+        id="menu_customer_invoice_outstanding_report"
+        name="Outstanding Invoice Report"
+        parent="account.menu_finance_receivables"
+        sequence="6"
+        action="abs_invoice_outstanding_report.open_outstanding_invoice_action"
+    />
+</odoo>

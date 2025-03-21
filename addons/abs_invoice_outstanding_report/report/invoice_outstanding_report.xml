@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="action_customer_invoice_outstanding"
+            string="Print Outstanding Invoices"
+            model="report.abs_invoice_outstanding_report.invoice_outstanding" 
+            report_type="qweb-html"
+            file="abs_invoice_outstanding_report.invoice_outstanding" 
+            name="abs_invoice_outstanding_report.invoice_outstanding" 
+        />
+    </data>
+</odoo>

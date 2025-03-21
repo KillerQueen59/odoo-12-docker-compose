@@ -1,0 +1,47 @@
+<odoo>
+    <data>
+
+        <!-- Created new Form multiple product View for wizard-->
+        <record id="sr_form_view_select_multi_product_wizard_stock_inventory" model="ir.ui.view">
+            <field name="name">sr.form.view.select.multi.product.wizard.stock.inventory</field>
+            <field name="model">sr.multi.product.stock.inventory</field>
+            <field name="arch" type="xml">
+                <form string="Select Multiple product" >
+                    <group>
+                        <field name="product_ids" nolabel="1">
+                            <tree>
+                                <field name="name"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <footer>
+                        <button class="btn-primary" name="add_product" type="object" string="Select" />
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Created new product action for wizard-->
+        <record id="action_select_multi_product_wizard_stock_inventory" model="ir.actions.act_window">
+            <field name="name">Select Multiple Product</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sr.multi.product.stock.inventory</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="rnet_stock_inventory_form_inherit" model="ir.ui.view">
+        <field name="name">stock.inventory.form.inherit</field>
+        <field name="model">stock.inventory</field>
+        <field name="inherit_id" ref="stock.view_inventory_form"/>
+        <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_cancel_draft']" position="after">
+                    <button name="%(action_select_multi_product_wizard_stock_inventory)d" type="action" class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'confirm')]}" string="Select Multiple Product"/>
+                </xpath>
+        </field>
+     </record>
+
+    </data>
+</odoo>

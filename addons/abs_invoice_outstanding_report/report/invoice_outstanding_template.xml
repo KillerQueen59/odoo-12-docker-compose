@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="invoice_outstanding">
+    <t t-call="web.html_container">
+    <t t-call="web.external_layout">
+        <t t-set="docs" t-value="docs.with_context()"/>
+
+        <style type="text/css">
+                .highlight  {
+                background-color: #D3D3D3 !important;
+                }
+                .texthighlight  {
+                color: red !important;
+                }
+            </style>
+        <div class="page">
+            <div class="oe_structure"/>
+            <br/>
+            <table border="1" class="table table-bordered" style="border-style:solid">
+                <tr style="height:30%">
+                    <td style="border: 1px solid black" align="center">Customer:&amp;ensp; <strong> <span t-field="docs.customer"/></strong> </td>
+
+                    <td style="border: 1px solid black" align="center">Cut-off Date:&amp;ensp;  <span t-field="docs.start_date" t-options="{'format': 'd-MMM-YY'}"/></td>
+                </tr>
+            </table>
+            <br/>
+            <table class="table table-bordered">
+
+                <thead>
+                    <tr t-att-class="'highlight'" >
+                        <th>Invoice No.</th>
+                        <th>Invoice Date</th>
+                        <th>Due Date</th>
+                        <th>Overdue</th>
+                        <th>Amount</th>
+                        <th>PO</th>
+                        <th>Project</th>
+                    </tr>
+                </thead>
+                <tbody class="sale_tbody">
+                    <t t-foreach="invoices" t-as="invoice">
+                        <tr>
+                            <td><span t-field="invoice.number"/></td>
+                            <!-- <td><span t-field="invoice.partner_id"/></td> -->
+                            <td><span t-field="invoice.date_invoice" t-options="{'format': 'd-MMM-YY'}"/></td>
+                            <td><span t-field="invoice.date_due" t-options="{'format': 'd-MMM-YY'}"/></td>
+                            <td t-att-class="'texthighlight'" ><span t-esc="(datetime.datetime.now().date() - invoice.date_due).days"/> days</td>
+                            <td><span t-field="docs.currency"/>&amp;ensp; <span t-esc="'{0:,.0f}'.format(invoice.residual)"/></td>
+                            <td><span t-field="invoice.po_no"/></td>
+                            <td><span t-field="invoice.project.name"/></td>
+                        </tr>                           
+		            </t>
+                </tbody>
+                        <tr>
+                            <td colspan="4">WHT 2.65% (PPh 23)</td>
+                           <td colspan="3"><span t-field="docs.currency"/>&amp;ensp; (<span t-field="docs.total_amount_pph"/>)</td>
+                        </tr>  
+                        <tr t-att-class="'highlight'">
+                            <td colspan="4">Amount</td>
+                           <td colspan="3"><span t-field="docs.currency"/>&amp;ensp; <span t-field="docs.total_amount_due"/></td>
+                        </tr>  
+            </table>
+        </div>
+    </t>
+    </t>
+</template>
+</odoo>

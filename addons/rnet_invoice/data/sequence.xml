@@ -1,0 +1,23 @@
+<odoo>
+    <data noupdate="True">
+        <record id="rnet_seq_invoice" model="ir.sequence">
+                <field name="name">rnet invoice sequence</field>
+                <field name="code">rnet.invoice</field>
+                <field name="suffix">/GUT/INV/%(year)s</field>
+                <field name="padding">4</field>
+        </record>
+        <record id="rnet_seq_invoice_debit_note" model="ir.sequence">
+                <field name="name">rnet invoice Debit Note sequence</field>
+                <field name="code">rnet.invoice.debit.note</field>
+                <field name="suffix">/GUT/DN/%(year)s</field>
+                <field name="padding">4</field>
+        </record>
+        <record id="rnet_seq_proforma_invoice" model="ir.sequence">
+                <field name="name">rnet proforma invoice sequence</field>
+                <field name="code">rnet.invoice.proforma.invoice</field>
+                <field name="suffix">/GUT/PI/%(year)s</field>
+                <field name="padding">4</field>
+        </record>
+
+    </data>
+</odoo>

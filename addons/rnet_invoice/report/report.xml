@@ -1,0 +1,69 @@
+<odoo>
+    <data noupdate="True">
+        <report id="report_invoice_standar_gut"
+                model="account.invoice"
+                string="Invoice GUT Standar"
+                name="rnet_invoice.report_invoice_gut"
+                file="rnet_invoice.report_invoice_gut"
+                report_type="qweb-html"
+                print_report_name="'Invoice - %s' % (object.number)"
+        />
+        <!-- <report id="report_invoice_hyundai"
+                model="account.invoice"
+                string="Invoice Hyundai"
+                name="rnet_invoice.report_invoice_hyundai"
+                file="rnet_invoice.report_invoice_hyundai"
+                report_type="qweb-html"
+                print_report_name="'Invoice Hyundai - %s' % (object.number)"
+        /> -->
+        <report id="report_invoice_gut_rapp"
+                model="account.invoice"
+                string="Invoice RAPP"
+                name="rnet_invoice.report_invoice_rapp"
+                file="rnet_invoice.report_invoice_rapp"
+                report_type="qweb-html"
+                print_report_name="'Invoice - %s' % (object.number)"
+        />
+        <report id="report_invoice_gut_donghwa"
+                model="account.invoice"
+                string="Invoice Donghwa"
+                name="rnet_invoice.report_invoice_donghwa"
+                file="rnet_invoice.report_invoice_donghwa"
+                report_type="qweb-html"
+                print_report_name="'Invoice - %s' % (object.number)"
+        />
+        <report id="report_gut_debit_note_shinbo"
+                model="account.invoice"
+                string="Debit Note Shinbo"
+                name="rnet_invoice.report_debit_note_shindo"
+                file="rnet_invoice.report_debit_note_shindo"
+                report_type="qweb-html"
+                print_report_name="'Debit Note - %s' % (object.number)"
+        />
+        <report id="report_gut_debit_note_vat"
+                model="account.invoice"
+                string="Debit Note With VAT"
+                name="rnet_invoice.report_debit_note_vat"
+                file="rnet_invoice.report_debit_note_vat"
+                report_type="qweb-html"
+                print_report_name="'Debit Note With VAT - %s' % (object.number_debit_note)"
+        />
+        <report id="report_gut_debit_note_no_vat"
+                model="account.invoice"
+                string="Debit Note Without VAT"
+                name="rnet_invoice.report_debit_note_no_vat"
+                file="rnet_invoice.report_debit_note_no_vat"
+                report_type="qweb-html"
+                print_report_name="'Debit Note Without VAT - %s' % (object.number_debit_note)"
+        />
+        <report id="report_gut_proforma_invoice"
+                model="account.invoice"
+                string="Proforma Invoice"
+                name="rnet_invoice.report_proforma_invoice"
+                file="rnet_invoice.report_proforma_invoice"
+                report_type="qweb-html"
+                print_report_name="'Proforma Invoice - %s' % (object.number_proforma_invoice)"
+        />
+
+    </data>
+</odoo>

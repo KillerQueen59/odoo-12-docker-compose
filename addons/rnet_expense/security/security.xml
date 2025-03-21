@@ -1,0 +1,100 @@
+<odoo>
+<!-- expense advance request / hr.expense.advance -->
+<delete id="ir_rule_hr_expense_advance_user"  model="ir.rule">
+</delete>
+
+<record id="ir_rule_hr_expense_advance_user" model="ir.rule">
+    <field name="name">view own BAR</field>
+    <field name="model_id" ref="model_hr_expense_advance" />
+    <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>    
+    <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_user'))]"/>
+</record>
+
+<record id="ir_rule_hr_expense_advance_project_manager" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense_advance" />
+    <field name="name">view BAR for Project Manager</field>
+    <field name="domain_force">['|',('project_manager.user_id','=',user.id),('site_manager.user_id','=',user.id)] </field>
+    <field name="groups" eval="[(4, ref('project.group_project_manager'))]"/>
+</record>
+
+<record id="ir_rule_hr_expense_advance_manager" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense_advance" />
+    <field name="name">view BAR for Director</field>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_manager'))]"/>
+</record>
+
+<record id="ir_rule_hr_expense_advance_administrator" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense_advance" />
+    <field name="name">view BAR for administrator</field>
+    <field name="domain_force">[(1,'=',1)]</field>
+    <field name="groups" eval="[(4, ref ('base.group_erp_manager'))]"/>
+</record>
+
+
+<!-- access record CVR -->
+<record id="ir_rule_hr_expense_sheet_user" model="ir.rule">
+    <field name="name">view own CVR</field>
+    <field name="model_id" ref="model_hr_expense_sheet"/>
+    <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>    
+    <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_user'))]"/>
+</record>
+
+<record id="ir_rule_hr_expense_sheet_project_manager" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense_sheet" />
+    <field name="name">view CVR for Project Manager</field>
+    <field name="domain_force">['|',('project_manager_id.user_id','=',user.id),('site_manager_id.user_id','=',user.id)] </field>
+    <field name="groups" eval="[(4, ref('project.group_project_manager'))]"/>
+</record>
+
+<!-- <record id="ir_rule_hr_expense_sheet_manager" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense_sheet" />
+    <field name="name">view CVR for Director</field>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_manager'))]"/>
+    <field name="perm_create" eval="False"/>
+    <field name="perm_write" eval="False"/>
+    <field name="perm_unlink" eval="False"/>
+    <field name="perm_read" eval="True"/>
+    
+</record>  -->
+
+<record id="ir_rule_hr_expense_sheet_administrator" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense_sheet" />
+    <field name="name">view CVR for administrator</field>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref ('base.group_erp_manager'))]"/>
+</record>
+
+<!-- access record Expenses -->
+<record id="ir_rule_hr_expense_user" model="ir.rule">
+    <field name="name">view own Expenses</field>
+    <field name="model_id" ref="model_hr_expense"/>
+    <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>    
+    <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_user'))]"/>
+</record>
+
+<record id="ir_rule_hr_expense_project_manager" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense" />
+    <field name="name">view Expenses for Project Manager</field>
+    <field name="domain_force">[('project.project_manager.user_id','=',user.id)] </field>
+    <field name="groups" eval="[(4, ref('project.group_project_manager'))]"/>
+</record>
+
+<record id="ir_rule_hr_expense_manager" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense" />
+    <field name="name">view Expenses for Director</field>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_manager'))]"/>
+    
+</record> 
+
+<record id="ir_rule_hr_expense_administrator" model="ir.rule">
+    <field name="model_id" ref="model_hr_expense" />
+    <field name="name">view Expenses for administrator</field>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref ('base.group_erp_manager'))]"/>
+</record>
+
+
+</odoo>

@@ -1,0 +1,301 @@
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="purchase_order_form">
+			<field name="name">purchase order form</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//sheet/notebook/page[1]/field/tree/field[@name='price_subtotal']" position="after">
+					<field name="gut_remark" />
+				</xpath>
+				<xpath expr="//field[@name='taxes_id']" position="after">
+					<field name="price_tax" />
+				</xpath>
+				<xpath expr="//group[1]/group[1]/field[@name='currency_id']" position="after">
+					<field name="gut_term_of_delivery" />
+					<field name="picking_type_id" domain="[('code','=','incoming')]" options="{'no_create': True, 'no_edit': True, 'no_open': True}" groups="stock.group_stock_multi_locations" position="move" />
+				</xpath>
+				<field name="company_id" position="after">
+					<field name="gut_qc" />
+					<field name="is_product_category_service" invisible="1"/>
+					<field name="payment_term_id" position="move" />
+                	<field name="gut_receive_status" invisible="True" />
+				</field>
+				<xpath expr="//sheet/notebook/page[1]/field/tree/field[@name='company_id']" position="attributes">
+					<attribute name="invisible">
+						1
+					</attribute>
+				</xpath>
+				<xpath expr="//sheet/notebook/page[1]/field/tree/field[@name='date_planned']" position="attributes">
+					<attribute name="invisible">
+						1
+					</attribute>
+				</xpath>
+				<xpath expr="//sheet/notebook/page[1]/field/tree/field[@name='product_uom']" position="attributes">
+					<attribute name="string">
+						Unit
+					</attribute>
+					<attribute name="readonly">
+						1
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='date_planned']" position="attributes">
+					<attribute name="string">
+						Expected Date
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='user_id']" position="replace">
+					<field name="user_id" string="Purchaser" options="{'no_create': True, 'no_edit': True, 'no_open': True}" />
+				</xpath>
+				<xpath expr="//field[@name='origin']" position="after">
+					<field name="date_order" position="move"/>
+				</xpath>
+				<xpath expr="//field[@name='date_order']" position="before">
+					<field name="user_id" position="move"/>
+				</xpath>
+				<xpath expr="//field[@name='picking_type_id']" position="replace">
+					<field name="picking_type_id" domain="[('code','=','incoming')]" options="{'no_create': True, 'no_edit': True, 'no_open': True}" groups="stock.group_stock_multi_locations" />
+				</xpath>
+				<xpath expr="//field[@name='notes']" position="after">
+					<group colspan="2" attrs="{'invisible': [('amount_total', '&lt;=', 0)]}">
+						<div class="oe_subtotal_footer_separator oe_inline o_td_label" style="font-size:15px;">
+							<label for="total_purchase_product" style="margin-right: 8px;font-size:15px;" />
+							<field name="total_purchase_product" string="Total Products:" />
+							<br />
+							<label for="total_purchase_quantity" style="margin-right: 8px;font-size:15px;" />
+							<field name="total_purchase_quantity" string="Total Quantities:" />
+						</div>
+					</group>
+				</xpath>
+				<xpath expr="//sheet/notebook/page[2]/group[1]/group[1]/field[@name='incoterm_id']" position="before">
+					<field name="gut_description" />
+				</xpath>
+				<xpath expr="//field[@name='notes']" position="replace">
+					<field name="notes" class="oe_inline" placeholder="Additional Remark" />
+					<div class="oe_clear" />
+				</xpath>
+				<xpath expr="//button[@name='action_view_invoice'][2]" position="replace">
+					<button name="action_view_invoice" string="Create Bill" invisible="1" type="object" context="{'create_bill':True}" attrs="{'invisible': ['|', '|', '|',('state', 'not in', ('purchase', 'done')), ('invoice_status', 'not in', ('no', 'invoiced')), ('order_line', '=', []), ('is_product_category_service', '=', False)]}" />
+				</xpath>
+				<xpath expr="//button[@name='action_rfq_send']" position="before">
+					<xpath expr="//button[@name='action_view_invoice']"  position="move" />
+				</xpath>
+				<xpath expr="//button[@name='print_quotation']" position="replace">
+					<button name="print_quotation" invisible="1" string="Print RFQ" type="object" states="draft" class="oe_highlight" groups="base.group_user" />
+				</xpath>
+				<xpath expr="//button[@name='print_quotation'][2]" position="replace">
+					<button name="print_quotation" invisible="1" string="Print RFQ" type="object" states="sent" groups="base.group_user" />
+				</xpath>
+				<xpath expr="//button[@name='button_cancel']" position="replace">
+					<button name="button_cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'refuse']),('gut_receive_status', 'in', ['close','over'])]}" string="Cancel" type="object" />
+				</xpath>
+				<xpath expr="//button[@name='button_done']" position="replace">
+					<button name="button_done" invisible="1" type="object" string="Lock" states="purchase" />
+				</xpath>
+				<xpath expr="//button[@name='button_unlock']" position="replace">
+					<button name="button_unlock" invisible="1" type="object" string="Unlock" states="done" groups="purchase.group_purchase_manager" />
+				</xpath>
+				<xpath expr="////sheet/notebook/page[2]/group" position="replace">
+					<group>
+						<group>
+							<field name="date_planned" string="Expected Date" required="1" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}" />
+							<field name="dest_address_id" groups="stock.group_stock_multi_locations" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')], 'required': [('default_location_dest_id_usage', '=', 'customer')]}" />
+							<field name="default_location_dest_id_usage" invisible="1" />
+							<field name="incoterm_id" />
+                            <field name="invoice_status" />
+							<!-- <field name="payment_term_id" options="{'no_open': True, 'no_create': True}" attrs="{'readonly': ['|', ('invoice_status','=', 'invoiced'), ('state', '=', 'done')]}" /> -->
+							<field name="fiscal_position_id" options="{'no_create': True}" attrs="{'readonly': ['|', ('invoice_status','=', 'invoiced'), ('state', '=', 'done')]}" />
+							<field name="date_approve" groups="base.group_no_one" />
+						</group>
+					</group>
+				</xpath>
+				<xpath expr="//field[@name='order_line']/tree/field[@name='account_analytic_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+            	</xpath>
+				<xpath expr="//field[@name='order_line']/tree/field[@name='analytic_tag_ids']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+            	</xpath>
+				<xpath expr="//field[@name='order_line']/tree/field[@name='account_analytic_id']" position="before">
+					<field name="asset_category_id"/>
+					<field name="account_id"/>
+            	</xpath>
+				<xpath expr="//field[@name='partner_id']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='partner_ref']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='currency_id']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='gut_term_of_delivery']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='picking_type_id']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='origin']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='user_id']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='date_order']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='payment_term_id']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='gut_qc']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='partner_id']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//notebook/page[1]/field[@name='order_line']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve', 'purchase'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='invoice_status']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='fiscal_position_id']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='date_approve']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='incoterm_id']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+<!--				<xpath expr="//field[@name='dept_manager_id']" position="attributes">-->
+<!--					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>-->
+<!--				</xpath>-->
+<!--				<xpath expr="//field[@name='finance_manager_id']" position="attributes">-->
+<!--					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>-->
+<!--				</xpath>-->
+<!--				<xpath expr="//field[@name='director_manager_id']" position="attributes">-->
+<!--					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve','finance_approval'])]}</attribute>-->
+<!--				</xpath>-->
+				<xpath expr="//field[@name='notes']" position="attributes">
+					<attribute name="attrs">{'readonly':[('state','not in',['draft','sent', 'to approve'])]}</attribute>
+				</xpath>
+				<!-- baru ditambahkan -->
+				<!--
+				<notebook>
+				<page name="Notification" string="Notification Receipt">
+				<group>
+				<field name="email_date" string = "When to send"/>
+				<field name="recipient" />
+				<field name="subject"/>
+				<field name="email_content" widget = "html"/>
+				</group>
+				</page>
+				</notebook>
+				-->
+			</field>
+		</record>
+        
+		<record model="ir.ui.view" id="rnet_purchase_order_form">
+			<field name="name">purchase order form</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase_stock.purchase_order_view_form_inherit" />
+			<field name="arch" type="xml">
+				<xpath expr="//button[@name='action_view_picking']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="purchase_order_tree">
+			<field name="name">purchase order tree</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_tree" />
+			<field name="arch" type="xml">
+				<field name="name" position="attributes">
+					<attribute name="string">
+						PO No
+					</attribute>
+				</field>
+				<field name="date_planned" position="attributes">
+					<attribute name="string">
+						Expected Date
+					</attribute>
+				</field>
+				<field name="origin" position="replace" />
+				<field name="partner_id" position="after">
+                    <field name="user_id" position="move" />
+					<field name="origin" />
+					<field name="gut_qty_total" />
+					<field name="gut_qty_received" />
+					<field name="gut_qty_billed" />
+					<field name="amount_tax" />
+					<field name="invoice_status" />
+				</field>
+                <field name="state" position="before">
+					<field name="gut_receive_status" />
+				</field>
+                <field name="date_order" position="after">
+					<field name="date_planned" position="move"/>
+				</field>
+				<field name="name" position="after">
+					<field name="state" position="move"/>
+					<field name="gut_receive_status" position="move"/>
+					<field name="invoice_status" position="move" />
+				</field>
+				<field name="company_id" position="attributes">
+					<attribute name="invisible">
+						1
+					</attribute>
+				</field>
+				<field name="state" position="replace">
+                    <field name="state" string="Status" widget="label_selection" options="{'classes': {'draft': 'secondary', 'sent': 'secondary','cancel': 'danger', 'finance_approval': 'info', 'director_approval': 'info', 'purchase': 'success', 'refuse': 'danger', 'done': 'dark'}}"/>
+                </field>
+				<field name="gut_receive_status" position="replace">
+                    <field name="gut_receive_status" string="Received Status" widget="label_selection" options="{'classes': {'open': 'info', 'over': 'warning', 'close': 'dark'}}"/>
+                </field>
+			</field>
+		</record>
+
+		<record id="view_purchase_order_inherit_search" model="ir.ui.view">
+			<field name="name">request quotation select</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.view_purchase_order_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//search" position="replace">
+					<search string="Search Purchase Order">
+						<field name="name" string="All" filter_domain="[
+							'|','|','|','|','|',
+							('name', 'ilike', self),
+							('partner_id', 'ilike', self),
+							('origin', 'ilike', self),
+							('product_id', 'ilike', self),
+							('project', 'ilike', self),
+							('state', 'ilike', self), ]" />
+						<filter string="Project" name="project" domain="[]" context="{'group_by': 'project'}" />
+						<filter name="draft" string="RFQ" domain="[('state', 'in', ['draft','sent'])]"/>
+						<filter name="approved" string="Purchase Orders" domain="[('state','in',('purchase','done'))]"/>
+						<filter name="to_approve" string="To Approve" domain="[('state', '=', 'to approve')]"/>
+						<separator/>
+						<filter name="gut_receive_status" string="Received Status: Open" domain="[('gut_receive_status','=', 'open')]" />
+						<filter name="status_close" string="Received Status: Close" domain="[('gut_receive_status','=', 'close')]" />
+						<filter name="status_over" string="Received Status: Over" domain="[('gut_receive_status','=', 'over')]" />
+						<separator/>
+						<filter name="not_invoiced" string="Waiting Bills" domain="[('invoice_status','=', 'to invoice')]" help="Purchase orders that include lines not invoiced."/>
+						<filter name="invoiced" string="Bills Received" domain="[('invoice_status','=', 'invoiced')]" help="Purchase orders that have been invoiced."/>
+						<separator/>
+						<group expand="0" string="Group By">
+							<filter string="Vendor" name="vendor" domain="[]" context="{'group_by':'partner_id'}"/>
+							<filter string="Order Date" name="order_date" domain="[]" context="{'group_by':'date_order'}"/>
+						</group>
+					</search>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>

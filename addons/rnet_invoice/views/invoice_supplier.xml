@@ -1,0 +1,113 @@
+<odoo>
+    <data noupdate="True">
+
+        <record model="ir.ui.view" id="rnet_account_invoice_supplier_form">
+            <field name="name">account.invoice.supplier.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/field[@name='state']" position="replace">
+                     <field name="state" widget="statusbar" statusbar_visible="draft,to_approve,open,paid"/>
+                </xpath>
+                <xpath expr="//field[@name='reference']" position="after">
+                     <field name="project" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" attrs="{'readonly': [('state', 'not in', ['draft','open'])] }" />
+                </xpath>
+                <xpath expr="//header/button[@name='action_invoice_open']" position="replace">
+                     <button name="action_invoice_open" type="object" states="to_approve,proforma2" string="Approve" class="oe_highlight" groups="account.group_account_invoice"/>
+                </xpath>
+                <xpath expr="//header/button[@name='action_invoice_open']" position="after">
+                    <button name="action_submit" attrs="{'invisible': ['|', ('state', 'not in', ['draft'])]}" string="Submit" type="object" class="oe_highlight" groups="purchase.group_purchase_user"/>
+                    <button name="action_refuse_finance" attrs="{'invisible': ['|', ('state', 'not in', ['to_approve'])]}" string="Refuse" type="object" groups="account.group_account_invoice"/>
+                </xpath>
+                <!-- <xpath expr="//notebook/page[1]" position="attributes">
+                    <attribute name="string">
+						Invoice Line
+					</attribute>
+                </xpath> -->
+                
+                <xpath expr="//sheet/group[1]" position="after">
+                    <xpath expr="//notebook/page[@name='other_info']/group" position="move"/>
+                </xpath>
+                <xpath expr="//sheet/group/group[2]/field[@name='origin']" position="after">
+                    <xpath expr="//group/group[1]/field[@name='user_id']" position="move"/>
+                </xpath>
+                <xpath expr="//group/group[2]/field[@name='fiscal_position_id']" position="after">
+                    <xpath expr="//group/group[1]/field[@name='name']" position="move"/>
+                </xpath>
+                <xpath expr="//notebook/page[@name='other_info']" position="attributes">
+                    <attribute name="invisible">
+						True
+					</attribute>
+                </xpath>
+                <xpath expr="//field[@name='fiscal_position_id']" position="attributes">
+                    <attribute name="invisible">
+						True
+					</attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="string">
+						Purchaser
+					</attribute>
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="replace">
+                    <field name="payment_term_id" options="{'no_create': True}" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+                </xpath>
+                <xpath expr="//sheet/group/group[2]/field[@name='partner_bank_id']" position="after">
+                    <xpath expr="//field[@name='payment_term_id']" position="move"/>
+                    <field name="active" invisible="1"/>
+                </xpath>
+                <xpath expr="//sheet/group/group[1]/field[@name='vendor_bill_purchase_id']" position="after">
+                    <xpath expr="//sheet/group/group[2]/field[@name='currency_id']" position="move"/>
+                </xpath>
+                <xpath expr="//field[@name='account_id']" position="after">
+                    <xpath expr="//sheet/group/group[2]/field[@name='partner_bank_id']" position="move"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='account_analytic_id']" position="attributes">
+                <attribute name="invisible">
+						True
+					</attribute>
+                </xpath>
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='analytic_tag_ids']" position="attributes">
+                <attribute name="invisible">
+						True
+					</attribute>
+                </xpath>
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='account_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='company_id']" position="after">
+                    <field name="account_id" groups="account.group_account_invoice" domain="[('company_id', '=', parent.company_id), ('internal_type', '=', 'other'), ('deprecated', '=', False)]"/>
+                </xpath>
+                <xpath expr="//field[@name='account_id']" position="replace">
+                    <field name="account_id" domain="[('company_id', '=', company_id), ('internal_type', '=', 'payable'), ('deprecated', '=', False)]"
+                    groups="account.group_account_invoice"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='invoice_line_tax_ids']" position="before">
+                    <field name="discount" string="Discount" groups="account.group_account_invoice"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record  model="ir.ui.view" id="rnet_account_invoice_supplier_tree">
+            <field name="name">account.invoice.supplier.tree</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_tree"/>
+            <field name="arch" type="xml">
+                <field name="vendor_display_name" position="after">
+                    <field name="project"/>
+                </field>
+                <field name="partner_id" position="after">
+                    <field name="number" position="move"/>
+                </field>
+                <field name="origin" position="after">
+                    <field name="reference" position="move"/>
+                </field>
+                 <field name="amount_untaxed_invoice_signed" position="after">
+                    <field name="amount_tax"/>
+                </field>
+                <field name="amount_tax_signed" position="attributes">
+                      <attribute name="invisible">True</attribute>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+    <!-- add group yang bisa create/edit project -->
+        <record model="ir.module.category" id="module_create_projecr">
+                <field name="name">Create/Edit</field>
+                <field name="sequence">8</field>
+        </record>
+
+        <record id="can_create_edit_project_group" model="res.groups">
+                <field name="name">Project</field>
+                <field name="category_id" ref="module_create_projecr"/>
+        </record>
+
+        <!-- <record id="sequence_project" model="ir.sequence">
+            <field name="name">Project No</field>
+            <field name="code">project.no</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">PROJ</field>
+            <field name="padding">6</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record> -->
+
+        <record id="seq_project_no_urut" model="ir.sequence">
+                <field name="name">project Seq</field>
+                <field name="code">project.seq</field>
+                <field name="padding">4</field>
+        </record>
+        <record id="seq_project_no_site" model="ir.sequence">
+                <field name="name">project Seq no site</field>
+                <field name="code">project.no.site</field>
+                <field name="prefix">SITE</field>
+                <field name="padding">4</field>
+        </record>
+
+        <record id="1" model="project.type">
+            <field name="name">Type 1</field>
+        </record>
+        <record id="2" model="project.type">
+            <field name="name">Type 2</field>
+        </record>
+        <record id="3" model="project.status">
+            <field name="name">Open</field>
+        </record>
+    </data>
+</odoo>

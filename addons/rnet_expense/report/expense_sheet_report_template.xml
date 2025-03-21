@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_expense_sheet_report_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+            <t t-call="web.basic_layout">
+				<!-- header -->
+				<div class="header">
+					<div class="row">
+						<div class="col">
+							<h5 class="text-center" style="font-weight: bold;">
+								COST VOUCHER REPORT
+							</h5>
+                            <p class="text-center">
+								Bulan :
+								<span t-field="o.create_date" t-options="{'format': 'MMMM yyyy'}" />
+							</p>
+						</div>
+                    </div>
+
+					<style type="text/css">
+						table.table-bordered > thead > tr > th {
+						border:1px solid;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+                    <div class="row mt-2">
+						<div class="col">
+							<table class="table table-bordered table-sm small ">
+<!-- 
+								<tbody>
+                                    <tr>
+                                        <td class="text-left" t-att-rowspan="4" colspan="3">
+                                            <h5> PT GRAHA USAHA</h5>
+                                        </td>
+                                    </tr>
+                
+                                    <tr>
+                                        <td style="font-weight: bold;" class="text-left" colspan="2">Project:  
+                                            <t t-esc="o.project.name[:24]"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left" colspan="2">Order No. :
+                                            <t t-esc="o.project.no"/>
+                                        </td>
+                                    </tr>
+									 <tr>
+                                        <td colspan="2">No. Lap : <t t-esc="o.seq"/></td>
+                                    </tr>
+                                </tbody> -->
+                                <tbody>
+                                        <tr>
+                                            <td t-att-rowspan="4">
+                                                <img src="/web/binary/company_logo" alt="Logo" style="max-height: 80px;"/>
+                                                <br/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Project: <t t-esc="o.project.name[:24]"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Order No. : <t t-esc="o.project.no"/> </td>
+                                        </tr>
+                                        <tr>
+                                            <td>No. Lap : <t t-esc="o.name"/></td>
+                                        </tr>
+                                </tbody>
+                            </table>
+						</div>
+                    </div>
+				</div>
+
+				<div class="page">
+					<style type="text/css">
+						table.table-bordered > thead > tr > th {
+						border:1px solid;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+					<div class="row mt-2">
+						<div class="col">
+							<table class="table table-bordered table-sm small">
+								<thead>
+									<tr>
+                                        <th class="text-center" width="3%">No.</th>
+                                        <th class="text-center" width="7%">Tgl/Bln/Thn</th>
+                                        <th class="text-center" width="17%">kategori Bon</th>
+                                        <th class="text-center" width="43%">Jenis</th>
+                                        <th class="text-center" width="10%">Pengeluaran (Rp)</th>
+                                        <!-- <th class="text-center" style="font-weight:normal;" width="10%">Sub</th> -->
+                                        <!-- <th class="text-center" style="font-weight:normal;" width="5%">Site</th> -->
+									</tr>
+									<!-- <tr>
+										<th>
+											&amp;ensp;
+										</th>
+										<th>
+											&amp;ensp;
+										</th>
+										<th>
+											&amp;ensp;
+										</th>
+										<th>
+											&amp;ensp;
+										</th>
+										<th style="font-weight:normal;">
+											Penerimaan (Rp)
+										</th>
+										<th style="font-weight:normal;">
+											Pengeluaran (Rp)
+										</th>
+										<th style="font-weight:normal;"> 
+											Total
+										</th>
+										<th>
+											&amp;ensp;
+										</th>
+									</tr> -->
+                                    </thead>
+                                    <t t-set="no" t-value="1"/>
+                                    <tbody>
+									<t t-foreach="o.expense_line_ids.sorted(key=lambda x: x.seq)" t-as="line">
+										<tr>
+                                            <td class="text-center">
+                                                <span t-esc="no"/>
+                                            </td>
+											<td>
+                                                <span t-esc="line.date.strftime('%d %b %Y')"/>
+											</td>
+											<td>
+												<span t-field="line.cost_category" />
+											</td>
+                                            <td>
+                                               <span t-field="line.seq" />&#160;&#160; <span t-field="line.name" />
+											</td>
+                                            <td class="text-right">
+                                                <t t-esc="'{0:,.0f}'.format(int(line.total_amount))" />
+											</td>
+											<!-- <td>
+                                                &amp;ensp;
+                                            </td> -->
+                                            <!-- <td>
+												&amp;ensp;
+											</td> -->
+                                            <t t-set="no" t-value="no+1"/>
+										</tr>
+									</t>
+
+                                    <!-- <tr>
+                                        <td class="text-center" colspan="4"  style="font-weight: bold;">Total Project</td>
+                                        <td>
+                                            &amp;ensp;
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{0:,.2f}'.format(int(o.total_amount))" />
+                                        </td>
+                                    </tr> -->
+                                    <tr>
+                                        <td class="text-center" colspan="4"  style="font-weight: bold;">Grand Total</td>
+                                        <td class="text-right">
+                                            <t t-esc="'{0:,.0f}'.format(int(o.total_amount))" />
+                                        </td>
+                                        <!-- <td>
+                                            <t t-esc="'{0:,.2f}'.format(int(o.total_amount))" />
+                                        </td> -->
+                                        <!-- <td>
+                                            &amp;ensp;
+                                        </td> -->
+                                    </tr>
+                                </tbody>
+							</table>
+						</div>
+					</div>
+                    <br/>
+					<div class="row">
+						<div class="col-7">
+                            &amp;ensp;
+						</div>
+						<div class="col-5">
+							<table class="table table-borderless table-sm small">
+								<tbody>
+									<tr>
+										<td colspan="3">
+											&amp;ensp;
+										</td>
+										<td>
+											Disusun Oleh,
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td>
+											Disetujui Oleh,
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+                                    <tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td>
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+											&amp;ensp;
+										</td>
+										<td style="border-top: solid 1px">
+											Project Commercial
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td style="border-top: solid 1px">
+											Site Manager
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+                <br/>
+                <div class="footer">
+                        <div class="row justify-content-end">
+                            <div class="col-6">
+                                <p class="text-left">
+                                    <span t-field="o.name"/>
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-right">
+                                    Page <span class="page" /> of <span class="topage" />
+                                </p>
+                            </div>
+                        </div>
+                </div>
+
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="report_expense_sheet_report">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_expense.report_expense_sheet_report_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

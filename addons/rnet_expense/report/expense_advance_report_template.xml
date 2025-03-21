@@ -1,0 +1,940 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_expense_advance">
+		<t t-foreach="docs" t-as="o">
+			<t t-call="web.basic_layout">
+				<div class="header" style="font-size: 12px !important;">
+					<div class="row border border-dark p-1">
+						<div class="col-8">
+							<img src="/web/binary/company_logo" alt="Logo" style="max-height: 70px;" />
+						</div>
+						<div class="col-4">
+							<div class="row">
+								<div class="col-12">
+									Doc No : 6.1.2
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12">
+									Revision : 00
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-12">
+									Release Date : 03.03.2009
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row border-right border-left border-dark p-1">
+						<div class="col-12 text-center">
+							<h6 class="font-weight-bold">
+								BUSINESS ADVANCE REQUEST
+							</h6>
+						</div>
+					</div>
+				</div>
+				<div class="page" style="font-size: 12px !important;">
+					<t t-foreach="docs" t-as="o">
+						<!-- Rec no -->
+						<span>
+							<div class="row border border-dark p-1">
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Record No.
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.name" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</span>
+						<!-- Requester -->
+						<span>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-6 font-weight-bold">
+									1. Requester
+								</div>
+								<div class="col-6 font-weight-bold">
+									Purpose
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Name
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.employee_id.name" />
+										</div>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											<t t-if="o.purpose == 'project'">
+												<td>
+													Project
+												</td>
+											</t>
+											<t t-else="">
+												<td>
+													Non Project
+												</td>
+											</t>
+										</div>
+										<div class="col-8">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Nomor Induk Karyawan
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.employee_id.gut_nik" />
+										</div>
+									</div>
+								</div>
+								<div class="col-6">
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Title
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.employee_id.job_id.name" />
+										</div>
+									</div>
+								</div>
+								<div class="col-6">
+								</div>
+							</div>
+						</span>
+						<!-- Visit plan -->
+						<span>
+							<div class="row border border-dark p-1">
+								<div class="col-12 font-weight-bold">
+									2. Visit Plan
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Project
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.project_id.name" />
+										</div>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Customer
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.project_id.partner_id" />
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Kind of Work
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.project_id.project_type" />
+										</div>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Workplace
+										</div>
+										<div class="col-8">
+											:
+											<!-- project workplace? -->
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Job Order
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.project_id.no" />
+										</div>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4">
+											Location
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.project_id.location.name" />
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4" style="font-size: 12px !important;">
+											From (dd-mm-yyyy)
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.project_id.actual_start_date" t-options="{'format': 'dd-MM-yyyy'}" />
+										</div>
+									</div>
+								</div>
+								<div class="col-6">
+									<div class="row">
+										<div class="col-4" style="font-size: 12px !important;">
+											Until (dd-mm-yyyy)
+										</div>
+										<div class="col-8">
+											:
+											<span t-field="o.project_id.actual_end_date" t-options="{'format': 'dd-MM-yyyy'}" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</span>
+						<!-- Allowance -->
+						<span>
+							<div class="row border border-dark p-1">
+								<div class="col-12 font-weight-bold">
+									3. Allowance
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-12">
+									<table class="table table-borderless table-sm">
+										<thead>
+											<tr>
+												<th style="width:15%">
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th style="width:25%">
+													&amp;nbsp;
+												</th>
+												<th class="border border-dark text-center" colspan="4">
+													Currency
+												</th>
+											</tr>
+											<tr>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													IDR
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													USD
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													EUR
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													SGD
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													Est. Visit days
+												</td>
+												<td>
+													:
+												</td>
+												<td>
+													<t t-if="o.est_visit_days > 0">
+														<span t-field="o.est_visit_days"/>
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Allowance / day
+												</td>
+												<td>
+													:
+												</td>
+												<td>
+													<t t-if="o.allowance_per_day > 0">
+														<span t-field="o.allowance_per_day"/>
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark text-right">
+													<t t-if="o.total_allowance > 0">
+														<span t-esc="'{:,.0f}'.format(o.total_allowance)" />
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</span>
+						<!-- Other expenses -->
+						<span>
+							<div class="row border border-dark p-1">
+								<div class="col-12 font-weight-bold">
+									4. Other Expenses
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-12">
+									<table class="table table-borderless table-sm">
+										<thead>
+											<tr>
+												<th style="width:15%">
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th style="width:25%">
+													&amp;nbsp;
+												</th>
+												<th class="border border-dark text-center" colspan="4">
+													Currency
+												</th>
+											</tr>
+											<tr>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													IDR
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													USD
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													EUR
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													SGD
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													Transportation
+												</td>
+												<td>
+													:
+												</td>
+												<td>
+													<span t-field="o.transport_expense_note" />
+												</td>
+												<td class="border border-dark text-right">
+													<t t-if="o.transport_expense > 0">
+														<span t-esc="'{:,.0f}'.format(o.transport_expense)" />
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Material
+												</td>
+												<th>
+													:
+												</th>
+												<td>
+													<span t-field="o.material_expense_note" />
+												</td>
+												<td class="border border-dark text-right">
+													<t t-if="o.material_expense > 0">
+														<span t-esc="'{:,.0f}'.format(o.material_expense)" />
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Other
+												</td>
+												<th>
+													:
+												</th>
+												<td>
+													<span t-field="o.other_expense_note" />
+												</td>
+												<td class="border border-dark text-right">
+													<t t-if="o.other_expense > 0">
+														<span t-esc="'{:,.0f}'.format(o.other_expense)" />
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</span>
+						<!-- Non project expenses -->
+						<span>
+							<div class="row border border-dark p-1">
+								<div class="col-12 font-weight-bold">
+									5. Non Project Expense
+								</div>
+							</div>
+							<div class="row border-left border-right border-dark p-1">
+								<div class="col-12">
+									<table class="table table-borderless table-sm">
+										<thead>
+											<tr>
+												<th style="width:15%">
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th style="width:25%">
+													&amp;nbsp;
+												</th>
+												<th class="border border-dark text-center" colspan="4">
+													Currency
+												</th>
+											</tr>
+											<tr>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th>
+													&amp;nbsp;
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													IDR
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													USD
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													EUR
+												</th>
+												<th style="width:15%" class="border border-dark text-center">
+													SGD
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													Private
+												</td>
+												<td>
+													:
+												</td>
+												<td>
+													<span t-field="o.private_expense_note" />
+												</td>
+												<td class="border border-dark text-right">
+													<t t-if="o.private_expense > 0">
+														<span t-esc="'{:,.0f}'.format(o.private_expense)" />
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Office
+												</td>
+												<th>
+													:
+												</th>
+												<td>
+													<span t-field="o.office_expense_note" />
+												</td>
+												<td class="border border-dark text-right">
+													<t t-if="o.office_expense > 0">
+														<span t-field="o.office_expense"/>
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Other
+												</td>
+												<th>
+													:
+												</th>
+												<td>
+													<span t-field="o.other_nonproject_note" />
+												</td>
+												<td class="border border-dark text-right">
+													<t t-if="o.total_nonproject_expense > 0">
+														<span t-esc="'{:,.0f}'.format(o.total_nonproject_expense)" />
+													</t>
+													<t t-else="">
+														&amp;ensp;
+													</t>
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</span>
+						<!-- Total -->
+						<span>
+							<div class="row border border-dark p-1">
+								<div class="col-12">
+									<table class="table table-borderless table-sm">
+										<tbody>
+											<tr>
+												<td style="width:15%">
+													&amp;nbsp;
+												</td>
+												<td>
+													&amp;nbsp;
+												</td>
+												<td style="width:25%" class="text-center font-weight-bold">
+													TOTAL
+												</td>
+												<td style="width:15%" class="text-right border border-dark font-weight-bold">
+													<span t-esc="'{:,.0f}'.format(o.amount_total)" />
+												</td>
+												<td style="width:15%" class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td style="width:15%" class="border border-dark">
+													&amp;nbsp;
+												</td>
+												<td style="width:15%" class="border border-dark">
+													&amp;nbsp;
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</span>
+						<!-- Remark -->
+						<span>
+							<div class="row border-right border-bottom border-left border-dark px-1 py-3">
+								<div class="col-12 py-1">
+									Remark :
+									<br/>
+									<span t-field="o.remark" />
+								</div>
+							</div>
+						</span>
+						<!-- Approval -->
+						<span>
+							<div class="row border-right border-bottom border-left border-dark text-center">
+								<div class="col-4 border-right border-dark py-1">
+									Requested By
+								</div>
+								<div class="col-4 border-right border-dark py-1">
+									Manager
+								</div>
+								<div class="col-4 py-1">
+									Commercial
+								</div>
+							</div>
+							<div class="row border-right border-bottom border-left border-dark text-center">
+								<div class="col-4 border-right border-dark">
+									<t t-foreach="range(4)" t-as="i">
+										<br />
+									</t>
+								</div>
+								<div class="col-4 border-right border-dark">
+									&amp;nbsp;
+								</div>
+								<div class="col-4">
+									&amp;nbsp;
+								</div>
+							</div>
+							<div class="row border-right border-bottom border-left border-dark">
+								<div class="col-4 border-right border-dark py-1">
+									Name:
+									<span t-field="o.employee_id.name" />
+								</div>
+								<div class="col-4 border-right border-dark py-1">
+									Name:
+									<span t-field="o.user_id.name" />
+								</div>
+								<div class="col-4 py-1">
+									Name:
+									<span t-field="o.commercial_id.name" />
+								</div>
+							</div>
+							<div class="row border-right border-bottom border-left border-dark">
+								<div class="col-4 border-right border-dark py-1">
+									Date:
+									<span t-field="o.requested_date" t-options="{'format': 'dd-MM-yyyy'}" />
+								</div>
+								<div class="col-4 border-right border-dark py-1">
+									Date:
+								</div>
+								<div class="col-4 py-1">
+									Date:
+								</div>
+							</div>
+						</span>
+					</t>
+				</div>
+				<!-- end page 1 -->
+
+				<!-- Page 2 -->
+				<p style="page-break-after:always"></p>
+				<div class="page" style="font-size: 12px !important;">
+					<span>
+						<div class="row border-right border-top border-left  border-dark px-1 py-3">
+							<div class="col-12 py-1 text-center">
+								<h6>Perincian Biaya Operasional</h6>
+								<br/>
+								<h6><span t-field="o.project_id.name" /></h6>
+							</div>
+						</div>
+					</span>
+					<div class="row">
+					<style type="text/css">
+							table.table-bordered > thead > tr > th {
+							border:1px ;
+							}
+							table.table-bordered > tbody > tr > td {
+							border:1px solid;
+							}
+					</style>
+						<table class="table table-bordered table-sm ">
+							<thead class="text-center">
+								<tr>
+									<th style="width: 5%" class="border border-dark">No</th>
+									<th style="width: 20%" class="border border-dark">Uraian</th>
+									<th style="width: 15%" class="border border-dark">Total Biaya</th>
+									<th style="width: 25%" class="border border-dark">keterangan</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="font-weight-bold" colspan="4">Transportasi</td>
+								</tr>
+								<t t-set="i" t-value="1" />
+								<tr t-foreach ="o.transportasi_line" t-as="line">
+									<td class="text-center"> 
+										<span t-esc="i"/>
+										<t t-set="i" t-value="i+1"/>
+									</td>
+									<td>
+										<span t-field="line.name" />
+									</td>
+									<td class="text-right">
+										<span t-esc="'{:,.0f}'.format(line.biaya)" />
+									</td>
+									<td class="text-left">
+										<span t-field="line.Keterangan"/>
+									</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td class="font-weight-bold" colspan="4">Material and Tools</td>
+								</tr>
+								<t t-set="i" t-value="1" />
+								<tr t-foreach ="o.material_line" t-as="line">
+									<td class="text-center">
+										<span t-esc="i"/>
+										<t t-set="i" t-value="i+1"/>
+									</td>
+									<td>
+										<span t-field="line.name" />
+									</td>
+									<td class="text-right">
+										<span t-esc="'{:,.0f}'.format(line.biaya)" />
+									</td>
+									<td class="text-left">
+										<span t-field="line.Keterangan"/>
+									</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td class="font-weight-bold" colspan="4">Gaji + Allowance</td>
+								</tr>
+								<t t-set="i" t-value="1" />
+								<tr t-foreach ="o.allowance_line" t-as="line">
+									<td class="text-center">
+										<span t-esc="i"/>
+										<t t-set="i" t-value="i+1"/>
+									</td>
+									<td>
+										<span t-field="line.name" />
+									</td>
+									<td class="text-right">
+										<span t-esc="'{:,.0f}'.format(line.biaya)" />
+									</td>
+									<td class="text-left">
+										<span t-field="line.Keterangan"/>
+									</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td class="font-weight-bold" colspan="4">Akomodasi</td>
+								</tr>
+								<t t-set="i" t-value="1" />
+								<tr t-foreach ="o.akomodasi_line" t-as="line">
+									<td class="text-center">
+										<span t-esc="i"/>
+										<t t-set="i" t-value="i+1"/>
+									</td>
+									<td>
+										<span t-field="line.name" />
+									</td>
+									<td class="text-right">
+										<span t-esc="'{:,.0f}'.format(line.biaya)" />
+									</td>
+									<td class="text-left">
+										<span t-field="line.Keterangan"/>
+									</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td class="font-weight-bold" colspan="4">Non Project Expenses</td>
+								</tr>
+								<t t-set="i" t-value="1" />
+								<tr t-foreach ="o.non_project_line" t-as="line">
+									<td class="text-center">
+										<span t-esc="i"/>
+										<t t-set="i" t-value="i+1"/>
+									</td>
+									<td>
+										<span t-field="line.name" />
+									</td>
+									<td class="text-right">
+										<span t-esc="'{:,.0f}'.format(line.biaya)" />
+									</td>
+									<td class="text-left">
+										<span t-field="line.Keterangan"/>
+									</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+									<td>&amp;ensp;</td>
+								</tr>
+								<tr>
+									<td class="text-center font-weight-bold" colspan="2">TOTAL</td>
+									<td class="text-right font-weight-bold"><span t-esc="'{:,.0f}'.format(o.amount_total)" /></td>
+									<td>&amp;ensp;</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+ 				<div class="footer">
+                        <div class="row">
+                            <div class="col-6 small">
+                                <div class="text-left">
+                                BAR <span t-field="o.name"/>
+                                </div>
+                            </div>
+                            <div class="col-6 small">
+                                <div class="text-right">
+                                Page <span class="page" />
+                                of <span class="topage" />
+                            </div>
+                        </div>
+					</div>
+				</div>
+				
+			</t>
+		</t>
+	</template>
+</odoo>

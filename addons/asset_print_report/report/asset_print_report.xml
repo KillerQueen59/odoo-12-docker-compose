@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+         <!-- QWeb Reports -->
+        <report 
+            id="asset_print_report"
+            model="account.asset.asset.custom"
+            menu="True"
+            report_type="qweb-pdf"
+            string="Print Asset"
+            name="asset_print_report.asset_print_report_id"
+            file="asset_print_report.asset_print_report_id"
+           />
+        
+        <template id="asset_print_report_id">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.internal_layout">
+                    	<t t-call="web.html_container">
+                         <div class="page">
+                            <br/><br/>
+                            <h3>
+                                <span t-if="doc.state in ['draft']"><span t-field="doc.state"/></span>
+                                <span t-if="doc.state in ['open']"><span t-field="doc.state"/></span>
+                                <span t-if="doc.state in ['close']"><span t-field="doc.state"/></span> Asset - <span t-field="doc.name"/>
+                            </h3> <br/>
+                            <table class="table col-12">
+                               <tr>
+                                   <td><strong>Asset Category:</strong> </td><td> <span t-field="doc.category_id.name"/></td>
+                                   <td><strong>Reference : </strong></td><td><span t-field="doc.code"/></td>
+                               </tr>
+                                <tr>
+                                   <td><strong>Date: </strong></td><td><span t-field="doc.date"/></td>
+                                   <td><strong>Vendor: </strong></td><td><span t-field="doc.partner_id.name"/></td>
+                                </tr>
+                                <tr>
+                                   <td><strong>Gross Value:</strong> </td><td><span t-field="doc.value" t-field-options='{"widget": "monetary", "display_currency": "doc.currency_id"}'/><br/></td>
+                                   <td><strong>Salvage Value: </strong></td><td><span t-field="doc.salvage_value" t-field-options='{"widget": "monetary", "display_currency": "doc.currency_id"}'/></td>
+                                </tr>
+                                <tr>
+                                   <td><strong>Residual: </strong></td><td><span t-field="doc.value_residual" t-field-options='{"widget": "monetary", "display_currency": "doc.currency_id"}'/><br/></td>
+                                   <td></td><td></td>
+                                </tr>
+                            </table>
+                            <h3>Depreciation Information</h3> <br/>
+                            <table class="table col-12">
+                               <tr>
+                                   <td><strong>Computation Method:</strong></td>
+                                   <td><span t-field="doc.method"/></td>
+                                   <td><strong>Time Method:</strong></td>
+                                   <td><span t-field="doc.method_time"/></td>
+                               </tr>
+                                <tr>
+                                   <td><strong>Number of Depreciations:</strong></td>
+                                   <td><span t-field="doc.method_number"/></td>
+                                   <td><strong>Number of Months in a Period:</strong></td>
+                                   <td><span t-field="doc.method_period"/></td>
+                                </tr>
+                            </table>
+                            <h3>Depreciation Board</h3> <br/>
+                            <table class="table table-bordered">
+                               <tr>
+                                   <td><strong>Seq.</strong></td>
+                                   <td><strong>Depreciation Name </strong> </td>
+                                   <td><strong>Depreciation Date</strong></td>
+                                   <td><strong>Cummulative Depreciation</strong></td>
+                                   <td><strong>Depreciation</strong></td>
+<!--                                   <td><strong>Residual Depreciation</strong></td-->
+                                   <td><strong>Depreciation Entry</strong></td>
+                                   <td><strong>Entry Status</strong></td>
+                               </tr>
+                               <t t-foreach="doc.depreciation_line_ids" t-as="asset">
+                                    <tr>
+                                       <td><span t-esc="asset.sequence"/></td>
+                                       <td><span t-esc="asset.name"/> </td>
+                                       <td><span t-esc="asset.depreciation_date"/></td>
+                                       <td><span t-esc="asset.depreciated_value" t-esc-options='{"widget": "monetary", "display_currency": "doc.currency_id"}'/></td>
+                                       <td><span t-esc="asset.amount" t-esc-options='{"widget": "monetary", "display_currency": "doc.currency_id"}'/></td>
+<!--                                       <td><span t-esc="asset.remaining_value"/></td-->
+                                       <td><span t-esc="asset.move_id.name"/></td>
+                                       <td>
+                                           <span t-if="asset.move_check">Posted</span>
+                                           <span t-if="not asset.move_check">Unposted</span>
+                                       </td>
+                                    </tr>
+                               </t>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+               </t>
+        </template>
+    </data>
+</openerp>

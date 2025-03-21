@@ -1,0 +1,408 @@
+<odoo>
+    <data noupdate="True">
+
+    <record id="rnet_view_account_invoice_form" model="ir.ui.view">
+        <field name="name">rnet.account.invoice.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_tax']" position="attributes">
+                <attribute name="invisible">True</attribute>
+                <attribute name="string">VAT 11%</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_due']" position="attributes">
+                <attribute name="readonly">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="type_invoice" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+                <field name="customer_type" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+                <field name="active" invisible="1"/>
+            </xpath>
+            <xpath expr="//header[1]/field[@name='state']" position="replace">
+                     <field name="state" widget="statusbar" statusbar_visible="draft,open,paid"/>
+            </xpath>
+            <xpath expr="//field[@name='cash_rounding_id']" position="after">
+                <field name="project" required="1" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}" options="{'no_create': True, 'no_create_edit':True}"/>
+                <field name="po_no" invisible="1" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"  domain="[('project_id', '=', project)]" options="{'no_open': True, 'no_create': True, 'no_create_edit':True}"/>
+                <label for="less_dp_persen" string="Less DP"/>
+                    <div>
+                        <div class="o_row">
+                            <div class="o_col6">
+                                <field name="less_dp_persen" class="oe_inline" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+                                <span class="oe_inline">
+                                    %
+                                </span>
+                            </div>
+                        </div>
+                        <div class="o_row">
+                            <div class="o_col6">
+                                <field name="less_dp_amount" class="oe_inline" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+                            </div>
+                        </div>
+                    </div>
+                <!-- <label for="pph_265_persen" string="PPh"/>
+                    <div>
+                        <div class="o_row">
+                            <div class="o_col6">
+                                <field name="pph_265_persen" class="oe_inline" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+                                <span class="oe_inline">
+                                    %
+                                </span>
+                            </div>
+                        </div>
+                        <div class="o_row">
+                            <div class="o_col6">
+                                <field name="pph_265" class="oe_inline" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+                            </div>
+                        </div>
+                    </div> -->
+
+                <field name="rounded_total_rapp"  attrs="{'readonly': [('state', 'not in', ['open','draft'])], 'invisible': [('customer_type','not in', 'gut_rapp')]}"/>
+                <field name="amount_direct"  attrs="{'readonly': [('state', 'not in', ['open','draft'])], 'invisible': [('customer_type','not in', 'gut_shinbo')]}"/>
+                <field name="amount_indirect"  attrs="{'readonly': [('state', 'not in', ['open','draft'])], 'invisible': [('customer_type','not in', 'gut_shinbo')]}"/>
+                <field name="ap_deduction"  attrs="{'readonly': [('state', 'not in', ['open','draft'])], 'invisible': [('customer_type','not in', 'gut_shinbo')]}"/>
+                <field name="retention_deduction"  attrs="{'readonly': [('state', 'not in', ['open','draft'])], 'invisible': [('customer_type','not in', 'gut_shinbo')]}"/>
+                <field name="other_deduction"  attrs="{'readonly': [('state', 'not in', ['open','draft'])], 'invisible': [('customer_type','not in', 'gut_shinbo')]}"/>
+                <field name="discount_rate"  attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                <attribute name="string">Total before disc</attribute>
+            </xpath>
+            <!-- <xpath expr="//field[@name='date_invoice']" position="after">
+                <xpath expr="//page[@name='other_info']/field[@name='origin']" position="move"/>
+            </xpath> -->
+            <xpath expr="//field[@name='date_invoice']" position="after">
+                <xpath expr="//field[@name='payment_term_id']" position="move"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="gut_invoice_remark" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='date_invoice']" position="before">
+                <xpath expr="//field[@name='user_id']" position="move"/>
+                <field name="invoice_type" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="replace">
+                <field name="user_id" options="{'no_open': True, 'no_create': True, 'no_create_edit':True}" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="replace">
+                <field name="payment_term_id" required="1" options="{'no_open': True, 'no_create': True, 'no_create_edit':True}" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="after">
+                <field name="amount_discount" attrs="{'invisible': [('amount_discount','&lt;','1')]}" readonly="1"/>
+                <field name="amount_after_disc" attrs="{'invisible': [('amount_discount','&lt;','1')]}" readonly="1"/>
+                <field name="amount_less_dp" attrs="{'invisible': [('less_dp_amount','&lt;','1')]}" readonly="1"/>
+                <field name="ap_deduction_amount" attrs="{'invisible': [('customer_type','not in','gut_shinbo')]}"/>
+                <field name="retention_deduction_amount" attrs="{'invisible': [('customer_type','not in','gut_shinbo')]}"/>
+                <field name="other_deduction_amount" attrs="{'invisible': [('customer_type','not in','gut_shinbo')]}"/>
+                <field name="sub_total" attrs="{'invisible': [('customer_type','=','gut_shinbo')]}"/>
+                <field name="subtotal_invoice_shinbo" attrs="{'invisible': [('customer_type','not in','gut_shinbo')]}"/>
+                <field name="amount_tax" string="VAT 11%"  attrs="{'invisible': [('customer_type','=','gut_shinbo')]}"/>
+                <field name="amount_pph" readonly="1" />
+                <field name="retention_5" attrs="{'invisible': [('customer_type','in',['gut_standar','gut_shinbo'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="before">
+                <field name="direct_amount" attrs="{'invisible': [('customer_type','not in','gut_shinbo')]}"/>
+                <field name="indirect_amount" attrs="{'invisible': [('customer_type','not in','gut_shinbo')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='residual']" position="after">
+                <field name="paid_amount"  attrs="{'invisible': [('state','in',('draft',))]}"/>
+            </xpath>
+            <xpath expr="//notebook/page[2]/group/group[1]/field[@name='account_id']" position="replace">
+                <field name="account_id"  groups="account.group_account_invoice"/>
+            </xpath>
+            <xpath expr="//notebook/page[2]/group/group[1]/field[@name='reference']" position="replace">
+                 <field name="reference" attrs="{'readonly':[('state', 'not in', ['draft'])], 'invisible':[('state','=','draft')]}"/>
+            </xpath>
+            <xpath expr="//sheet/group/group[1]/field[@name='partner_id']" position="replace">
+                 <field string="Customer" name="partner_id" widget="res_partner_many2one" context="{'search_default_customer':1, 'show_address': 1, 'default_is_company': True, 'show_vat': True}" attrs="{'readonly': [('state', 'not in', ['open','draft'])]}" options="{&quot;always_reload&quot;: True, &quot;no_quick_create&quot;: True}" domain="[('customer', '=', True)]" required="1"/>
+            </xpath>
+            <xpath expr="//button[@name='action_invoice_draft']" position="replace">
+                 <button name="action_invoice_draft" states="cancel" string="Reset to Draft" type="object" attrs="{'invisible': [('state','not in',['cancel'])]}" groups="account.group_account_invoice"/>
+            </xpath>
+            <xpath expr="//button[@name='action_invoice_draft']" position="after">
+                <button name="action_invoice_cancel" type="object" states="draft,proforma2,open" string="Cancel Invoice" groups="account.group_account_invoice"/>
+            </xpath>
+            
+            <xpath expr="//sheet/h1[@class='mt0']" position="replace">
+                 <h1 class="mt0">
+                        <div>
+                            <label for="number" string="Draft Invoice" attrs="{'invisible': ['|',('state','not in',('draft',)), ('type','!=','out_invoice')]}"/>
+                            <label for="number" string="Draft Credit Note" attrs="{'invisible': ['|',('state','not in',('draft',)), ('type','!=','out_refund')]}"/>
+                            <field name="number" readonly="1" class="oe_inline" attrs="{'invisible': [('state','in',('draft',))]}"/>
+                        </div>
+                        <div invisible="1">
+                            <label for="sequence_number_next_prefix" string="Invoice Number:"/><br/>
+                            <field name="sequence_number_next_prefix" class="oe_inline"/>
+                            <field name="sequence_number_next" class="oe_inline"/>
+                        </div>
+                    </h1>
+            </xpath>
+
+            <xpath expr="//notebook/page/field[@name='invoice_line_ids']" position="replace">
+                    <field name="invoice_line_ids" nolabel="1" widget="section_and_note_one2many" mode="tree,kanban" context="{'type': type, 'journal_id': journal_id, 'default_invoice_id': id}">
+                            <tree string="Invoice Lines" editable="bottom">
+                                    <control>
+                                        <create string="Add a line"/>
+                                        <create string="Add a section" context="{'default_display_type': 'line_section'}" invisible="1"/>
+                                        <create string="Add a note" context="{'default_display_type': 'line_note'}" invisible="1"/>
+                                    </control>
+
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="po_line_id" string="PO" domain="[('project_id', '=', parent.project)]" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                    <field name="project_id" string="Job Order Number" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                    <field name="no_site" string="No Site"/>
+                                    <field name="product_id" domain="[('type','=','service')]" invisible="1"/>
+                                    <field name="origin" invisible="1"/>
+                                    <field name="is_rounding_line" invisible="1"/>
+                                    <field name="name" string="Description" />
+                                    <field name="display_type" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="account_id" groups="account.group_account_invoice" attrs="{'required': [('display_type', '=', False)]}" options="{'no_create': True, 'no_edit': True, 'no_open': True}"/>
+                                    <field name="account_analytic_id" invisible="1" groups="analytic.group_analytic_accounting" domain="[('company_id', '=', parent.company_id)]" context="{'default_partner_id': parent.partner_id}"/>
+                                    <field name="analytic_tag_ids" invisible="1" groups="analytic.group_analytic_tags" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id" invisible="1" groups="uom.group_uom"/>
+                                    <field name="price_unit" string="Price"/>
+                                    <field name="invoice_line_tax_ids" widget="many2many_tags" options="{'no_create': True}" context="{'type':parent.type, 'tree_view_ref': 'account.account_tax_view_tree', 'search_view_ref': 'account.account_tax_view_search'}" domain="[('type_tax_use','=','sale'),('company_id', '=', parent.company_id)]" />
+                                    <field name="discount"/>
+                                    <field name="price_subtotal" string="Subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                    <field name="price_total" string="Total" groups="account.group_show_line_subtotals_tax_included"/>
+                                    <field name="currency_id" invisible="1" />
+                                </tree>
+                                <kanban class="o_kanban_mobile">
+                                    <field name="name"/>
+                                    <field name="product_id"/>
+                                    <field name="price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                    <field name="price_total" groups="account.group_show_line_subtotals_tax_included"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id" groups="uom.group_uom"/>
+                                    <field name="price_unit"/>
+                                    <field name="display_type"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div t-attf-class="oe_kanban_card oe_kanban_global_click {{ record.display_type.raw_value ? 'o_is_' + record.display_type.raw_value : '' }}">
+                                                <t t-if="!record.display_type.raw_value">
+                                                    <div class="row">
+                                                        <div class="col-8">
+                                                            <strong>
+                                                                <span>
+                                                                    <t t-esc="record.product_id.value"/>
+                                                                </span>
+                                                            </strong>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <strong>
+                                                                <span class="float-right text-right">
+                                                                    <t t-esc="record.price_subtotal.value" groups="account.group_show_line_subtotals_tax_excluded"/>
+                                                                    <t t-esc="record.price_total.value" groups="account.group_show_line_subtotals_tax_included"/>
+                                                                </span>
+                                                            </strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12 text-muted">
+                                                            <span>
+                                                                Quantity:
+                                                                <t t-esc="record.quantity.value"/>
+                                                                <t t-esc="record.uom_id.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12 text-muted">
+                                                            <span>
+                                                                Unit Price:
+                                                                <t t-esc="record.price_unit.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                                <t t-if="record.display_type.raw_value === 'line_section' || record.display_type.raw_value === 'line_note'">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <span>
+                                                                <t t-esc="record.name.value"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                    </field>
+                </xpath>
+                <xpath expr="//notebook/page/field[@name='tax_line_ids']" position="replace">
+                    <field name="tax_line_ids">
+                        <tree editable="bottom" string="Taxes" create="0">
+                            <field name="name"/>
+                            <field name="tax_id" invisible="1"/>
+                            <field name="sequence" invisible="1"/>
+                            <field name="manual" invisible="1"/>
+                            <field name="account_id" groups="account.group_account_invoice"/>
+                            <field name="amount" invisible="1"/>
+                            <field name="account_analytic_id" invisible="1" domain="[('company_id', '=', parent.company_id)]" groups="analytic.group_analytic_accounting"/>
+                            <field name="analytic_tag_ids" invisible="1" groups="analytic.group_analytic_tags" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <field name="amount_rounding" invisible="1"/>
+                            <field name="amount_total"/>
+                            <field name="currency_id" invisible="1" force_save="1"/>
+                        </tree>
+                    </field>
+                </xpath>
+
+                <xpath expr="//sheet/group[1]" position="after">
+                    <xpath expr="//notebook/page[@name='other_info']/group" position="move"/>
+                </xpath>
+                <xpath  expr="//group/group[1]/field[@name='account_id']" position="after">
+                    <xpath expr="//group/group[2]/field[@name='partner_bank_id']" position="move"/>
+                </xpath>
+                <xpath expr="//group/group[2]/field[@name='fiscal_position_id']" position="after">
+                    <xpath expr="//group/group[1]/field[@name='name']" position="move" invisible="1"/>
+                </xpath>
+                <xpath expr="//group/group[2]/field[@name='move_id']" position="after">
+                    <xpath expr="//group/group[1]/field[@name='reference']" position="move"/>
+                </xpath>
+                <xpath expr="//notebook/page[@name='other_info']" position="attributes">
+                    <attribute name="string">
+						Taxes
+					</attribute>
+                </xpath>
+                <field name="fiscal_position_id" position="replace"/>
+                <field name="incoterm_id" position="replace"/>
+                <field name="name" position="replace"/>
+            </field>
+        </record>
+
+        <record id="rnet_account_invoice_tree_view_with_onboarding" model="ir.ui.view">
+            <field name="name">account.invoice.tree.with.onboarding</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+            <xpath expr="//tree" position="replace">
+                    <tree decoration-info="state == 'draft'" decoration-muted="state == 'cancel'" string="Invoice">
+                        <field name="number" string="Number"/>
+                       <field name="state" string="Status" widget="label_selection" options="{'classes': {'draft': 'secondary', 'cancel': 'danger', 'open': 'info', 'paid': 'success'}}"/>
+                        <field name="user_id"/>
+                        <field name="partner_id" string="Customer" />
+                        <field name="po_no" invisible="1"/>
+                        <field name="project" />
+                        <field name="date_invoice" />
+                        <field name="date_due" />
+                        <field name="currency_id" />
+                        <field name="amount_untaxed_invoice_signed" sum="amount_untaxed" string="DPP before disc" widget="monetary" />
+                        <field name="amount_discount"/>
+                        <field name="amount_after_disc"/>
+                        <field name="amount_tax" sum="amount_tax" string="VAT 11%" widget="monetary" />
+                        <field name="amount_pph" sum="amount_pph" string="PPh 2.56%" widget="monetary" />
+                        <field name="amount_total_signed" sum="amount" string="Total" widget="monetary" />
+                        <field name="paid_amount" string="Paid" sum="paid" widget="monetary"/>
+                        <field name="residual" string="Amount Due" sum="residual" widget="monetary"/>
+                        <field name="gut_invoice_remark" string="Remark"/>
+                    </tree>
+            </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rnet_account_invoice_search">
+            <field name="name">View Invoice Search</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field['partner_id']" position="after">
+                    <field name="project" string="Project" filter_domain="[('project.name','ilike',self)]"/>
+                    <!-- <field name="po_no" string="PO" filter_domain="[('po_no','ilike',self)]"/> -->
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="string">Customer</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='group_by_partner_id']" position="attributes">
+                    <attribute name="string">Customer</attribute>
+                </xpath>
+                <xpath expr="//group" position="inside">
+                    <filter string="Project" name="project"  context="{'group_by':'project'}"/>
+                </xpath>
+            </field>
+        </record>
+
+ 
+<!-- add menu invoicing di menu utama -->
+        <menuitem id="rnet_menu_account_invoice" name="Invoicing" sequence="16" action="account.action_invoice_tree1" web_icon="rnet_invoice,static/description/icon.png"/>
+        <menuitem id="rnet_menu_account_invoice_customer" name="Customer" parent="rnet_menu_account_invoice" sequence="2"/>
+        <menuitem id="rnet_menu_account_invoice_configuration" name="Configuration" parent="rnet_menu_account_invoice" sequence="3"/>
+
+<!-- add menu Payments di invoicing Payments menu -->
+        <menuitem
+            id="menu_customer_payment_invoice"
+            name="Invoice Payments"
+            sequence="2"
+            parent="rnet_invoice.rnet_menu_account_invoice_customer"
+            action="account.action_account_payments"
+            groups="account.group_account_invoice"/>
+
+
+<!-- add menu faktur pajak di invoicing Customer menu -->
+<!--        <menuitem-->
+<!--            id="menu_faktur_pajak_invoice"-->
+<!--            name="Faktur Pajak"-->
+<!--            sequence="3"-->
+<!--            parent="rnet_invoice.rnet_menu_account_invoice_customer"-->
+<!--            action="rnet_invoice.faktur_pajak_invoice_action"-->
+<!--            groups="account.group_account_invoice"/>-->
+
+<!-- add menu Outstanding Invoice Report di invoicing Customer menu -->
+        <menuitem
+            id="menu_invoice_outstanding_report_invoice"
+            name="Outstanding Invoice Report"
+            sequence="4"
+            parent="rnet_invoice.rnet_menu_account_invoice_customer"
+            action="abs_invoice_outstanding_report.open_outstanding_invoice_action"
+            groups="account.group_account_invoice"/>
+
+
+<!-- add menu Customer di invoicing Customer menu -->
+        <menuitem
+            id="menu_customer_customer_invoice"
+            name="Customers"
+            sequence="5"
+            parent="rnet_invoice.rnet_menu_account_invoice_customer"
+            action="base.action_partner_customer_form"
+            groups="account.group_account_invoice"/>
+
+<!-- add menu Payment Terms di invoicing Configuration menu -->
+        <menuitem
+            id="menu_payment_term_configuration_invoice"
+            name="Payment Terms"
+            sequence="2"
+            parent="rnet_invoice.rnet_menu_account_invoice_configuration"
+            action="account.action_payment_term_form"
+            groups="account.group_account_invoice"/>
+
+<!-- add menu Currencies  di invoicing Configuration menu -->
+        <menuitem
+            id="menu_currency_configuration_invoice"
+            name="Currencies"
+            sequence="3"
+            parent="rnet_invoice.rnet_menu_account_invoice_configuration"
+            action="base.action_currency_form"
+            groups="account.group_account_invoice"/>
+
+<!-- add menu Taxes di invoicing Configuration menu -->
+        <menuitem
+            id="menu_taxes_configuration_invoice"
+            name="Taxes"
+            sequence="4"
+            parent="rnet_invoice.rnet_menu_account_invoice_configuration"
+            action="account.action_tax_form"
+            groups="account.group_account_invoice"/>
+
+<!-- add menu Bank Account di invoicing Configuration menu -->
+        <menuitem
+            id="menu_bank_account_configuration_invoice"
+            name="Bank Account"
+            sequence="5"
+            parent="rnet_invoice.rnet_menu_account_invoice_configuration"
+            action="account.action_account_bank_journal_form"
+            groups="account.group_account_invoice"/>
+
+    </data>
+</odoo>

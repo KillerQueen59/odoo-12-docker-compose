@@ -1,0 +1,395 @@
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="rnet_project_edit_project">
+			<field name="name">rnet.project_edit_project</field>
+			<field name="model">project.project</field>
+			<field name="inherit_id" ref="project.edit_project" />
+			<field name="arch" type="xml">
+				<xpath expr="//page[1]/group[1]/field[@name='user_id']" position="replace" />
+				<xpath expr="//page[1]/group[1]/field[@name='privacy_visibility']" position="replace" />
+				<xpath expr="//page[1]/group[1]/field[@name='partner_id']" position="replace" />
+				<xpath expr="//div[@name='options_active']" position="inside">
+					<!--
+					<group>
+					<field name="distance" string="Project lebih dari 60 km?"/>
+					<field name="project_class_code" string="Project Class Code" />
+					</group>
+					-->
+					<field name="current_user_is_finance_director" invisible="True" />
+				</xpath>
+				<xpath expr="//div[@name='options_active']/div" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<!-- <xpath expr="//button[@name='116']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath> -->
+				<button name="toggle_active" position="replace">
+					<button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?" class="oe_stat_button" icon="fa-archive" groups="project.group_project_manager">
+						<field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}" />
+					</button>
+				</button>
+				<xpath expr="//field[@name='name']" position="before">
+					<h1>
+						<field name="no" attrs="{'required': [('no','!=', False)]}"  string="Job Order No 2" placeholder="Job Order No 2"/>
+
+					</h1>
+				</xpath>
+				<xpath expr="//notebook/page/group[1]" position="after">
+					<group>
+						<group>
+							<field name="seq" attrs="{'required': [('no','!=', False)]}"  string="No Project"/>
+							<field name="location" string="Site Location" />
+							<field name="location_longitude" invisible="1" />
+							<field name="location_latitude" invisible="1" />
+							<field name="location_city" invisible="1" />
+							<field name="location_state_id" invisible="1" />
+							<field name="kind_of_work" />
+							<field name="year_by"/>
+							<field name="project_type" />
+							<field name="description" />
+							<field name="partner_id" />
+							<field name="customer_pic_division" />
+							<field name="customer_pic"/>
+							<field name="can_edit" invisible="1" />
+							<field name="can_create" invisible="1" />
+							<!-- <label for="customer_pic" string="Contact Person" />
+							<div style="display: inline;">
+								<field name="customer_pic_title" class="oe_inline" placeholder="e.g. Mr."/>
+								<field name="customer_pic" class="oe_inline" />
+							</div> -->
+						</group>
+						<group>
+							<field name="plan_delivery_date" />
+							<field name="order_date" />
+							<field name="payment_term" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+							<field name="term_of_delivery" />
+							<field name="res_currency" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+							<!-- <field name="amount"/> -->
+							<field name="project_duration" />
+							<!--
+							<field name="project_status"/>
+							<field name="actual_delivery_date"/>
+							-->
+							<field name="plan_start_date" />
+							<field name="plan_end_date" />
+							<!--
+							<field name="actual_start_date"/>
+							<field name="actual_end_date"/>
+							-->
+							<field name="notes" />
+						</group>
+					</group>
+
+					<group col="2" string="Project Value" style="max-width: 60%">
+					<div/>
+						<field name="order_value" attrs="{'readonly':[('status','==','locked')]}" />
+						<field name="main_material" attrs="{'readonly':[('status','==','locked')]}" />
+						<field name="man_power" attrs="{'readonly':[('status','==','locked')]}" />
+						<field name="secondary_cost" attrs="{'readonly':[('status','==','locked')]}" />
+						<field name="tool_cost" attrs="{'readonly':[('status','==','locked')]}" />
+						<field name="consumable_material" attrs="{'readonly':[('status','==','locked')]}" />
+						<label for="other_value_desc" string="Others" />
+							<div style="display: inline;">
+								<field name="other_value_desc" class="oe_inline" placeholder="e.g Other Cost"/>
+								<field name="other_value" class="oe_inline" />
+								<field name="other_value_desc2" class="oe_inline" placeholder="e.g Other Cost" attrs="{'invisible': [('other_value_desc','=',False)]}"/>
+								<field name="other_value2" class="oe_inline" attrs="{'invisible': [('other_value_desc','=',False)]}"/>
+								<field name="other_value_desc3" class="oe_inline" placeholder="e.g Other Cost" attrs="{'invisible': [('other_value_desc2','=',False)]}"/>
+								<field name="other_value3" class="oe_inline" attrs="{'invisible': [('other_value_desc2','=',False)]}"/>
+								<field name="other_value_desc4" class="oe_inline" placeholder="e.g Other Cost" attrs="{'invisible': [('other_value_desc3','=',False)]}"/>
+								<field name="other_value4" class="oe_inline" attrs="{'invisible': [('other_value_desc3','=',False)]}"/>
+							</div>
+
+						<label for="overhead_cost_persen" string="Overhead  1112233 %"/>
+                        <div class="o_row" attrs="{'invisible': [('current_user_is_finance_director','=',False)]}">
+                            <div class="o_col">
+                                <field name="overhead_cost_persen" class="oe_inline" attrs="{'readonly':[('status','==','locked')]}" />
+                                <span class="oe_inline">
+                                    %
+                                </span>
+                            </div>
+                        </div>
+						<label for="holding_tax_persen" string="With Holding Tax %"/>
+                        <div class="o_row" attrs="{'invisible': [('current_user_is_finance_director','=',False)]}">
+                            <div class="o_col">
+                                <field name="holding_tax_persen" class="oe_inline" attrs="{'readonly':[('status','==','locked')]}" />
+                                <span class="oe_inline">
+                                    %
+                                </span>
+                            </div>
+                        </div>
+					</group>
+
+					<group style="max-width: 60%">
+					<div/>
+						<field name="calculated_cost" />
+						<field name="gross_margin" />
+						<field name="overhead_cost" />
+						<field name="holding_tax" />
+						<field name="net_margin" />
+					</group>
+					<group>
+						<group string="Price Condition">
+							<field name="price_condition" attrs="{'readonly':[('status','==','locked')]}" />
+						</group>
+						<group string="Document For Invoice">
+							<field name="document_for_invoice" attrs="{'readonly':[('status','==','locked')]}" />
+						</group>
+						<group string="Reimbursment">
+							<field name="reimbursement" attrs="{'readonly':[('status','==','locked')]}" />
+						</group>
+						<group string="Note">
+							<field name="note" attrs="{'readonly':[('status','==','locked')]}" />
+						</group>
+					</group>
+				</xpath>
+				<xpath expr="//page[@name='settings']/group[@name='misc']" position="replace" />
+				<xpath expr="//notebook/page[last()]" position="before">
+					<page name="po_line" string="Project TOC" groups="account.group_account_invoice">
+						<separator string="Project TOC Line" />
+						<field name="project_po_line" options="{'no_open': True}">
+							<tree string="PO Line" editable="bottom" open="false">
+								<field name="number" invisible="1" />
+								<field name="po_no_site" />
+								<field name="name" />
+								<field name="po_code" invisible="1" />
+								<field name="po_date" />
+								<field name="po_amount" />
+								<field name="po_start_date" />
+								<field name="po_end_date" />
+								<field name="po_desc" required="1"/>
+								<field name="project_id" invisible="1" />
+							</tree>
+						</field>
+					</page>
+				</xpath>
+				<xpath expr="//notebook/page[last()]" position="after">
+					<page name="team" string="Project Team" groups="project.group_project_manager,rnet_project.can_create_edit_project_group">
+						<group>
+							<group>
+								<field name="project_manager" required="1" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+								<field name="site_manager" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+								<field name="project_director" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+								<field name="project_admin" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+								<field name="pm_backup_approval" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+								<field name="finance_director_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" attrs="{'invisible': [('current_user_is_finance_director','=',False)]}"/>
+							</group>
+							<group>
+								<field name="pic_technical" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+								<field name="project_coordinator" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+								<field name="pic_project_cost" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+								<field name="project_pic_warehouse" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+							</group>
+						</group>
+						<label for="team_member" string="Team Member" />
+						<field name="team_member" options="{'no_create':True, 'no_quick_create':True}">
+							<tree>
+								<field name="name" />
+								<field name="job_id" />
+							</tree>
+						</field>
+					</page>
+					<!--
+					<page name="scope" string="Scope of Work"/>
+					<page name="phase" string="Project Phase/Term"/>
+					-->
+					<!--
+					<page name="settings" string="Settings">
+					<group>
+					<field name="privacy_visibility" widget="radio"/>
+					<field name="analytic_account" class="oe_inline"/>
+					</group>
+					<group name="misc">
+					<group string="Configuration" groups="base.group_no_one" name="configuration">
+					<field name="sequence" groups="base.group_no_one"/>
+					<field name="company_id" groups="base.group_multi_company"/>
+					</group>
+					<group string="Time Scheduling" groups="base.group_no_one">
+					<field name="resource_calendar_id" groups="base.group_no_one"/>
+					</group>
+					</group>
+					</page>
+					-->
+				</xpath>
+				<!--
+				<xpath expr="//div[@class='oe_title'][1]/div[1]/div[1]" position="after">
+				<div>
+				<label for="label_parent_project" class="oe_inline" string="Parent Project :"/>
+				<field name="parent_project" class="oe_inline oe_input_align"/>
+				</div>
+				</xpath>
+				-->
+				<xpath expr="//page[1]" position="attributes">
+					<attribute name="string">
+						Project Info
+					</attribute>
+				</xpath>
+				<div name="button_box" position="inside">
+<!--					<button class="oe_stat_button" type="object" icon="fa-list-ul" name="open_expense_project" groups="hr_expense.group_hr_expense_user">-->
+<!--						<field string="Expenses" name="expense_count" widget="statinfo" groups="hr_expense.group_hr_expense_user" />-->
+<!--					</button>-->
+					<button class="oe_stat_button" type="object" icon="fa-file-text" name="open_expense_sheet_project" groups="hr_expense.group_hr_expense_user">
+<!--						<field name="expense_sheet_amount" string="CVR" widget="statinfo" groups="hr_expense.group_hr_expense_user" />-->
+						<!-- <field string="CVR" name="expense_sheet_count" widget="statinfo" groups="hr_expense.group_hr_expense_user"/> -->
+					</button>
+					<button class="oe_stat_button" type="object" icon="fa-clipboard" name="open_expense_advance_project" groups="hr_expense.group_hr_expense_user">
+<!--						<field name="expense_advance_amount" string="BAR" widget="statinfo" groups="hr_expense.group_hr_expense_user" />-->
+						<!-- <field string="BAR" name="expense_advance_count" widget="statinfo" groups="hr_expense.group_hr_expense_user"/> -->
+					</button>
+					<button class="oe_stat_button" type="object" icon="fa-file" name="open_purchase_order_project" groups="purchase.group_purchase_user">
+						<field name="purchase_order_amount" string="PO" widget="statinfo" groups="purchase.group_purchase_user" />
+					</button>
+				</div>
+				<xpath expr="//field[@name='message_follower_ids']" position="after">
+					<field name="message_ids" widget="mail_thread" />
+				</xpath>
+				<header position="inside">
+					<button string="Lock" type="object" name="button_lock" class="oe_highlight" attrs="{'invisible':[('status','==','locked')]}" groups="account.group_account_invoice"/>
+					<button string="Reset to Draft" type="object" name="button_reset" attrs="{'invisible':[('status','==','draft')]}" class="oe_highlight" groups="base.group_erp_manager"/>
+					<field name="status" widget="statusbar" statusbar_visible="draft,locked" statusbar_colors="{'locked':'blue'}" />
+				</header>
+				<xpath expr="//form" position="attributes">
+					<attribute name="rp_edit">can_edit == 'yes'</attribute>
+					<attribute name="rp_create">can_create == 'yes'</attribute>
+				</xpath>
+			</field>
+		</record>
+
+		<!-- project view tree -->
+		<record id="rnet_project_view_project" model="ir.ui.view">
+			<field name="name">rnet.project_view_project</field>
+			<field name="model">project.project</field>
+			<field name="inherit_id" ref="project.view_project" />
+			<field name="arch" type="xml">
+				<field name="name" position="before">
+					<field name="seq" string="No Project"/>
+					<field name="no" string="Job Order No" />
+				</field>
+				<field name="partner_id" position="after">
+					<field name="project_manager" />
+					<field name="order_date" />
+					<field name="location"/>
+					<field name="year_by"/>
+					<field name="kind_of_work"/>
+					<field name="order_value"/>
+					<field name="calculated_cost"/>
+					<field name="gross_margin" string="Gross Margin"/>
+					<field name="overhead_cost"/>
+					<field name="net_margin" string="Net Margin"/>
+					<field name="project_status" invisible="1" />
+					<field name="project_type" invisible="1" />
+					<field name="reference_no" invisible="1" />
+					<field name="plan_start_date" invisible="1" />
+					<field name="plan_end_date" invisible="1" />
+					<field name="actual_start_date" invisible="1" />
+					<field name="actual_end_date" invisible="1" />
+					<field name="description" invisible="1" />
+				</field>
+				<field name="partner_id" position="attributes">
+					<attribute name="string">
+						Customer
+					</attribute>
+				</field>
+				<field name="user_id" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</field>
+				<!-- <xpath expr="//tree[1]" position="attributes">
+					<attribute name="create">false</attribute>
+				</xpath> -->
+			</field>
+		</record>
+
+		<!-- filter -->
+		<record id="view_project_project_filter" model="ir.ui.view">
+			<field name="name">project.project.filter</field>
+			<field name="model">project.project</field>
+			<field name="inherit_id" ref="project.view_project_project_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='name']" position="replace">
+					<field name="name" string="All" filter_domain="[
+                                '|','|','|','|','|','|',
+								('name', 'ilike', self),
+                                ('no', 'ilike', self),
+                                ('seq', 'ilike', self),
+                                ('project_manager', 'ilike', self),
+                                ('partner_id', 'ilike', self),
+                                ('location', 'ilike', self),
+                                ('project_admin', 'ilike', self),
+                                ]"/>
+                </xpath>
+				<xpath expr="//filter[@name='Manager']" position="after">
+					<filter string="Order Date" name="order_date" domain="[]" context="{'group_by':'order_date'}"/>
+					<filter string="Location" name="location" domain="[]" context="{'group_by':'location'}"/>
+				</xpath>
+				<xpath expr="//filter[@name='Manager']" position="replace">
+					<filter string="Project Manager" name="Manager" context="{'group_by': 'project_manager'}"/>
+				</xpath>
+			</field>
+		</record>
+
+
+		<!-- override existing menu sequences -->
+		<record model="ir.ui.menu" id="project.menu_project_tags_act">
+			<field name="sequence">13</field>
+		</record>
+		<record model="ir.ui.menu" id="project.project_menu_config_activity_type">
+			<field name="sequence">14</field>
+		</record>
+
+		<!-- override action -->
+		<record id="project.open_view_project_all" model="ir.actions.act_window">
+            <field name="view_mode">kanban,form</field>
+		</record>
+
+		<record id="action_project_view_tree" model="ir.actions.act_window.view">
+			<field name="sequence" eval="2" />
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="rnet_project_view_project" />
+			<field name="act_window_id" ref="project.open_view_project_all" />
+		</record>
+		<!--  -->
+
+		  <record id="action_project_show_gantt" model="ir.actions.client">
+            <field name="tag">project_show_gantt</field>
+            <field name="name">Project Gantt</field>
+        </record>
+
+        <record id="view_project_form_gantt" model="ir.ui.view">
+            <field name="name">project.project.gantt.form</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+<!--
+                <xpath expr="//button" position="after">
+                    <button name="%(action_project_show_gantt)d" type="action" class="o_dhx_show_gantt" string="Show Gantt"/>
+                </xpath> -->
+
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="date_start"/>
+                </xpath>
+
+            </field>
+        </record>
+		
+		<record model="ir.actions.act_window" id="open_project_type">
+			<field name="name">Project Type</field>
+			<field name="res_model">project.type</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<record model="ir.actions.act_window" id="open_project_status">
+			<field name="name">Project Status</field>
+			<field name="res_model">project.status</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<menuitem id="menu_project_type" name="Project Type" parent="project.menu_project_config" action="open_project_type" sequence="11" />
+		<menuitem id="menu_project_status" name="Project Status" parent="project.menu_project_config" action="open_project_status" sequence="12" />
+	</data>
+</odoo>

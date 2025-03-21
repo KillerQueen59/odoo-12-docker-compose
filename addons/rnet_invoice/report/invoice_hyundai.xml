@@ -1,0 +1,377 @@
+
+<odoo>
+    <template id="report_invoice_hyundai_document" >
+       <xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+            <t t-call="web.basic_layout">
+                <!-- header -->
+                <div class="header">
+                    <div class="row">
+                        <div class="col-7">
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 80px;"/>
+                        </div>
+
+                        <div class="col-5 small" style="font-size:10px;">
+                        <span class="text-left">
+
+                            <t t-set="street" t-value=""/>
+                            <t t-set="city" t-value=""/>
+                            <t t-set="telp" t-value=""/>
+                            <t t-foreach="o.company_id.partner_id.child_ids.filtered(lambda x: x.type == 'invoice')" t-as="p" >
+                                <t t-set="street" t-value="p.street"/>
+                                <t t-set="city" t-value="p.city"/>
+                                <t t-set="telp" t-value="p.phone"/>
+                            </t>
+                            <t t-esc="street"/>,<br/>
+                            <t t-esc="city"/><br/>
+                            Telp. <t t-esc="telp"/>
+                        </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- page -->
+                <div class="page mt1">
+                    <h6 class="text-center" style="font-weight: bold;">1. COMMERCIAL INVOICE</h6>
+                    <div class="row">
+                        <div class="col-6">
+                            
+                        </div>
+                        <div class="col-6">
+                            <table class="table table-borderless table-sm small" style="font-size:10px;">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-right" style="font-weight: bold;">Invoice No : <span t-field="o.number"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right" style="font-weight: bold;"> Date: <span t-field="o.date_invoice" t-options="{'format': 'MMMM d, yyyy'}"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <table class="table table-borderless table-sm small" style="font-size:10px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight: bold; width: 15%">
+                                            TO
+                                        </td>
+                                        <td style="font-weight: bold;">:&amp;nbsp;</td>
+                                        <td style="font-weight: bold;">
+                                            <span t-field="o.partner_id.name"/><br/>
+                                            <span t-field="o.partner_id.street"/>
+                                            <span t-field="o.partner_id.city"/>
+                                            <span t-field="o.partner_id.country_id"/><br/>
+                                            <span t-field="o.partner_id.zip"/>
+                                        </td>
+                                    </tr>    
+                                    <tr>
+                                        <td style="font-weight: bold; width: 15%">
+                                            ATTN
+                                        </td>
+                                        <td style="font-weight: bold;">:&amp;nbsp;</td>
+                                        <td style="font-weight: bold;">
+                                            <t t-set="nama" t-value=""/>
+                                            <t t-set="title" t-value=""/>
+                                             <t t-foreach="o.partner_id.child_ids" t-as="p" >
+                                                <t t-set="nama" t-value="p.name"/>
+                                                <t t-set="title" t-value="p.function"/>
+                                            </t>
+                                            <t style="font-weight: bold;" t-esc="nama"/>,
+                                            <t style="font-weight: bold;" t-esc="title"/>
+                                        </td>
+                                    </tr>     
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <table class="table table-borderless table-sm small" style="font-size:10px;">
+                                <tbody>
+                                    <tr>
+                                        <td>Project Name :</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Subcontractor Name :</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Period Of This Invoice Amount :</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Invoice No :</td>
+                                    </tr>    
+                                    <tr>
+                                        <td>Period of This Contract :</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table class="table table-borderless table-sm small" style="font-size:10px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="text-decoration:underline"><span t-field="o.project.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-decoration:underline"><span t-field="o.company_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-decoration:underline">
+                                            <span t-field="o.project.plan_start_date" t-options="{'format': 'MMMM d, yyyy'}"/>-
+                                            <span t-field="o.project.plan_end_date" t-options="{'format': 'MMMM d, yyyy'}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-decoration:underline"><span t-field="o.number"/></td>
+                                    </tr>    
+                                    <tr>
+                                         <td style="text-decoration:underline">
+                                            <span t-field="o.project.actual_start_date" t-options="{'format': 'MMMM d, yyyy'}"/>-
+                                            <span t-field="o.project.actual_end_date" t-options="{'format': 'MMMM d, yyyy'}"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-12">
+                            <style type="text/css">
+                                    .highlight  {
+                                    background-color: #D3D3D3 !important;
+                                    }
+                                    table.table-bordered > thead > tr > th {
+                                    border:1px ;
+                                    }
+                                    table.table-bordered > tbody > tr > td {
+                                        border:1px solid;
+                                    }
+                            </style>
+                            <p style="font-size:12px;">INVOICE DESCRIPTION</p>
+                            <table class="table table-bordered table-sm small" style="font-size:10px;">
+                                <thead>
+                                    <tr>
+                                        <td style="width: 15%" class="border border-dark text-center">Subject</td>
+                                        <td colspan="2" style="width: 40%" class="border border-dark text-center">Description</td>
+                                        <td style="width: 15%" class="border border-dark text-center">Amount (<span t-field="o.currency_id.name"/>)</td>
+                                        <td style="width: 7%" class="border border-dark text-center">%</td>
+                                        <td style="width: 20%" class="border border-dark text-center">Remarks</td>
+                                    </tr>
+                                </thead>
+                                <tbody >
+                                    <tr class="border border-dark">
+                                            <td t-att-rowspan="7" style="vertical-align : middle;text-align:center;" class="border border-dark">
+                                                <t t-set="desc" t-value=""/>
+                                                <t t-foreach="o.invoice_line_ids" t-as="line">
+                                                    <t t-set="desc" t-value="line.project_id.name"/>
+                                                </t>
+                                                <t t-esc="desc"/>
+                                            </td>
+                                            <td class="border border-dark text-center">(A)</td>
+                                            <td class="border border-dark">Work Value</td>
+                                            <td class="border border-dark"><span class="text-left" t-field="o.currency_id.name"/>&amp;ensp;<span class="text-right" t-esc="'{0:,.0f}'.format(o.work_value)"/></td>
+                                            <td class="border border-dark text-center">6,66%</td>
+                                            <td class="border border-dark text-center">Contract Amount&amp;ensp;<span t-field="o.currency_id.name"/>&amp;ensp; <span t-esc="'{0:,.0f}'.format(o.project.amount)"/></td>
+                                    </tr>
+                                    <tr class="border border-dark">
+                                            <td class="border border-dark text-center">(B)</td>
+                                            <td class="border border-dark">Advance Payment deduction (10%)</td>
+                                            <td class="border border-dark"><span class="text-left" t-field="o.currency_id.name"/>&amp;ensp;<span class="text-right" t-esc="'{0:,.0f}'.format(o.advance_paymnet)"/></td>
+                                            <td class="border border-dark text-center">10%</td>
+                                            <td class="border border-dark text-center">(A) * 10%</td>
+                                    </tr>
+                                    <tr class="border border-dark">
+                                            <td class="border border-dark text-center">(C)</td>
+                                            <td class="border border-dark">Retention (10%)</td>
+                                            <td class="border border-dark"><span class="text-left" t-field="o.currency_id.name"/>&amp;ensp;<span class="text-right" t-esc="'{0:,.0f}'.format(o.retention_hyundai)"/></td>
+                                            <td class="border border-dark text-center">10%</td>
+                                            <td class="border border-dark text-center">(A) * 10%</td>
+                                    </tr>
+                                    <tr class="border border-dark">
+                                            <td class="border border-dark text-center">(D)</td>
+                                            <td class="border border-dark">Work Value (net)</td>
+                                            <td class="border border-dark"><span class="text-left" t-field="o.currency_id.name"/>&amp;ensp;<span class="text-right" t-esc="'{0:,.0f}'.format(o.work_value_net)"/></td>
+                                            <td class="border border-dark text-center">80%</td>
+                                            <td class="border border-dark text-center">(A)-(B)-(C)</td>
+                                    </tr>
+                                    <tr class="border border-dark">
+                                            <td class="border border-dark text-center">(E)</td>
+                                            <td class="border border-dark">VAT 11%</td>
+                                            <td class="border border-dark"><span class="text-left" t-field="o.currency_id.name"/>&amp;ensp;<span class="text-right" t-esc="'{0:,.0f}'.format(o.vat_hyundai)"/></td>
+                                            <td class="border border-dark text-center">11%</td>
+                                            <td class="border border-dark text-center">(D) * 11%</td>
+                                    </tr>
+                                    <tr class="border border-dark">
+                                            <td class="border border-dark text-center">(F)</td>
+                                            <td class="border border-dark">WITHHOLDING TAX (2,65%)</td>
+                                            <td class="border border-dark"><span class="text-left" t-field="o.currency_id.name"/>&amp;ensp;<span class="text-right" t-esc="'{0:,.0f}'.format(o.with_holding)"/></td>
+                                            <td class="border border-dark text-center">2,65%</td>
+                                            <td class="border border-dark text-center">(D)*2,65%</td>
+                                    </tr>
+                                    <tr class="border border-dark text-center; highlight">
+                                            <td colspan="2" style="text-align:center;">Payable (Net)</td>
+                                            <td class="border border-dark"><span class="text-left" t-field="o.currency_id.name"/>&amp;ensp;<span class="text-right" t-esc="'{0:,.0f}'.format(o.payable_net)"/></td>
+                                            <td class="border border-dark text-center">&amp;ensp;</td>
+                                            <td class="border border-dark text-center">(D)+(E)-(F)</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" class="border border-dark"><span style="margin-left: 5%;"/>Payment: &amp;ensp;<span t-field="o.num_word_hyundai"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-borderless table-sm small" style="font-size:10px;">
+                                <tbody>
+                                    <tr>
+                                        <td>Dear Sirs,</td>
+                                    </tr>
+                                    <tr>
+                                        <td>In accordance with Article 8 of the Subcontract Agreement, we are pleased to submit the documents indicated below.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1. Commercial Invoice</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2. Evidences of This Invoice </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-7">
+                        </div>
+                        <div class="col-5">
+                            <table class="table table-borderless table-sm small" style="font-size:10px;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" >&amp;ensp;</td>
+                                        <td class="text-center">PT GRAHA USAHA TEKNIK</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&amp;ensp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&amp;ensp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&amp;ensp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5">&amp;ensp;</td>
+                                        <td class="text-center" style="font-style:bold ; text-decoration:underline" >kuswanto Rahayu</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5">&amp;ensp;</td>
+                                        <td class="text-center">Director</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <table class="table table-bordered table-sm small" style="font-size:10px;">
+                                <tbody class="border border-dark">
+                                    <tr>
+                                        <td colspan="2" class="border border-dark text-left; highlight">Payment to be credited to : </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:none;" class="text-left">ACCOUNT NAME</td>
+                                        <td style="border:none;">:&amp;ensp;<span class="text-left" t-field="o.partner_bank_id.partner_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:none;" class="text-left">ACCOUNT NO.</td>
+                                        <td style="border:none;">:&amp;ensp;<span t-field="o.partner_bank_id.acc_number"/>
+                                        &amp;ensp;(<span t-field="o.partner_bank_id.currency_id.name"/>)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:none;" class="text-left">NAME OF BANK</td>
+                                        <td style="border:none;">:&amp;ensp;<span class="text-left" t-field="o.partner_bank_id.bank_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:none;" class="text-left">NAME OF BRANCH</td>
+                                        <td style="border:none;">:&amp;ensp;<span t-field="o.partner_bank_id.bank_id.street2"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:none;" class="text-left">ADDRESS</td>
+                                        <td style="border:none;">:&amp;ensp;<span t-field="o.partner_bank_id.bank_id.street"/>&amp;ensp;
+                                        <span t-field="o.partner_bank_id.bank_id.city"/>&amp;ensp;<span t-field="o.partner_bank_id.bank_id.state"/>&amp;ensp;Telp.
+                                        <span t-field="o.partner_bank_id.bank_id.phone"/>&amp;ensp;<span t-field="o.partner_bank_id.bank_id.country"/>&amp;ensp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:none;" class="text-left">EMAIL</td>
+                                        <td style="border:none;">:&amp;ensp;<span t-field="o.partner_bank_id.bank_id.email"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:none;" class="text-left">SWIFT</td>
+                                        <td style="border:none;">:&amp;ensp;<span t-field="o.partner_bank_id.bank_id.bic"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="footer">
+                    <!-- <div class="row">
+                        <div class="col-12 last-page">
+                            <table class="table table-borderless table-sm small" style="font-size:10px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50% ; color:white; background-color:orange ; justify-content: center">
+                                            <div class="row">
+                                                <div class="col-6 small">
+                                                    <p> http://www.ptgut.co.id</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="width: 50%; color:white; background-color:green">
+                                        <div class="row">
+                                            <div class="col-6 small">
+                                                <div class="text-right">
+                                                    Tel: +62 21 8378 7333&amp;nbsp;
+                                                    <br/>
+                                                    Fax: +62 21 8378 7222&amp;nbsp;
+                                                </div>
+                                            </div>
+                                            <div class="col-6 small">
+                                                <span t-field="o.company_id.partner_id.street"/>&amp;nbsp;
+                                                <span t-field="o.company_id.partner_id.street2"/>
+                                            </div>
+                                        </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> -->
+                    <!-- <div class="row">
+                        <div class="col-6 small">
+                            <div class="text-left">
+                                <span t-field="o.number"/>
+                            </div>
+                        </div>
+                        <div class="col-6 small">
+                            <div class="text-right">
+                                Page <span class="page" /> of <span class="topage" />
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </t>
+        </xpath>
+    </template>
+    <!-- main template -->
+<template id="report_invoice_hyundai">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="rnet_invoice.report_invoice_hyundai_document" />
+        </t>
+    </t>
+</template>
+</odoo>

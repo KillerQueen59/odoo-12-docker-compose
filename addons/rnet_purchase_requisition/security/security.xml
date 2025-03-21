@@ -1,0 +1,40 @@
+<odoo>
+<!-- <record id="material_purchase_requisition_user_rule" model="ir.rule">
+            <field name="name">per PR user (copy)</field>
+            <field name="model_id" ref="model_material_purchase_requisition"/>
+            <field name="domain_force">['|',('employee_id.user_id','=',user.id),('requisiton_responsible_id.user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_portal')), (4, ref('group_anonymous'))]"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="global" eval="True"/>
+</record> -->
+
+<record id="ir_rule_requisition_user" model="ir.rule">
+    <field name="name">view own Purchase Requisition</field>
+    <field name="model_id" ref="model_material_purchase_requisition"/>
+    <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>    
+    <field name="groups" eval="[(4, ref('material_purchase_requisitions.group_purchase_requisition_user'))]"/>
+</record>
+
+<record id="ir_rule_requisition_project_manager" model="ir.rule">
+        <field name="model_id" ref="model_material_purchase_requisition" />
+        <field name="name">view Purchase Requisition for Project Manager</field>
+        <field name="domain_force">[('requisiton_responsible_id.user_id','=',user.id)] </field>
+        <field name="groups" eval="[(4, ref('material_purchase_requisitions.group_purchase_requisition_manager'))]"/>
+</record>
+
+<!-- <record id="ir_rule_requisition_manager" model="ir.rule">
+    <field name="model_id" ref="model_material_purchase_requisition" />
+    <field name="name">view for Purchase Requisition Manager</field>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('material_purchase_requisitions.group_purchase_requisition_manager'))]"/>
+</record> -->
+
+<record id="ir_rule_hr_expense_requisition_administrator" model="ir.rule">
+    <field name="model_id" ref="model_material_purchase_requisition" />
+    <field name="name">view BAR for administrator</field>
+    <field name="domain_force">[(1,'=',1)]</field>
+    <field name="groups" eval="[(4, ref ('base.group_erp_manager'))]"/>
+</record>
+</odoo>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="expenset_report_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+            <t t-call="web.basic_layout">
+				<!-- header -->
+                <div class="header">
+                    <style type="text/css">
+                    table.table-bordered > thead > tr > th {
+                        border:1px solid;
+                    }
+                    table.table-bordered > tbody > tr > td {
+                        border:1px solid;
+                    }
+                    </style>
+                        <div class="row">
+                            <div class="col-8 small">
+                               <img src="/web/binary/company_logo" alt="Logo" style="max-height: 80px;"/>
+                            </div>
+                            <div class="col-4">
+                               
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="text-center m-1">
+                                <strong>PROJECT CASH REPORT</strong>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 small">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td width="50px">Report Made at Head Office/Site Office</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="50px">Project</td>
+                                        <td>:&#8194;</td>
+                                        <td>
+                                            <t t-esc="o.project.name[:24]"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="50px">Job Order No</td>
+                                        <td>:&#8194;</td>
+                                        <td>
+                                            <t t-esc="o.project.no"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6 small">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td width="100px">CVR No</td>
+                                        <td>:&#8194;</td>
+                                        <td>
+                                            <span t-field="o.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="100px">Bulan</td>
+                                        <td>:&#8194;</td>
+                                        <td>
+                                           <span t-field="o.create_date" t-options="{'format': 'MMMM yyyy'}" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+				<div class="page">
+					<style type="text/css">
+						table.table-bordered > thead > tr > th {
+						border:1px solid;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+
+					<div class="row mt-1">
+						<div class="col">
+							<table class="table table-bordered table-sm small">
+								<thead>
+									<tr>
+                                        <th class="text-center" style="font-weight:normal;" width="3%">No.</th>
+                                        <th class="text-center" style="font-weight:normal;" width="7%">Tgl/Bln/Thn</th>
+                                        <th class="text-center" style="font-weight:normal;" width="10%">kategori Bon</th>
+                                        <th class="text-center" style="font-weight:normal;" width="15%">Jenis</th>
+                                        <th class="text-center" colspan="2" style="font-weight:normal;" width="20%">Kas</th>
+                                        <th class="text-center" style="font-weight:normal;" width="10%">Sub</th>
+                                        <th class="text-center" style="font-weight:normal;" width="5%">Site</th>
+									</tr>
+									<tr>
+										<th>
+											&amp;ensp;
+										</th>
+										<th>
+											&amp;ensp;
+										</th>
+										<th>
+											&amp;ensp;
+										</th>
+										<th>
+											&amp;ensp;
+										</th>
+										<th style="font-weight:normal;">
+											Penerimaan
+										</th>
+										<th style="font-weight:normal;">
+											Pengeluaran
+										</th>
+										<th style="font-weight:normal;"> 
+											Total
+										</th>
+										<th>
+											&amp;ensp;
+										</th>
+									</tr>
+                                    </thead>
+                                    <t t-set="no" t-value="1"/>
+                                    <tbody>
+									<t t-foreach="o.expense_line_ids" t-as="line">
+										<tr>
+                                            <td class="text-center">
+                                                <span t-esc="no"/>
+                                            </td>
+											<td>
+												<span t-field="line.date" t-options="{'format': 'd MMMM yyyy'}" />
+											</td>
+											<td>
+												<span t-field="line.cost_category" />
+											</td>
+                                            <td>
+                                                <span t-field="line.name" />
+											</td>
+											<td>
+												&amp;ensp;
+											</td>
+                                            <td>
+                                                <span t-field="line.total_amount" />
+											</td>
+											<td>
+                                                &amp;ensp;
+                                            </td>
+                                            <td>
+												&amp;ensp;
+											</td>
+                                            <t t-set="no" t-value="no+1"/>
+										</tr>
+									</t>
+
+                                    <tr>
+                                        <td class="text-center" colspan="6"  style="font-weight: bold;">Total Project</td>
+                                        <td>
+                                            <t t-esc="o.total_amount"/>
+                                        </td>
+                                        <td>
+                                            &amp;ensp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            &amp;ensp;
+                                        </td>
+                                        <td>
+                                            &amp;ensp;
+                                        </td>
+                                        <td>
+                                            &amp;ensp;
+                                        </td>
+                                        <td  colspan="2"  style="font-weight: bold;">Grand Total</td>
+                                        <td>
+                                            <t t-esc="o.total_amount"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="o.total_amount"/>
+                                        </td>
+                                        <td>
+                                            &amp;ensp;
+                                        </td>
+                                    </tr>
+                                </tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+                <!-- <div class="footer">
+                    <div class="row">
+                    <div class="col small">
+                        <div class="text-right">
+                        Hal <span class="page" />
+                        of <span class="topage" />
+                        </div>
+                        </div>
+                    </div>
+                </div> -->
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="expense_report">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_expense.expenset_report_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

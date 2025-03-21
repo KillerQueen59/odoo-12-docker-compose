@@ -1,0 +1,281 @@
+
+<section class="oe_container oe_dark" style="overflow: hidden;">
+    <div class="row mt32 mb32">
+        <div class="col-md-12">
+            <h2 class="oe_slogn" style="text-align: center; color: purple">
+                Expense Request Management in Odoo.  <br/>
+                Expense Cash Advance Request Management in Odoo.
+            </h2>
+        </div>
+    </div>
+</section>
+
+<section class="oe_container oe_dark">
+    <section class="oe_container oe_dark lead">
+        <div class="oe_row">
+            <div class="oe_span12" style="width: 100%">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 style="font-size: 20px;">
+                            This module provides functions to manage expense request and cash advance.
+                            It allows employee to raise Expense Request and Expense Cash Advance before they actually spend it.
+                            Employee can include approved Expense Request or Paid Expense Advance in their Expense Report when they claim the expense later.
+                            <br/><br/>
+                            <strong>Main Features: </strong>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul style="font-size: 20px;">
+                            <li>
+                                Allow employee to create Expense Request without Expense Items.
+                            </li>
+                            <li>
+                                Allow employee to create Expense Cash Advance Request without Expense Items.
+                            </li>
+                            <li>
+                                Allow Expense Approver (Expense officer/manager) to approve Expense Request or Expense Advance Request.
+                            </li>
+                            <li>
+                                Allow Billing Manager to register payment for approved Expense Advance.
+                            </li>
+                            <li>
+                                Allow employee to select approved Expense Request or paid Expense Advance which are not reported yet when creating Expense Report to claim the Expense.
+                            </li>
+                        </ul>
+                    </div><div class="panel-heading">
+                        <h3 style="font-size: 20px;">
+                            <strong>Menus Available: </strong>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul style="font-size: 20px;">
+                            <li>Expense Requests</li>
+                            <ul>
+                              <li>My Expense Requests</li>
+                              <li>Requests To Approve</li>
+                            </ul>
+                            <li>Expense Advance</li>
+                            <ul>
+                              <li>My Advance Requests</li>
+                              <li>Advance To Approve</li>
+                              <li>Advance to Pay</li>
+                            </ul>
+                        </ul>
+                    </div>
+                    </div><div class="panel-heading">
+                        <h3 style="font-size: 20px;">
+                            <strong>User Roles: </strong>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul style="font-size: 20px;">
+                            <li>Employee : can raise expense request and expense advance request.</li>
+                            <li>Expense Officer: can approve or reject expense request and expense advance request.</li>
+                            <li>Billing Manager: can register payment for approved Expense Advance.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+<section class="oe_container oe_dark">
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12">
+            <h3 style="font-size: 20px;">
+                 <strong>Usage of Module: </strong>
+            </h3>
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as normal employee: test1, go to Expense Requests to see all his/her own Expense Requests, create a new one.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/1.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Create a new Expense Request, set the 'Approver" who should approve this expense request(by default it's the employees' expense manager or reporting manager), the 'Approver' should have 'Expense Officer' role.<br/>
+                Set the 'Requested Amount', the amount must be bigger than 0.00 and the currency can be selected with supported currencies.<br/>
+                Then submit the request, the 'Approver' will get email notification for new expense request approval.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/2.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as Expense Request Approver: test manager. Got to 'Expense Requests->Requests To Approve' to see Expense Requests pending approval.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/3.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Open an Expense Request to approve or refuse it.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/4.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                The employee will get approved notification and can see the Expense Request status changed to 'Approved'.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/5.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                The employee can go to 'My Expenses->My Expense Reports' to claim the expense.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/6.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                The employee can select the approved Expense Request in expense report form to specify which Expense Request she/he want to report in this Expense Report.<br/>
+                In the Amount section at the bottom, 'Request Amount' shows the amount approved in Expense Request, and 'Return to Employee' shows the amount the company need to pay to employee, later it will show on register payment page.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/7.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Then submit the Expense Report, the 'Manager' will get email notification for new expense report approval.<br/>
+                Login as 'Manager': test manager, go to 'Expense Reports->To Approve' to see Expense Reports that pending approval.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/8.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                The 'Manager' can approve or refuse the Expense Report<br/>
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/9.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as 'Billing Manager': Mitchell Admin. Go to 'Expense Reports->To Post' to see approved Expense Reports which are waiting for Post, open one and click 'Post Journal Entries' <br/>
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/10.png">
+            <img class="oe_picture oe_screenshot"  src="images/11.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Go to 'Expense Reports->To Pay' to register payment for the posted Expense Reports, validate the payment.<br/>
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/12.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as employee, can see the Expense Request status changed to 'Reported' and Expense Report status changed to 'Paid'. <br/>
+                This Expense Request will not show in other Expense Report.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/13.png">
+            <img class="oe_picture oe_screenshot"  src="images/14.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as employee: test1, go to Expense Advance to see all his/her own Expense Advance Requests, create a new one.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/15.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Create a new Expense Advance request, set the 'Approver" who should approve this expense in advance(by default it's the employees' expense manager or reporting manager), the 'Approver' should have 'Expense Officer' role.<br/>
+                Set the 'Requested Amount', the amount must be bigger than 0.00 and the currency can be selected with supported currencies.<br/>
+                Then submit the request, the 'Approver' will get email notification for new expense advance request approval.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/16.png">
+        </div>
+         <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as Expense Advance Request Approver: test manager. Got to 'Expense Advance->Advance To Approve' to see Expense Advance Requests pending approval.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/17.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Open an Expense Advance Request to approve or refuse it.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/18.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as 'Billing Manager': Mitchell Admin. Go to 'Expense Advance->Advance To Pay' to see approved Expense Advance which are waiting for payment.<br/>
+                Select right 'Payment Method' (the payment journal company must be same as the advance request company), then click 'Register Payment'.<br/>
+                Then 'Validate' the payment.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/19.png">
+            <img class="oe_picture oe_screenshot"  src="images/20.png">
+            <img class="oe_picture oe_screenshot"  src="images/21.png">
+        </div>
+
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                The employee will get approved notification and can see the Expense Advance Request status changed to 'Paid'.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/22.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                The employee can go to 'My Expenses->My Expense Reports' to claim the expense.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/23.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                The employee can select the approved Expense Advance Request in expense report form to specify which Expense Advance Request she/he want to reported in this Expense Report.<br/>
+                In the Amount section at the bottom, 'Advance Amount' shows the amount paid in Expense Advance Request, and 'Return to Employee' shows the amount the company need to pay to employee,
+                later it will show on register payment page.<br/>
+                If the currency in advance is different than the report currency, the module will change the advance amount to amount in report currency.<br/>
+                So the 'Return to Employee' amount will show as 'Total Amount-Advance Amount' in report company currency. In this case, the 200USD advance amount will change to 130.81EUR, the return amount will be 109.19EUR.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/24.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Then submit the Expense Report, the 'Manager' will get email notification for new expense report approval.<br/>
+                Login as 'Manager': test manager, go to 'Expense Reports->To Approve' to see Expense Reports that pending approval.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/25.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                The 'Manager' can approve or refuse the Expense Report<br/>
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/26.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as 'Billing Manager': Mitchell Admin. Go to 'Expense Reports->To Post' to see approved Expense Reports which are waiting for Post, open one and click 'Post Journal Entries' <br/>
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/27.png">
+
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Go to 'Expense Reports->To Pay' to register payment for the posted Expense Reports<br/>
+                Please note, the module will count expense advance here, so the payment only pay the return amount, not the total amount. In this case is 109.19EUR, not 240EUR
+                because company already paid 130.81EUR in advance.<br/>
+                Please note, if the expense report total is less than expense advance paid, means the employee need to pay back to company, then no payment will be created in this step.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/28.png">
+            <img class="oe_picture oe_screenshot"  src="images/29.png">
+        </div>
+        <div class="oe_span12">
+            <p style="font-size: 15px;">
+                Login as employee, can see the Expense Advance status changed to 'Reported' and Expense Report status changed to 'Paid'. <br/>
+                This Expense Advancew will not show in other Expense Report.
+            </p>
+            <img class="oe_picture oe_screenshot"  src="images/30.png">
+            <img class="oe_picture oe_screenshot"  src="images/31.png">
+        </div>
+    </div>
+
+</section>
+
+<section class="oe_container lead">
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12" align="center">
+            <h2>
+            <a href="mailto:1764076874@qq.com" style="color: #2F4F4F !important;" >
+                Contact &amp; Support
+            </a>
+            </h2>
+        </div>
+    </div>
+</section>
+

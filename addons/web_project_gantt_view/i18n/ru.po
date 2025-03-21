@@ -1,0 +1,319 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* web_project_gantt_view
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-19 09:00+0000\n"
+"PO-Revision-Date: 2021-08-19 14:26+0400\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.0\n"
+"Last-Translator: \n"
+"Language: ru\n"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Create"
+msgstr "Создать"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__create_uid
+msgid "Created by"
+msgstr "Создано"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__create_date
+msgid "Created on"
+msgstr "Создано"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Day"
+msgstr "День"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_ir_ui_view__display_name
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__display_name
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__display_name
+msgid "Display Name"
+msgstr "Отображаемое имя"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Dropdown menu"
+msgstr "Выпадающее меню"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.js:0
+#, python-format
+msgid "Duration(d)"
+msgstr "Продолжительность (д)"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Export"
+msgstr "Экспорт"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__task_link__link_type__2
+msgid "Finish to Finish"
+msgstr "От конца до конца"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__task_link__link_type__0
+msgid "Finish to Start"
+msgstr "Готово к началу"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/js/gantt_view.js:0
+#, python-format
+msgid "Gantt"
+msgstr "Гант"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.js:0
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__ir_ui_view__type__ganttview
+#, python-format
+msgid "Gantt View"
+msgstr "Гантт"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/js/gantt_model.js:0
+#, python-format
+msgid "Grouping by date is not supported"
+msgstr "Группировка по дате не поддерживается"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_priority__high
+msgid "High"
+msgstr "Высокий"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_ir_ui_view__id
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__id
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__id
+msgid "ID"
+msgstr "Я БЫ"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_ir_ui_view____last_update
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task____last_update
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link____last_update
+msgid "Last Modified on"
+msgstr "Последнее изменение"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__write_uid
+msgid "Last Updated by"
+msgstr "Последнее обновление:"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__write_date
+msgid "Last Updated on"
+msgstr "Последнее обновление"
+
+#. module: web_project_gantt_view
+#: model_terms:ir.ui.view,arch_db:web_project_gantt_view.view_task_form2_inherit
+msgid "Link Task"
+msgstr "Связать задачу"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__link_type
+#: model_terms:ir.ui.view,arch_db:web_project_gantt_view.view_task_form2_inherit
+msgid "Link Type"
+msgstr "Тип ссылки"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_priority__low
+msgid "Low"
+msgstr "Низкий"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Main actions"
+msgstr "Основные действия"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_type__milestone
+msgid "Milestone"
+msgstr "Веха"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Month"
+msgstr "Месяц"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "New"
+msgstr "Новый"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Next"
+msgstr "Следующий"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_priority__normal
+msgid "Normal"
+msgstr "Обычный"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "PDF"
+msgstr "PDF"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "PNG"
+msgstr "PNG"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Period"
+msgstr "Период"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__date_from
+msgid "Planned start"
+msgstr "Планируемый старт"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__date_to
+msgid "Planned stop"
+msgstr "Запланированная остановка"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Previous"
+msgstr "Предыдущий"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__task_priority
+msgid "Priority"
+msgstr "Приоритет"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__color
+msgid "Project color"
+msgstr "Цвет проекта"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Sort"
+msgstr "Сортировать"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__task_link__link_type__3
+msgid "Start to Finish"
+msgstr "От начала до конца"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__task_link__link_type__1
+msgid "Start to Start"
+msgstr "Начать, чтобы начать"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__target_task_id
+msgid "Target Task"
+msgstr "Целевая задача"
+
+#. module: web_project_gantt_view
+#: model:ir.model,name:web_project_gantt_view.model_project_task
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__task_id
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_type__task
+msgid "Task"
+msgstr "Задача"
+
+#. module: web_project_gantt_view
+#: model:ir.model,name:web_project_gantt_view.model_task_link
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__task_link_ids
+msgid "Task Links"
+msgstr "Ссылки на задачи"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__task_type
+msgid "Task Type"
+msgstr "Тип задачи"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Today"
+msgstr "Сегодня"
+
+#. module: web_project_gantt_view
+#: model:ir.model,name:web_project_gantt_view.model_ir_ui_view
+msgid "View"
+msgstr "Вид"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_ir_ui_view__type
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_website_page__type
+msgid "View Type"
+msgstr "Тип просмотра"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Week"
+msgstr "Неделя"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/xml/web_gantt.xml:0
+#, python-format
+msgid "Year"
+msgstr "Год"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.js:0
+#, python-format
+msgid "You are trying to write on a read-only field!"
+msgstr "Вы пытаетесь писать в поле только для чтения!"
+
+#. module: web_project_gantt_view
+#. openerp-web
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.js:0
+#, python-format
+msgid "You have no date_stop field defined!"
+msgstr "У вас не определено поле date_stop!"

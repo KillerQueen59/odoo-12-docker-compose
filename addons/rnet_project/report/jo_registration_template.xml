@@ -1,0 +1,901 @@
+<odoo>
+	<template id="report_jo_registration_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+			<t t-call="web.basic_layout">
+				<div class="page table-responsive" style="font-size: 11px !important; font-size: x-small;">
+					<style type="text/css">
+						table.table-bordered > thead > tr > th {
+						border:1px ;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+					<table class="table table-bordered table-sm small ">
+						<tbody>
+							<tr>
+								<td t-att-rowspan="3" colspan="3">
+									<img src="/web/binary/company_logo" alt="Logo" style="max-height: 70px;" />
+								</td>
+								<td class="text-left">
+									Doc No&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;: 6.1.1
+								</td>
+							</tr>
+							<tr>
+								<td class="text-left">
+									Revision&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;: 03
+								</td>
+							</tr>
+							<tr>
+								<td class="text-left">
+									Release Date&amp;nbsp;:&amp;nbsp;12.05.2023
+								</td>
+							</tr>
+							<tr>
+								<td style="font-weight: bold; vertical-align : middle;text-align:center;" colspan="4">
+									<span>
+										JOB ORDER REGISTRATION
+									</span>
+								</td>
+							</tr>
+							<tr>
+								<td style="width: 20%">
+									project Name
+								</td>
+								<td style="width: 30%">
+									<span t-field="o.name" />
+								</td>
+								<td style="width: 20%">
+									Record No *
+								</td>
+								<td style="width: 20%">
+									&amp;nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td style="width: 20%">
+									Job Order No *
+								</td>
+								<td style="width: 30%">
+									<span t-field="o.no" />
+								</td>
+								<td style="width: 20%">
+									Contact Person
+								</td>
+								<td style="width: 20%">
+									<t t-foreach="o.partner_id.child_ids" t-as="p">
+										<t t-if="p.type == 'contact'">
+											<span t-field="p.title" />
+											<span t-field="p.name" />
+											<t t-if="not p_last">
+												<span>
+													,&amp;nbsp;
+												</span>
+											</t>
+										</t>
+									</t>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									PO No./SPK No./Contract
+								</td>
+								<td style="font-weight: bold;">
+									&amp;nbsp;
+								</td>
+								<td>
+									Kind of Work
+								</td>
+								<td>
+									<span t-field="o.kind_of_work" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Order Date
+								</td>
+								<td>
+									&amp;nbsp;
+								</td>
+								<td>
+									Plan Delivery Date
+								</td>
+								<td>
+									<span t-field="o.plan_delivery_date" t-options="{'format': 'd.MM.YYYY'}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Customer
+								</td>
+								<td>
+									<span t-field="o.partner_id.name" />
+								</td>
+								<td>
+									Term of Delivery
+								</td>
+								<td>
+									&amp;nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Division
+								</td>
+								<td>
+									&amp;nbsp;
+								</td>
+								<td>
+									Term of Payments
+								</td>
+								<td>
+									&amp;nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Customer Address
+								</td>
+								<td>
+									<span t-field="o.partner_id.street" />
+									<span t-field="o.partner_id.city" />
+									<span t-field="o.partner_id.state_id.name" />
+									<span t-field="o.partner_id.zip" />
+								</td>
+								<td>
+									Currency
+								</td>
+								<td>
+									<span t-field="o.res_currency.name" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<style type="text/css">
+						<!--
+						.table th, .table tr {
+						border-top: none !important;
+						border-bottom: none !important;
+						}
+						-->
+						<!--
+						th.border-dark {
+						border border-top:1px solid #000000;
+						border border-right:1px solid #000000;
+						border border-bottom:1px solid #000000;
+						border border-left:1px solid #000000;
+						}
+						-->
+						<!--
+						.borderless-cell { border-top: none !important;
+						border-bottom: none !important;}
+						-->
+						<!--
+						.border {
+						border:1px solid;
+						}
+						-->
+						<!--
+						table.main-table {
+						border:1px solid #000000;
+						border-collapse:collapse;
+						}
+						-->
+					</style>
+					<table class=" table-sm small" style="border-spacing: 5px;" cellspacing="5" cellpadding="5">
+						<thead>
+							<tr class="border border-dark">
+								<th class="text-left border border-dark" style="font-weight: bold" colspan="4">
+									PROJECT VALUE
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									Item
+								</th>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 30%">
+									Job Description
+								</th>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 10%">
+									Order Value
+								</th>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 10%;">
+									Calculated Cost
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									1
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%; ">
+									<span t-esc="'{0:,.2f}'.format(o.order_value)" />
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%; ">
+									<span t-esc="'{0:,.2f}'.format(o.calculated_cost)" />
+								</th>
+							</tr>
+							<tr>
+								<th class="border border-dark" style="font-weight:normal; width: 5%">
+									&amp;nbsp;
+								</th>
+								<th class="border border-dark" style="font-weight:normal " colspan="3">
+									Calculated Cost Breakdown:
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%;">
+									2
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									Direct Cost Plan
+								</th>
+								<th class="text-left border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th class="text-left border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									2.1
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%;">
+									&amp;nbsp;&amp;nbsp;&amp;nbsp;
+									Main Material
+								</th>
+								<th class="text-right borderless-cell" style="font-weight:normal; width: 10%;  borderless-cell">
+									<t t-if="o.main_material > 0.0">
+										<span t-esc="'{0:,.2f}'.format(o.main_material)" />
+									</t>
+									<t t-else="">
+										&amp;ensp;
+									</t>
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10% ">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									2.2
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%;">
+									&amp;nbsp;&amp;nbsp;&amp;nbsp;
+									Manpower
+								</th>
+								<th class="text-right borderless-cell" style="font-weight:normal; width: 10%;  ">
+									<t t-if="o.man_power > 0.0">
+										<span t-esc="'{0:,.2f}'.format(o.man_power)" />
+									</t>
+									<t t-else="">
+										&amp;ensp;
+									</t>
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									3
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									secondary_cost
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%; ">
+									<t t-if="o.secondary_cost > 0.0">
+										<span t-esc="'{0:,.2f}'.format(o.secondary_cost)" />
+									</t>
+									<t t-else="">
+										&amp;ensp;
+									</t>
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									4
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									Tools, HSE, Uniform
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%; ">
+									<t t-if="o.tool_cost > 0.0">
+										<span t-esc="'{0:,.2f}'.format(o.tool_cost)" />
+									</t>
+									<t t-else="">
+										&amp;ensp;
+									</t>
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									5
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									Consummable Material
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%; ">
+									<t t-if="o.consumable_material > 0.0">
+										<span t-esc="'{0:,.2f}'.format(o.consumable_material)" />
+									</t>
+									<t t-else="">
+										&amp;ensp;
+									</t>
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									6
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									<span t-esc="o.other_value_desc"/>
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%; ">
+									<t t-if="o.other_value > 0.0">
+										<span t-esc="'{0:,.2f}'.format(o.other_value)" />
+									</t>
+									<t t-else="">
+										&amp;ensp;
+									</t>
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									7
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									8
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									9
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									10
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									11
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									12
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									&amp;nbsp;
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th t-att-rowspan="3" class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr class="border border-dark">
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									13
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									Gross Margin ([Order Value] - [Calculated Cost])
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%; ">
+									<span t-esc="'{0:,.2f}'.format(o.gross_margin)" />
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									&amp;nbsp;
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									14
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									OverHead Cost
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%; ">
+									<span t-esc="'{0:,.2f}'.format(o.overhead_cost)" />
+								</th>
+								<th t-att-rowspan="3" class="text-right border border-dark" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									&amp;nbsp;
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									15
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									With Holding Tax
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%; ">
+									<span t-esc="'{0:,.2f}'.format(o.holding_tax)" />
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									&amp;nbsp;
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+								<th t-att-rowspan="3" class="text-center border border-dark" style="vertical-align : middle;text-align:center;margin-left:auto;
+                                	margin-right:auto;width: 10%">
+									<span t-esc="o.persentase" t-options="{'widget': 'float', 'precision': 2}" />
+									%
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									16
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%; ">
+									Net Margin ((Gross Margin - Overhead Cost) - (With Holding Tax)
+								</th>
+								<th class="text-right border border-dark" style="font-weight:normal; width: 10%; ">
+									<span t-esc="'{0:,.2f}'.format(o.net_margin)" />
+								</th>
+							</tr>
+							<tr>
+								<th class="text-center border border-dark" style="font-weight:normal; width: 5%">
+									&amp;nbsp;
+								</th>
+								<th class="border border-dark" style="font-weight:normal; width: 30%">
+									&amp;nbsp;
+								</th>
+								<th class="text-right" style="font-weight:normal; width: 10%">
+									&amp;nbsp;
+								</th>
+							</tr>
+						</thead>
+					</table>
+					
+					<div class="border border-dark py-1" style="font-size: x-small;">
+						<div class="row p-1 ">
+							<div class="col-12 font-weight-bold">
+								PRICE CONDITION
+							</div>
+						</div>
+						<div class="row  p-1">
+							<div class="col">
+								<div class="row">
+									<div class="col-3">
+										&amp;nbsp;
+									</div>
+									<div class="col-3">
+										<t t-if="o.price_condition == 'actual_outlay'">
+											<input type="checkbox" checked="checked" />
+											ACTUAL OUTLAY
+										</t>
+										<t t-else="">
+											<input type="checkbox" />
+											ACTUAL OUTLAY
+										</t>
+									</div>
+									<div class="col-3">
+										<t t-if="o.price_condition == 'material'">
+											<input type="checkbox" checked="checked" />
+											MATERIAL/SPAREPART
+										</t>
+										<t t-else="">
+											<input type="checkbox" />
+											MATERIAL/SPAREPART
+										</t>
+									</div>
+									<div class="col-3">
+										<t t-if="o.price_condition == 'repair'">
+											<input type="checkbox" checked="checked" />
+											REPAIR
+										</t>
+										<t t-else="">
+											<input type="checkbox" />
+											REPAIR
+										</t>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-3">
+										&amp;nbsp;
+									</div>
+									<div class="col-3">
+										<t t-if="o.price_condition == 'fix_price'">
+											<input type="checkbox" checked="checked" />
+											FIXED PRICE/LUMPSUM
+										</t>
+										<t t-else="">
+											<input type="checkbox" />
+											FIXED PRICE/LUMPSUM
+										</t>
+									</div>
+									<div class="col-3">
+										<t t-if="o.price_condition == 'service'">
+											<input type="checkbox" checked="checked" />
+											SERVICE/TRAINING
+										</t>
+										<t t-else="">
+											<input type="checkbox" />
+											SERVICE/TRAINING
+										</t>
+									</div>
+									<div class="col-3">
+										<t t-if="o.price_condition == 'rental_tool'">
+											<input type="checkbox" checked="checked" />
+											RENTAL TOOLS
+										</t>
+										<t t-else="">
+											<input type="checkbox" />
+											RENTAL TOOLS
+										</t>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row border border-dark border-left border-right border-dark p-1">
+							<div class="col-3 font-weight-bold">
+								DOKUMEN FOR INVOICE:
+							</div>
+							<div class="col-9 ">
+								<span style="text-decoration:underline" t-esc="o.document_for_invoice" />
+							</div>
+						</div>
+						<div class="row p-1 ">
+							<div class="col-12 font-weight-bold">
+								REIMBURSMENT
+							</div>
+						</div>
+						<div class="row  p-1">
+							<div class="col">
+								<div class="row">
+									<div class="col-3">
+										&amp;nbsp;
+									</div>
+									<div class="col-3">
+										<t t-if="o.reimbursement == 'chargerable'">
+											<input type="checkbox" checked="checked" />
+											CHARGEABLE
+										</t>
+										<t t-else="">
+											<input type="checkbox" />
+											CHARGEABLE
+										</t>
+									</div>
+									<div class="col-3">
+										<t t-if="o.reimbursement == 'unchargerable'">
+											<input type="checkbox" checked="checked" />
+											UNCHARGEABLE
+										</t>
+										<t t-else="">
+											<input type="checkbox" />
+											UNCHARGEABLE
+										</t>
+									</div>
+									<div class="col-3">
+										&amp;nbsp;
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row border border-dark border-left border-right border-dark p-1">
+							<div class="col-3 font-weight-bold">
+								NOTE
+							</div>
+							<div class="col-9">
+								<span t-field="o.note" />
+							</div>
+						</div>
+
+						<!-- Approval -->
+						<div class="row border-right border-bottom border-left border-dark text-center">
+							<div class="col-3 border-right border-dark py-1">
+								Marketing &#160;&#160;&#160;&#160;&#160;&#160; Engineering
+							</div>
+							<div class="col-3 border-right border-dark py-1">
+								Project Director
+							</div>
+							<div class="col-3 border-right border-dark py-1">
+								Project Manager
+							</div>
+							<div class="col-3 py-1">
+								Business Control
+							</div>
+						</div>
+						<div class="row border-right border-bottom border-left border-dark text-center">
+							<div class="col-3 border-right border-dark">
+								<t t-foreach="range(4)" t-as="i">
+									<br />
+								</t>
+							</div>
+							<div class="col-3 border-right border-dark">
+								&amp;nbsp;
+							</div>
+							<div class="col-3 border-right border-dark">
+								&amp;nbsp;
+							</div>
+							<div class="col-3">
+								&amp;nbsp;
+							</div>
+						</div>
+						<div class="row border-right border-bottom border-left border-dark">
+							<div class="col-3 border-right border-dark py-1">
+								&#160;&#160;&#160; Name:
+								&amp;nbsp;
+							</div>
+							<div class="col-3 border-right border-dark py-1">
+								Name:
+								<span t-field="o.project_director.name" />
+							</div>
+							<div class="col-3 border-right border-dark py-1">
+								Name:
+								<span t-field="o.project_manager.name" />
+							</div>
+							<div class="col-3 py-1">
+								Name:
+								&amp;nbsp;
+							</div>
+						</div>
+						<div class="row border-right border-left border-dark">
+							<div class="col-3 border-right border-dark py-1">
+								&#160;&#160;&#160; Date:
+								&amp;nbsp;
+							</div>
+							<div class="col-3 border-right border-dark py-1">
+								Date:
+								&amp;nbsp;
+							</div>
+							<div class="col-3 border-right border-dark py-1">
+								Date:
+								&amp;nbsp;
+							</div>
+							<div class="col-3 py-1">
+								Date:
+								&amp;nbsp;
+							</div>
+						</div>
+					</div>
+					<!--
+					<table class="table table-bordered table-sm">
+					<tbody>
+					<tr>
+					<td width="25%">
+					<div class="text-center">
+					Marketing &#160;&#160; Engineering
+					</div>
+					</td>
+					<td width="25%">
+					<div class="text-center">
+					Project Director
+					</div>
+					</td>
+					<td width="25%">
+					<div class="text-center">
+					Project Manager
+					</div>
+					</td>
+					<td width="25%">
+					<div class="text-center">
+					Business Control
+					</div>
+					</td>
+					</tr>
+					<tr>
+					<td>
+					<p>
+					&#160;
+					</p>
+					<p>
+					&#160;
+					</p>
+					</td>
+					<td>
+					<p>
+					&#160;
+					</p>
+					<p>
+					&#160;
+					</p>
+					</td>
+					<td>
+					<p>
+					&#160;
+					</p>
+					<p>
+					&#160;
+					</p>
+					</td>
+					<td>
+					<p>
+					&#160;
+					</p>
+					<p>
+					&#160;
+					</p>
+					</td>
+					</tr>
+					<tr>
+					<td class="font-smaller">
+					Name :&#160;
+					<span>
+					&amp;nbsp;
+					</span>
+					</td>
+					<td class="font-smaller">
+					Name :&#160;
+					<span>
+					&amp;nbsp;
+					</span>
+					</td>
+					<td class="font-smaller">
+					Name :&#160;
+					<span>
+					&amp;nbsp;
+					</span>
+					</td>
+					<td class="font-smaller">
+					Name :&#160;
+					<span>
+					&amp;nbsp;
+					</span>
+					</td>
+					</tr>
+					<tr>
+					<td>
+					Date :&#160;
+					<span>
+					&amp;nbsp;
+					</span>
+					</td>
+					<td>
+					Date :&#160;
+					<span>
+					&amp;nbsp;
+					</span>
+					</td>
+					<td>
+					Date :&#160;
+					<span>
+					&amp;nbsp;
+					</span>
+					</td>
+					<td>
+					Date :&#160;
+					<span>
+					&amp;nbsp;
+					</span>
+					</td>
+					</tr>
+					</tbody>
+					</table>
+					-->
+				</div>
+				<!-- end page -->
+				<div class="footer">
+					<div class="row">
+						<div class="col-6 small">
+							<div class="text-left">
+								Author. PT. GUT, BC/BA
+							</div>
+						</div>
+						<div class="col-6 small">
+							<div class="text-right">
+								Page
+								<span class="page" />
+								of
+								<span class="topage" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="report_jo_registration">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_project.report_jo_registration_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

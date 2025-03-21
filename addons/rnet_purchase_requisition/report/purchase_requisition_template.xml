@@ -1,0 +1,188 @@
+<odoo>
+    <data>
+        <template id="purchase_requisition_template" inherit_id="material_purchase_requisitions.purchase_requisition">
+            <xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+                <t t-call="web.basic_layout">
+                    <!-- header -->
+                    <div class="header" style="font-size: 14px ;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-7">
+                                    <img t-if="doc.company_id.logo" t-att-src="image_data_uri(doc.company_id.logo)"/>
+                                </div>
+                                <div class="col-5">
+                                    <table class="table table-sm small">
+                                        <tbody>
+                                            <tr class="border">
+                                                <td style="width: 40%" class="border border-dark">Doc No.</td>
+                                                <td style="width: 60%" class="border border-dark">6.3.1</td>
+                                            </tr>
+                                            <tr class="border">
+                                                <td style="width: 40%" class="border border-dark">Revision</td>
+                                                <td style="width: 60%" class="border border-dark">02</td>
+                                            </tr>
+                                            <tr class="border">
+                                                <td style="width: 40%" class="border border-dark">Release Date</td>
+                                                <td style="width: 60%" class="border border-dark">22.09.2011</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- page -->
+                    <div class="page" style="font-size: 14px ;">
+                        <div class="container">
+                            <table class="table table-bordered table-sm small">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4" class="text-center border border-dark">
+                                            <h5><strong>PURCHASE REQUISITION</strong></h5>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-dark" style="width: 15%">PR No</td>
+                                        <td class="border border-dark" style="width: 45%"><span t-field="doc.name"/></td>
+                                        <td class="border border-dark" style="width: 15%">Record No</td>
+                                        <td class="border border-dark" style="width: 25%">&amp;ensp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-dark" style="width: 15%">Date</td>
+                                        <td class="border border-dark" style="width: 45%"><span t-field="doc.request_date"  t-options='{"format": "dd-MM-yyyy"}'/></td>
+                                        <td class="border border-dark" style="width: 15%">Delivery Date</td>
+                                        <td class="border border-dark" style="width: 25%"><span t-field="doc.receive_date"  t-options='{"format": "dd-MM-yyyy"}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-dark" style="width: 15%">Dept/Section</td>
+                                        <td class="border border-dark" style="width: 45%"><span t-field="doc.department_id.name"/></td>
+                                        <td class="border border-dark" style="width: 15%">Delivery To</td>
+                                        <td class="border border-dark" style="width: 25%">
+                                            <!-- <span t-field="doc.dest_location_id.location_id.name"/> -->
+                                            <span t-field="doc.dest_location_id.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-dark" style="width: 15%">Project</td>
+                                        <td class="border border-dark" style="width: 45%"><span t-field="doc.project.name"/></td>
+                                        <td class="border border-dark" style="width: 15%">Job Order No</td>
+                                        <td class="border border-dark" style="width: 25%"><span t-field="doc.project.no"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-dark" style="width: 15%">Categories</td>
+                                        <td class="border border-dark" colspan="3">
+                                            <span t-field="doc.categories"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-bordered table-sm small">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 5%" class="border border-dark text-center">No</td>
+                                        <td style="width: 48%" class="border border-dark text-center">Description</td>
+                                        <td style="width: 5%" class="border border-dark text-center">Qty</td>
+                                        <td style="width: 5%" class="border border-dark text-center">Unit</td>
+                                        <td style="width: 8%" class="border border-dark text-center">Est. Unit Price</td>
+                                        <td style="width: 8%" class="border border-dark text-center">Total Est. Price</td>
+                                        <td style="width: 20%" class="border border-dark text-center">Remarks</td>
+                                    </tr>
+                                    <t t-set="i" t-value="1" />
+                                    <t t-foreach ="doc.requisition_line_ids" t-as="line">
+                                    <tr>
+                                        <td class="border border-dark text-center">
+                                            <span t-esc="i"/><t t-set="i" t-value="i+1"/>
+                                        </td>
+                                        <td class="border border-dark">
+                                            <!-- <span t-field="line.product_id.name"/>.&#160; -->
+                                            <span t-field="line.description"/>&#160;
+                                            <span t-field="line.product_id.brand"/>
+                                            <span t-field="line.product_id.brand_type"/>
+                                        </td>
+                                        <td class="border border-dark text-center"><span t-esc="'%.0f'% line.qty"/></td>
+                                        <td class="border border-dark text-center"><span t-esc="line.uom.name"/></td>
+                                        <td class="border border-dark text-right"><span t-esc="'{0:,.0f}'.format(line.product_id.standard_price)"/></td>
+                                        <td class="border border-dark text-right"><span t-esc="'{0:,.0f}'.format(line.product_id.standard_price * line.qty)"/></td>
+                                        <td class="border border-dark text-center"><span t-field="line.remark"/></td>
+                                    </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- footer -->
+                    <div class="footer" style="font-size: 14px ;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col last-page">
+                                    <table class="table table-bordered table-sm small">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width: 25%" class="border border-dark" rowspan="2">
+                                                    <p>Asset No.</p>
+                                                </td>
+                                                <td class="border border-dark">
+                                                    <p>Investment Reason: <span t-field="doc.reason"/></p>
+                                                </td>
+                                            </tr>
+                                            <tr colspan="2">
+                                                <td class="border border-dark">
+                                                    <p>Supplier Reference: <span t-field="doc.vendors"/> </p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-bordered table-sm small">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width: 20%" class="border border-dark text-center">Applicant</td>
+                                                <td style="width: 20%" class="border border-dark text-center">Purchasing</td>
+                                                <td style="width: 20%" class="border border-dark text-center">Manager</td>
+                                                <td style="width: 20%" class="border border-dark text-center">Commercial</td>
+                                                <td style="width: 20%" class="border border-dark text-center">Director</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="border border-dark"><p>&amp;ensp;</p><br></br></td>
+                                                <td class="border border-dark"><p>&amp;ensp;</p><br></br></td>
+                                                <td class="border border-dark"><p>&amp;ensp;</p><br></br></td>
+                                                <td class="border border-dark"><p>&amp;ensp;</p><br></br></td>
+                                                <td class="border border-dark"><p>&amp;ensp;</p><br></br></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="border border-dark">Name:&amp;ensp;<span t-field="doc.employee_id"/></td>
+                                                <td class="border border-dark">Name:</td>
+                                                <td class="border border-dark">Name:&amp;ensp;<span t-field="doc.approve_manager_id"/></td>
+                                                <td class="border border-dark">Name:</td>
+                                                <td class="border border-dark">Name:</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="border border-dark">Date:&amp;ensp;<span t-field="doc.request_date"  t-options='{"format": "dd-MM-yyyy"}'/></td>
+                                                <td class="border border-dark">Date:&amp;ensp;</td>
+                                                <td class="border border-dark">Date:&amp;ensp;<span t-field="doc.managerapp_date"  t-options='{"format": "dd-MM-yyyy"}'/></td>
+                                                <td class="border border-dark">Date:&amp;ensp;</td>
+                                                <td class="border border-dark">Date:&amp;ensp;</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-6 small">
+                                    <div class="text-left">
+                                        <span t-field="doc.name"/>
+                                    </div>
+                                </div>
+                                <div class="col-6 small">
+                                    <div class="text-right">
+                                        Page <span class="page" /> of <span class="topage" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>

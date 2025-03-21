@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_act_expense_request_approval" model="mail.activity.type">
+            <field name="name">Expense Request Approval</field>
+            <field name="icon">fa-dollar</field>
+            <field name="res_model_id" ref="hr_expense_request_advance.model_hr_expense_request"/>
+        </record>
+
+        <record id="mail_act_expense_advance_approval" model="mail.activity.type">
+            <field name="name">Expense Advance Approval</field>
+            <field name="icon">fa-dollar</field>
+            <field name="res_model_id" ref="hr_expense_request_advance.model_hr_expense_advance"/>
+        </record>
+
+        <!-- Expense request related subtypes for messaging / Chatter -->
+        <record id="mt_expense_request_approved" model="mail.message.subtype">
+            <field name="name">Approved</field>
+            <field name="res_model">hr.expense.request</field>
+            <field name="default" eval="True"/>
+            <field name="description">Expense request approved</field>
+        </record>
+        <record id="mt_expense_request_rejected" model="mail.message.subtype">
+            <field name="name">Rejected</field>
+            <field name="res_model">hr.expense.request</field>
+            <field name="default" eval="True"/>
+            <field name="description">Expense request rejected</field>
+        </record>
+
+        <!-- Expense advance related subtypes for messaging / Chatter -->
+        <record id="mt_expense_advance_approved" model="mail.message.subtype">
+            <field name="name">Approved</field>
+            <field name="res_model">hr.expense.advance</field>
+            <field name="default" eval="True"/>
+            <field name="description">Expense advance approved</field>
+        </record>
+        <record id="mt_expense_advance_rejected" model="mail.message.subtype">
+            <field name="name">Rejected</field>
+            <field name="res_model">hr.expense.advance</field>
+            <field name="default" eval="True"/>
+            <field name="description">Expense advance rejected</field>
+        </record>
+        <record id="mt_expense_advance_paid" model="mail.message.subtype">
+            <field name="name">Paid</field>
+            <field name="res_model">hr.expense.advance</field>
+            <field name="default" eval="True"/>
+            <field name="description">Expense advance paid</field>
+        </record>
+
+        <!-- Email Templates -->
+        <template id="expense_request_template_refuse_reason">
+            <p>Your Expense Request <t t-esc="name"/> has been rejected</p>
+            <ul class="o_timeline_tracking_value_list">
+                <li>Reason : <t t-esc="reason"/></li>
+            </ul>
+        </template>
+        <template id="expense_advance_template_refuse_reason">
+            <p>Your Expense Advance <t t-esc="name"/> has been rejected</p>
+            <ul class="o_timeline_tracking_value_list">
+                <li>Reason : <t t-esc="reason"/></li>
+            </ul>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <data noupdate="0">
+
+   <!-- approval PR -->
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('name', '=', 'email_confirm_material_purchase_requistion'), ('module', '=', 'material_purchase_requisitions')]" />
+            </function>
+            <value eval="{'noupdate': False}" />
+        </function>
+
+        <record id="material_purchase_requisitions.email_confirm_material_purchase_requistion" model="mail.template">
+            <field name="report_template" ref="material_purchase_requisitions.report_purchase_requisition"/>
+            <field name="report_name">Purchase Requisition - ${object.name}</field>
+            <field name="email_from">${object.employee_id.work_email}</field>
+            <field name="email_to">${object.requisiton_responsible_id.work_email}</field>
+            <field name="subject">ERP GUT - Request for Purchase Requisition </field>
+            <field name="body_html" type="html">
+            <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"><tr><td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 24px; background-color: white; color: #454748; border-collapse:separate;">
+                <tbody>
+                    <tr>
+                        <td align="center" style="min-width: 590px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: white; padding: 0; border-collapse:separate;">
+                                <tr><td valign="middle">
+                                    <span style="font-size: 20px; font-weight: bold;">
+                                    ${object.name}
+                                    </span>
+                                </td><td valign="middle" align="right">
+                                    <img t-att-src="image_data_uri(company.logo)" style="padding: 0px; margin: 0px; height: 48px;"  alt="${object.company_id.name}"/>
+                                </td></tr>
+                                <tr><td colspan="2" style="text-align:center;">
+                                <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:4px 0px 32px 0px;"/>
+                                </td></tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0">
+                            <div style="margin:0px; padding:0px">
+                                <p style="margin:0px; padding:0px; font-size:13px">
+                                    Dear ${object.requisiton_responsible_id.name},<br/><br/>
+                                    Please Approve this Request Purchase Requistion - ${object.name}<br/>
+                                    Thank You
+                                </p>
+                            </div>
+                            <div style="margin: 32px 0px 32px 0px; text-align: center;">
+                                <a href="${object.get_url_view_purchase_requisition()}"  style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                                Open Purchase Requistion 
+                                </a>
+                            </div>
+                            <div style="margin: 0px; padding: 0px; font-size:13px;">
+                                Regards,
+                            </div><br/>
+                            <div style="font-size: 13px;">
+                                ${object.employee_id.name}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td style="padding: 0; font-size:11px; text-align:center;">
+                            <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 32px 0px 4px 0px;"/>
+                            <b>${object.company_id.name}</b><br/>
+                            <div style="color: #999999">
+                                +62-21-8378 7333
+                                |
+                                <a style="text-decoration:none; color: #999999;" href="mailto:erp@ptgut.co.id">erp@ptgut.co.id</a>
+                                
+                                |
+                                <a style="text-decoration:none; color: #999999;" href="http://www.ptgut.co.id">
+                                    http://www.ptgut.co.id
+                                </a>
+                                
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+            </td></tr>
+            </table>
+            </field>
+        </record>
+
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('name', '=', 'email_confirm_material_purchase_requistion'), ('module', '=', 'material_purchase_requisitions')]" />
+            </function>
+            <value eval="{'noupdate': True}" />
+        </function>
+
+    <!-- Reject PR -->
+
+        <record id="email_reject_material_purchase_requistion" model="mail.template">
+           <field name="name">Reject Request for Purchase Requisition - Send by Email</field>
+           <field name="subject">ERP GUT - Rejected Purchase Requisition</field>
+           <field name="email_from">${object.requisiton_responsible_id.work_email}</field>
+           <field name="email_to">${object.employee_id.work_email}</field>
+           <field name="model_id" ref="material_purchase_requisitions.model_material_purchase_requisition"/>
+           <field name="auto_delete" eval="True"/>
+           <field name="report_template" ref="material_purchase_requisitions.report_purchase_requisition"/>
+            <field name="report_name">Purchase Requisition - ${object.name}</field>
+            <field name="body_html" type="html">
+            <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"><tr><td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 24px; background-color: white; color: #454748; border-collapse:separate;">
+                <tbody>
+                    <tr>
+                        <td align="center" style="min-width: 590px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: white; padding: 0; border-collapse:separate;">
+                                <tr><td valign="middle">
+                                    <span style="font-size: 20px; font-weight: bold;">
+                                    ${object.name}
+                                    </span>
+                                </td><td valign="middle" align="right">
+                                                                        <img style="padding: 0px; margin: 0px; height: 48px;" src="http://117.53.47.16:8069/web/image/res.company/${object.company_id.id}/logo?width=180" alt="${object.company_id.name}"/>
+                                </td></tr>
+                                <tr><td colspan="2" style="text-align:center;">
+                                <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:4px 0px 32px 0px;"/>
+                                </td></tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0">
+                            <div style="margin:0px; padding:0px">
+                                 Dear ${object.employee_id.name},<br/><br/>
+                                    Your Request - ${object.name}<br/>
+                                    Has been rejected<br/>
+                                    Reason:  <span style="font-weight: bold;"> ${object.reject_reason} </span><br/><br/>
+                                    Please let me know if you have any questions <br/>
+                                    Thank You
+                            </div>
+                            <div style="margin: 32px 0px 32px 0px; text-align: center;">
+                                <a href="${object.get_url_view_purchase_requisition()}"  style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                                Open Purchase Requistion 
+                                </a>
+                            </div>
+                            <div style="margin: 0px; padding: 0px; font-size:13px;">
+                                Regards,
+                            </div><br/>
+                            <div style="font-size: 13px;">
+                                ${object.requisiton_responsible_id.name}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0; font-size:11px; text-align:center;">
+                            <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 32px 0px 4px 0px;"/>
+                            <b>${object.company_id.name}</b><br/>
+                            <div style="color: #999999">
+                                +62-21-8378 7333
+                                |
+                                <a style="text-decoration:none; color: #999999;" href="mailto:erp@ptgut.co.id">erp@ptgut.co.id</a>
+                                
+                                |
+                                <a style="text-decoration:none; color: #999999;" href="http://www.ptgut.co.id">
+                                    http://www.ptgut.co.id
+                                </a>
+                                
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+            </td></tr>
+            </table>
+            </field>
+        </record>
+
+    
+     <!-- notif to user Purchase when approved PR -->
+
+        <record id="email_proses_purchase_material_purchase_requistion" model="mail.template">
+           <field name="name">Proses Purchase Requisition</field>
+           <field name="subject">ERP GUT - Process Purchase Requisition</field>
+           <field name="email_from">${object.employee_id.work_email}</field>
+           <field name="email_to">${object.purchase_pic.work_email}</field>
+           <field name="email_cc">muchamad.rizky@ptgut.co.id</field>
+           <field name="model_id" ref="material_purchase_requisitions.model_material_purchase_requisition"/>
+           <field name="auto_delete" eval="True"/>
+           <field name="report_template" ref="material_purchase_requisitions.report_purchase_requisition"/>
+            <field name="report_name">Purchase Requisition - ${object.name}</field>
+            <field name="body_html" type="html">
+            <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"><tr><td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 24px; background-color: white; color: #454748; border-collapse:separate;">
+                <tbody>
+                    <tr>
+                        <td align="center" style="min-width: 590px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: white; padding: 0; border-collapse:separate;">
+                                <tr><td valign="middle">
+                                    <span style="font-size: 20px; font-weight: bold;">
+                                    ${object.name}
+                                    </span>
+                                </td><td valign="middle" align="right">
+                                                                        <img style="padding: 0px; margin: 0px; height: 48px;" src="http://117.53.47.16:8069/web/image/res.company/${object.company_id.id}/logo?width=180" alt="${object.company_id.name}"/>
+                                </td></tr>
+                                <tr><td colspan="2" style="text-align:center;">
+                                <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:4px 0px 32px 0px;"/>
+                                </td></tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0">
+                            <div style="margin:0px; padding:0px">
+                                 Dear ${object.purchase_pic.name},<br/><br/>
+                                    Please continue with the process - ${object.name}<br/>
+                                    Purchase Order <br/>
+                                    Thank You
+                            </div>
+                            <div style="margin: 32px 0px 32px 0px; text-align: center;">
+                                <a href="${object.get_url_view_purchase_requisition()}"  style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                                Open Purchase Requistion 
+                                </a>
+                            </div>
+                            <div style="margin: 0px; padding: 0px; font-size:13px;">
+                                Regards,
+                            </div><br/>
+                            <div style="font-size: 13px;">
+                                ${object.employee_id.name}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0; font-size:11px; text-align:center;">
+                            <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 32px 0px 4px 0px;"/>
+                            <b>${object.company_id.name}</b><br/>
+                            <div style="color: #999999">
+                                +62-21-8378 7333
+                                |
+                                <a style="text-decoration:none; color: #999999;" href="mailto:erp@ptgut.co.id">erp@ptgut.co.id</a>
+                                
+                                |
+                                <a style="text-decoration:none; color: #999999;" href="http://www.ptgut.co.id">
+                                    http://www.ptgut.co.id
+                                </a>
+                                
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+            </td></tr>
+            </table>
+            </field>
+        </record>
+    
+    </data>
+</odoo>

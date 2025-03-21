@@ -1,0 +1,79 @@
+<odoo>
+
+        <!-- <template id="rnet_report_expense_sheet" inherit_id="hr_expense.report_expense_sheet">
+            <xpath expr="//div[@class='page']//h2" position="replace">
+                <h5>
+                    <span t-field="o.seq" />
+                </h5>
+                <h5>Expenses Report</h5>
+            </xpath>
+            <xpath expr="//div[@class='page']//table[@class='table table-sm']//tbody/tr/td[4]" position="replace">
+                <td class="text-right">
+                    <span t-esc="'{0:,.2f}'.format(line.unit_amount)" />
+                </td>
+            </xpath>
+        </template> -->
+    <!-- <data>
+        <report string="Expenses Report"
+            id="act_report_xml_view"
+            model="hr.expense.sheet"
+            report_type="qweb-html"
+            name="rnet_expense.report_expense_advance"
+            file="rnet_expense.report_expense_advance"
+            menu ="False"
+            paperformat="rnet_expense.a4_form_bar"/>
+            
+    </data> -->
+
+    <data>
+        <report string="BAR Report"
+            id="action_report_expense_advance"
+            model="hr.expense.advance"
+            report_type="qweb-html"
+            name="rnet_expense.report_expense_advance"
+            file="rnet_expense.report_expense_advance"
+            print_report_name=" 'BAR - %s' % (object.name)"
+            paperformat="rnet_expense.a4_form_bar"/>
+    </data>
+
+    <data>
+        <report string="CVR Report"
+        id="action_report_expense_sheet_report"
+        model="hr.expense.sheet" 
+        report_type="qweb-html" 
+        name="rnet_expense.report_expense_sheet_report" 
+        file="rnet_expense.report_expense_sheet_report" 
+        print_report_name=" 'CVR - %s' % (object.name)"/>
+    </data>
+
+    <data>
+        <report string="PCR Report"
+        id="action_report_expense_sheet_PCR_report"
+        model="hr.expense.sheet" 
+        report_type="qweb-html" 
+        name="rnet_expense.report_expense_sheet_PCR_report" 
+        file="rnet_expense.report_expense_sheet_PCR_report" 
+        print_report_name=" 'PCR - %s' % (object.name)"/>
+    </data>
+
+    <data>
+        <report string="Journal CVR Report"
+        id="action_report_expense_sheet_journal_cvr_report"
+        model="hr.expense.sheet" 
+        report_type="qweb-html" 
+        name="rnet_expense.report_expense_sheet_journal_cvr_report" 
+        file="rnet_expense.report_expense_sheet_journal_cvr_report" 
+        print_report_name=" 'Journal CVR - %s' % (object.name)"/>
+    </data>
+
+    <!-- <data>
+        <report string="PCR Report"
+        id="action_report_expense_sheet_report"
+        model="hr.expense.sheet" 
+        report_type="qweb-html" 
+        name="rnet_expense.report_expense_sheet_report" 
+        file="rnet_expense.report_expense_sheet_report" 
+        print_report_name=" 'PCR - %s' % (object.seq)"/>
+    </data> -->
+
+</odoo>

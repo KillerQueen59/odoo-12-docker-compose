@@ -1,0 +1,81 @@
+<odoo>
+    <data>
+        <record id="expense_sheet_reject_control_wizard" model="ir.ui.view">
+            <field name="name">hr expense sheet Reject Wizard</field>
+            <field name="model">hr.expense.sheet.control.reject.wizard</field>
+            <field name="arch" type="xml">
+                <form string="CVR Reject Form">
+                    <group>
+                        <field name="reject_control_reason"/>
+                    </group>
+                    <footer>
+                        <button name="action_reject_control" type="object" string="Reject" class="btn-primary"/>
+                            or
+                        <button string="_Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_control_reject" model="ir.actions.act_window">
+            <field name="name">Reject CVR</field>
+            <field name="res_model">hr.expense.sheet.control.reject.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="expense_sheet_reject_control_wizard"/>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="expense_sheet_reject_technical_wizard" model="ir.ui.view">
+            <field name="name">hr expense sheet Reject Wizard</field>
+            <field name="model">hr.expense.sheet.technical.reject.wizard</field>
+            <field name="arch" type="xml">
+                <form string="CVR Reject Form">
+                    <group>
+                        <field name="reject_technical_reason"/>
+                    </group>
+                    <footer>
+                        <button name="action_reject_technical" type="object" string="Reject" class="btn-primary"/>
+                            or
+                        <button string="_Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_technical_reject" model="ir.actions.act_window">
+            <field name="name">Reject CVR</field>
+            <field name="res_model">hr.expense.sheet.technical.reject.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="expense_sheet_reject_technical_wizard"/>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="expense_sheet_reject_finance_wizard" model="ir.ui.view">
+            <field name="name">hr expense sheet Reject Wizard</field>
+            <field name="model">hr.expense.sheet.finance.reject.wizard</field>
+            <field name="arch" type="xml">
+                <form string="CVR Reject Form">
+                    <group>
+                        <field name="reject_finance_reason"/>
+                    </group>
+                    <footer>
+                        <button name="action_reject_finance" type="object" string="Reject" class="btn-primary"/>
+                            or
+                        <button string="_Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_finance_reject" model="ir.actions.act_window">
+            <field name="name">Reject CVR</field>
+            <field name="res_model">hr.expense.sheet.finance.reject.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="expense_sheet_reject_finance_wizard"/>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

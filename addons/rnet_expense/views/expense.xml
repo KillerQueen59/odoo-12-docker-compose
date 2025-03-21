@@ -1,0 +1,1031 @@
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="rnet_expense_view_form">
+			<field name="name">rnet.expense_view_form</field>
+			<field name="model">hr.expense</field>
+			<field name="inherit_id" ref="hr_expense.hr_expense_view_form" />
+			<field name="priority" eval="25" />
+			<field name="arch" type="xml">
+				<xpath expr="//button[@name='action_submit_expenses'][1]" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//button[@name='action_submit_expenses'][2]" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='product_id']" position="after">
+					<xpath expr="//field[@name='employee_id']" position="move" />
+					<field name="cost_category" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+				</xpath>
+				<xpath expr="//field[@name='product_id']" position="before">
+					<field name="seq" widget="char"/>
+					<field name="active" invisible="1" />
+				</xpath>
+				<xpath expr="//field[@name='tax_ids']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='currency_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='total_amount']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='product_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='description']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='analytic_account_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='analytic_tag_ids']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='payment_mode']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='account_id']" position="attributes">
+					<attribute name="string">
+						Account Name
+					</attribute>
+					<attribute name="required">
+						True
+					</attribute>
+					<attribute name="domain">
+						[('user_type_id.type', 'in', ('other','receivable','payable' ))]
+					</attribute>
+					<attribute name="groups">
+						base.group_user
+					</attribute>
+					<attribute name="options">
+						{'no_create': True, 'no_create_edit':True, 'no_open': True,}
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='reference']" position="after">
+					<field name="project" />
+				</xpath>
+				<xpath expr="//field[@name='unit_amount']" position="replace">
+					<field name="unit_amount" attrs="{'readonly': [('state', 'in', 'refused')] }">
+					</field>
+				</xpath>
+				<xpath expr="//field[@name='quantity']" position="replace">
+					<field name="quantity" invisible="1" attrs="{'readonly': [('state', 'in', 'refused')] }">
+					</field>
+				</xpath>
+				<xpath expr="//field[@name='product_uom_id']" position="replace">
+					<field name="product_uom_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" attrs="{'readonly': [('state', 'in', 'refused')] }">
+					</field>
+				</xpath>
+				<xpath expr="//field[@name='project']" position="replace">
+					<field name="project" string="Project" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+				</xpath>
+				<xpath expr="//button[@name='action_view_sheet']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='reference']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='product_uom_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='employee_id']" position="attributes">
+					<attribute name="options">
+						{'no_create': True, 'no_create_edit':True, 'no_open': True,}
+					</attribute>
+				</xpath>
+				<xpath expr="//button[@name='action_get_attachment_view']" position="after">
+					<button name="action_view_sheet" class="oe_stat_button" string="View CVR" widget="statinfo" icon="fa-file-text" type="object" attrs="{'invisible': [('sheet_id', '=', False)]}">
+                    </button>
+				</xpath>
+			</field>
+		</record>
+		<record model="ir.ui.view" id="rnet_expense_sheet_form">
+			<field name="name">rnet.expense_sheet_form</field>
+			<field name="model">hr.expense.sheet</field>
+			<field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form" />
+			<field name="priority" eval="25" />
+			<field name="arch" type="xml">
+				<xpath expr="//header/field[@name='state']" position="before">
+					<button name="action_receive_payment" string="Receive Payment" type="object" class="oe_highlight" groups="account.group_account_manager" attrs="{'invisible': ['|','|','|',('return_to_employee','=',True),('balance','=',0),('state','!=','post'),('expense_advance_id','=',False)]}" />
+					<button name="action_register_payment" string="Register Payment" type="object" class="oe_highlight" groups="account.group_account_invoice" attrs="{'invisible': ['|','|','|',('return_to_employee','=',False),('balance','=',0),('state','!=','post'),('expense_advance_id','=',False)]}" />
+					<field name="is_approve_technical" invisible="True">
+					</field>
+					<field name="is_approve_finance" invisible="True">
+					</field>
+					<field name="show_post_journal_entries" invisible="True">
+					</field>
+					<field name="current_user_is_requester" invisible="True" />
+					<field name="current_user_is_cost_control" invisible="True" />
+					<field name="current_user_is_technical_director" invisible="True" />
+					<field name="current_user_is_finance_director" invisible="True" />
+					<field name="current_user_is_project_manager" invisible="True" />
+					
+					<field name="user_ids" invisible="True" />
+					<field name="active" invisible="1" />
+				</xpath>
+				<xpath expr="//header/button[@name='action_sheet_move_create']" position="replace">
+					<button name="action_sheet_move_create" string="Post Journal Entries" type="object" groups="account.group_account_manager" class="oe_highlight o_expense_sheet_post" attrs="{'invisible': ['|', ('show_post_journal_entries','=',False), ('state', 'not in', ['approve_technical_director', 'approve_finance_director'])]}" confirm="Are you sure want to Post?"/>
+					<button name="approve_cost_control" string="Approve Cost Control" type="object" class="oe_highlight" groups="hr_expense.group_hr_expense_manager" attrs="{'invisible': ['|', ('current_user_is_cost_control', '=', False),('state', 'not in', ['approve'])]}" />
+					<button name="approve_technical_director" string="Approve Project Director" type="object" class="oe_highlight" attrs="{'invisible': ['|', '|', ('current_user_is_technical_director','=',False), ('state','not in','approve_cost_control'), ('transaction_type','!=','petty_cash')]}" />
+					<button name="approve_finance_director" string="Approve Finance Director" type="object" groups="account.group_account_manager" class="oe_highlight" attrs="{'invisible': ['|', '|', ('state','not in','approve_cost_control'), ('current_user_is_finance_director','=',False), ('transaction_type','=','petty_cash')]}" />
+					<button name="create_revision" invisible="1" string="Make a Revision" type="object" attrs="{'invisible':['|','|',('active', '=', False),('current_user_is_requester', '!=', True),('state', 'not in', ['cancel','reject_control','reject_finance','reject_technical'])]}"/>
+				</xpath>
+				<xpath expr="//header/button[@states='submit,approve']" position="replace">
+					<button name="%(hr_expense.hr_expense_refuse_wizard_action)d" string="Refuse" states="submit,approve,approve_cost_control" context="{'hr_expense_refuse_model':'hr.expense.sheet'}" type="action" groups="hr.group_hr_manager" />
+				</xpath>
+				<field name="state" position="replace">
+					<field name="state" widget="statusbar" statusbar_visible="draft,submit,approve,approve_cost_control,approve_finance_director,post,done" attrs="{'invisible': ['|', ('is_approve_finance','=',False), ('transaction_type','!=','expense_report')]}" />
+					<field name="flow_petty_cash" widget="statusbar" statusbar_visible="draft,submit,approve,approve_cost_control,approve_technical_director,post,done" attrs="{'invisible': ['|', ('is_approve_technical','=',False), ('transaction_type','!=', 'petty_cash')]}" />
+					<field name="flow_reimburse" widget="statusbar" statusbar_visible="draft,submit,approve,approve_cost_control,approve_finance_director,post,done" attrs="{'invisible': [('transaction_type','=', 'petty_cash')]}" />
+				</field>
+				<field name="notes" position="before">
+					<field name="paid_to" attrs="{'invisible': [('transaction_type','=','petty_cash')] }" />
+					<field name="transaction_type" readonly="1" force_save="1" />
+				</field>
+				<xpath expr="//field[@name='expense_request_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='expense_advance_id']" position="replace">
+					<field name="expense_advance_id" attrs="{'invisible': [('transaction_type','!=',['petty_cash','hutang_usaha']),], 'readonly': [('state', 'not in', ['draft','cancel'])] }">
+					</field>
+				</xpath>
+				<xpath expr="//field[@name='request_amount']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='advance_amount']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='user_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<!--
+				<xpath expr="//field[@name='advance_amount']" position="replace">
+				<field name="total_amount" string="CVR Amount" class="oe_subtotal_footer_separator" />
+				</xpath>
+				-->
+				<!--
+				<xpath expr="//field[@name='return_amount'][2]" position="after">
+				<field name="returned_amount" string="Returned" readonly="1" class="oe_subtotal_footer_separator" attrs="{'invisible': ['|', ('transaction_type','==','expense_report'), ('state', 'not in', ['done', 'post'])]}"/>
+				<field name="balance" readonly="1" attrs="{'invisible': [('transaction_type','==','expense_report')]}"/>
+				</xpath>
+				-->
+				<xpath expr="//field[@name='return_amount'][1]" position="attributes">
+					<attribute name="invisible">
+						[('transaction_type','==','expense_report')]
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='return_amount'][2]" position="attributes">
+					<attribute name="invisible">
+						[('transaction_type','==','expense_report')]
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='notes']" position="replace">
+					<field name="notes" attrs="{'readonly': [('state', 'not in', 'draft')] }"/>
+				</xpath>
+				<!--
+				<xpath expr="//field[@name='return_amount']" position="replace">
+				<field name="return_amount" string="Return To Company" class="oe_subtotal_footer_separator" attrs="{'invisible': ['|', ('state', 'not in', ['done', 'post']), ('transaction_type', '!=', 'petty_cash')]}"/>
+				</xpath>
+				-->
+				<xpath expr="//field[@name='employee_id']" position="after">
+					<field name="project" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" attrs="{'readonly': [('state', 'not in', 'draft')] }" />
+					<field name="project_manager_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" attrs="{'readonly': [('state', 'not in', 'draft')] }" />
+					<field name="created_date" attrs="{'readonly': [('state', 'not in', 'draft')] }" />
+				</xpath>
+				<xpath expr="//field[@name='notes']" position="after">
+					<field name="reject_control_reason" attrs="{'invisible': [('state', 'not in', 'reject_control')] }" />
+					<field name="reject_technical_reason" attrs="{'invisible': [('state', 'not in', 'reject_technical')] }" />
+					<field name="reject_finance_reason" attrs="{'invisible': [('state', 'not in', 'reject_finance')] }" />
+				</xpath>
+				<xpath expr="//field[@name='employee_id']" position="attributes">
+					<attribute name="string">
+						Booked To
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='name']" position="replace">
+					<field name="name" attrs="{'readonly': ['|', ('state', 'not in', ['draft','submit']), ('name', 'ilike', 'New')], 'invisible': [('id', '=', False)]}" />
+				</xpath>
+				<xpath expr="//field[@name='user_id']" position="after">
+					<field name="cost_control_head_id" attrs="{'invisible': [('state', 'not in', ['approve','post','done'])],'readonly': [('state', 'not in', ['approve'])]}" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+					<field name="technical_director_id" attrs="{'invisible': ['|', ('state', 'not in', ['approve','post','done']), ('transaction_type','==','hutang_usaha')]}" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+					<field name="finance_director_id" attrs="{'invisible': ['|', ('state', 'not in', ['approve','post','done']), ('transaction_type','==','petty_cash')]}" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+				</xpath>
+				<!--
+				<xpath expr="//field[@name='expense_line_ids']" position="replace">
+				<field name="expense_line_ids" nolabel="1" widget="many2many"
+				domain="[('state', '=', 'draft'),('payment_mode','=',payment_mode)]"
+				options="{'reload_on_button': True}"
+				context="{'form_view_ref' : 'hr_expense.hr_expense_view_form_without_header', 'expense_adding_line': True}">
+				</field>
+				</xpath>
+				-->
+				<xpath expr="//group[@name='expense_total']" position="inside">
+					<div class="oe_subtotal_footer_separator oe_inline o_td_label" invisible="1">
+						<label for="balance" />
+					</div>
+					<field name="balance" invisible="1" nolabel="1" class="oe_subtotal_footer_separator" decoration-danger="balance &lt; 0" attrs="{'invisible': ['|', ('transaction_type','==','expense_report'), ('state', 'in', 'cancel')]}" />
+				</xpath>
+				<!--
+				<xpath expr="//group[@name='expense_total']/field[@name='total_amount']" position="replace">
+				<field name="advance_amount" nolabel="1" class="oe_subtotal_footer_separator" attrs="{'invisible': [('transaction_type','!=','petty_cash')]}"/>
+				</xpath>
+				-->
+				<!--
+				<label for="total_amount" position="replace">
+				<label for="total_amount"  string="BAR Amount" attrs="{'invisible': [('transaction_type','!=','petty_cash')]}"/>
+				</label>
+				-->
+				<xpath expr="//button[@name='approve_expense_sheets']" position="replace">
+					<button name="approve_expense_sheets" states="submit" attrs="{'invisible': ['|', ('current_user_is_project_manager','=',False),('state', 'not in', ['submit'])]}" string="Approve" type="object" class="oe_highlight o_expense_sheet_approve" groups="project.group_project_manager"/>
+					<button name="approve_expense_sheets" states="reject_control" attrs="{'invisible': ['|', ('current_user_is_project_manager','=',False),('state', 'not in', ['reject_control'])]}" string="Approve Again" type="object" groups="project.group_project_manager" class="oe_highlight o_expense_sheet_approve" />
+				</xpath>
+				<xpath expr="//button[@name='action_submit_sheet']" position="replace">
+					<button name="action_submit_sheet" type="object" string="Submit" class="oe_highlight" attrs="{'invisible': ['|', '|',('current_user_is_requester', '!=', True), ('state', 'not in', ['draft']), ('attachment_number', '=', 0)]}"/>
+				</xpath>
+				<button name="reset_expense_sheets" position="replace">
+					<button name="reset_expense_sheets" type="object" class="oe_highlight" string="Reset To Draft" attrs="{'invisible': ['|',('current_user_is_requester', '!=', True),('state', 'not in', ['cancel'])]}" />
+					<button name="reset_expense_sheets" type="object" class="oe_highlight" string="Reset To Draft" attrs="{'invisible': [('state', 'not in', ['reject_control','reject_technical', 'reject_finance'])]}" groups="project.group_project_manager" />
+				</button>
+<!--				<button name="402" position="replace">-->
+<!--					<button name="402" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" attrs="{'invisible': ['|', ('state','not in','post'), ('transaction_type','==','petty_cash')]}" context="{'default_amount': total_amount, 'partner_id': address_id}" groups="account.group_account_manager" />-->
+<!--				</button>-->
+<!--				<button name="401" position="replace">-->
+<!--					<button name="401" string="Refuse" type="action" states="submit" attrs="{'invisible': ['|', ('current_user_is_project_manager','=',False),('state', 'not in', ['submit'])]}" context="{'hr_expense_refuse_model':'hr.expense.sheet'}" groups="project.group_project_manager" />-->
+<!--				</button>-->
+				<button name="approve_cost_control" position="after">
+					<button name="action_refuse_control" string="Refuse" type="object" groups="hr_expense.group_hr_expense_manager" attrs="{'invisible': ['|', ('current_user_is_cost_control', '!=', True),('state', 'not in', ['approve'])]}" />
+				</button>
+				<button name="approve_technical_director" position="after">
+					<button name="action_refuse_technical_director" string="Refuse" type="object" groups="hr_expense.group_hr_expense_manager" attrs="{'invisible': ['|', '|', ('current_user_is_technical_director','=',False), ('state','not in','approve_cost_control'), ('transaction_type','!=','petty_cash')]}" />
+				</button>
+				<button name="approve_finance_director" position="after">
+					<button name="action_refuse_finance_director" string="Refuse" type="object" groups="account.group_account_manager" attrs="{'invisible': ['|', '|', ('state','not in','approve_cost_control'), ('current_user_is_finance_director','=',False), ('transaction_type','=','petty_cash')]}" />
+				</button>
+				<label for="name" position="replace">
+					<label for="name" string="CVR No." />
+				</label>
+				<xpath expr="//notebook/page/field[@name='expense_line_ids']" position="replace">
+					<field name="expense_line_ids" nolabel="1" widget="many2many" domain="[('state', '=', 'draft'),('employee_id.user_id','=',uid),('project','=', project)]" options="{'reload_on_button': True}" attrs="{'readonly': [('state', 'not in', ('draft','submit','approve'))] }" context="{'form_view_ref' : 'hr_expense.hr_expense_view_form_without_header', 'expense_adding_line': True, 'default_project': project}">
+						<tree decoration-danger="is_refused" editable="top">
+							<field name="seq" />
+							<field name="name" />
+							<field name="employee_id" invisible="1" />
+							<field name="date" />
+							<field name="unit_amount" string="Amount" />
+							<field name="account_id" string="Account Name" />
+							<field name="state" invisible="1" />
+							<field name="analytic_account_id" groups="analytic.group_analytic_accounting" invisible="True" />
+							<field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags" invisible="True" />
+							<field name="message_unread" invisible="1" />
+							<field name="cost_category" />
+							<field name="alokasi_biaya" />
+							<field name="expense_direct" />
+							<field name="project" />
+							<button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip" invisible="1" />
+							<field name="tax_ids" widget="many2many_tags" groups="account.group_account_user" invisible="1" />
+							<field name="currency_id" invisible="1" />
+							<field name="quantity" invisible="1"/>
+							<field name="total_amount"/>
+							<field name="company_currency_id" invisible="1" />
+							<field name="total_amount_company" groups="base.group_multi_currency" invisible="1" />
+							<field name="is_refused" invisible="True" />
+							<field name="expensed_by_id" invisible="True" />
+						</tree>
+					</field>
+				</xpath>
+				<xpath expr="//field[@name='account_move_id']" position="before">
+					<field name="journal" invisible="True" />
+				</xpath>
+				<xpath expr="//field[@name='bank_journal_id']" position="replace">
+					<field name="bank_journal_id" string="Journal" domain="[('user_ids','in',[context.get('uid')])]" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" attrs="{'readonly': [ ('state','not in','draft')]}" />
+				</xpath>
+				<xpath expr="//field[@name='journal_id']" position="replace">
+					<field name="journal_id" invisible="1" string="Expense Journal" domain="[('user_ids','in',[context.get('uid')])]" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" attrs="{'readonly': [ ('state','not in','draft')]}" />
+				</xpath>
+				<xpath expr="//field[@name='notes']" position="before">
+					<xpath expr="//field[@name='payment_mode']" position="move" />
+					<xpath expr="//field[@name='journal_id']" position="move" />
+					<xpath expr="//field[@name='bank_journal_id']" position="move" />
+				</xpath>
+				<xpath expr="//field[@name='project']" position="after">
+					<xpath expr="//field[@name='user_id']" position="move" />
+					<xpath expr="//field[@name='cost_control_head_id']" position="move" />
+					<xpath expr="//field[@name='technical_director_id']" position="move" />
+					<xpath expr="//field[@name='finance_director_id']" position="move" />
+				</xpath>
+				<xpath expr="//page[2]" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='user_id']" position="attributes">
+					<attribute name="options">
+						{'no_create': True, 'no_create_edit':True, 'no_open': True,}
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='employee_id']" position="attributes">
+					<attribute name="options">
+						{'no_create': True, 'no_create_edit':True, 'no_open': True,}
+					</attribute>
+				</xpath>
+                <xpath expr="//button[@name='action_get_attachment_view']" position="replace">
+					<button name="action_get_attachment_view" class="oe_stat_button" icon="fa-book" type="object" attrs="{'invisible': [('attachment_number', '=', 0)]}">
+                        <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                    </button>
+					<button type="object" class="oe_stat_button" icon="fa-clipboard" name="open_revision_list" attrs="{'invisible':[('revision_count', '=', 0)]}">
+						<field string="Revision" name="revision_count" widget="statinfo"/>
+					</button>
+				</xpath>
+                <xpath expr="//header" position="inside">
+                    <widget name="attach_document" string="Attach Document PDF" action="message_post" attrs="{'invisible': ['|','|','|', ('attachment_number', '&lt;', 1), ('id','=',False), ('current_user_is_requester', '!=', True), ('state', 'not in', ['draft'])]}"/>
+                    <widget name="attach_document" string="Attach Document PDF" action="message_post" highlight="1" attrs="{'invisible': ['|','|','|',('attachment_number', '&gt;=', 1), ('id','=',False), ('current_user_is_requester', '!=', True), ('state', 'not in', ['draft'])]}"/>
+				</xpath>
+			</field>
+		</record>
+		<record model="ir.ui.view" id="rnet_expense_advance_form_view">
+			<field name="name">rnet_expense_advance_form_view</field>
+			<field name="model">hr.expense.advance</field>
+			<field name="inherit_id" ref="hr_expense_request_advance.hr_expense_advance_form_view" />
+			<field name="arch" type="xml">
+				<button name="action_draft" position="replace">
+					<field name="current_user_is_approver" invisible="True" />
+					<field name="current_user_is_finance_director" invisible="True" />
+					<field name="current_user_is_processed_by" invisible="True" />
+					<field name="residual_amount" invisible="True" />
+					<button name="action_draft" type="object" string="Reset To Draft" attrs="{'invisible': ['|', ('current_user_is_requester', '!=', True), ('state', 'not in', ['rejected', 'rejected_commercial'])]}" />
+				</button>
+				<button name="action_approve" position="replace">
+					<button name="action_approve" type="object" class="oe_highlight" string="Approve" groups="hr_expense.group_hr_expense_manager" attrs="{'invisible': ['|', ('current_user_is_approver', '!=', True), ('state', 'not in', 'submitted')]}" />
+				</button>
+				<button name="%(hr_expense_request_advance.hr_expense_advance_register_payment_wizard_action)d" position="replace">
+					<button name="%(hr_expense_request_advance.hr_expense_advance_register_payment_wizard_action)d" type="action" string="Register Payment" class="oe_highlight o_expense_sheet_pay" context="{'default_amount': residual_amount, 'partner_id': address_id, 'transaction_type': transaction_type}" groups="account.group_account_manager"  attrs="{'invisible': [('state', 'not in', ('processed','partial'))]}"/>
+				</button>
+<!--				<button name="554" position="before">-->
+<!--					<button name="action_approve_commercial" type="object" string="Approve by Commercial" class="oe_highlight" groups="account.group_account_manager" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('current_user_is_finance_director','=',False)]}" />-->
+<!--				</button>-->
+<!--				<button name="554" position="replace">-->
+<!--					<button name="554" string="Refuse" type="action" groups="hr_expense.group_hr_expense_manager" attrs="{'invisible': ['|', '|', ('current_user_is_requester', '=', True), ('current_user_is_approver', '!=', True), ('state', 'not in', 'submitted')]}" />-->
+<!--				</button>-->
+<!--				<button name="action_approve_commercial" position="after">-->
+<!--					<button name="action_refuse_commercial" string="Refuse" type="object" groups="account.group_account_manager" attrs="{'invisible': ['|', ('state', 'not in', 'approved'), ('current_user_is_finance_director','=',False)]}" />-->
+<!--				</button>-->
+<!--				<button name="action_approve_commercial" position="after">-->
+<!--					<button name="action_processed" string="Process" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', 'not in', 'approved_commercial'), ('current_user_is_processed_by','=',False)]}" />-->
+<!--				</button>-->
+				<button name="action_submit" position="replace">
+					<button name="action_submit" type="object" string="Submit" class="oe_highlight" attrs="{'invisible': ['|', ('current_user_is_requester', '!=', True), ('state', 'not in', ['draft'])]}" />
+				</button>
+				<xpath expr="//field[@name='state']" position="replace">
+					<field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,approved_commercial,processed,paid" />
+				</xpath>
+				<field name="requested_amount" position="attributes">
+					<attribute name="required">
+						False
+					</attribute>
+				</field>
+				<xpath expr="//sheet[1]" position="replace">
+					<sheet>
+						<field name="address_id" invisible="1" />
+						<field name="currency_id" invisible="1" />
+						<field name="journal_id" invisible="1" />
+						<field name="paid_amount" invisible="1" />
+						<field name="seq_num" invisible="1" />
+						<field name="company_id" invisible="1" />
+						<field name="requested_amount" invisible="1" />
+						<field name="active" invisible="1" />
+						<div class="oe_button_box" name="button_box">
+							<!--
+							<button class="oe_stat_button" name="open_expense_report" type="object" icon="fa-book">
+							<field string="Report" name="gut_expense_report_count" widget="statinfo" />
+							</button>
+							-->
+							<button class="oe_stat_button" name="open_expense_journal" groups="account.group_account_manager" type="object" icon="fa-bars" attrs="{'invisible':[('state','in',('draft','submitted',))]}">
+								<field string="Journal" name="expense_journal_count" widget="statinfo" />
+							</button>
+						</div>
+						<!--
+						<div class="oe_title" attrs="{'invisible': [('state', '=', 'draft')]}">
+						<h2>
+						<field name="seq_num" />
+						</h2>
+						</div>
+						-->
+						<div class="oe_title">
+							<span class="o_form_label">
+								Record No.
+							</span>
+							<h2>
+								<field name="name" string="BAR No." attrs="{'readonly': [('name', 'ilike', 'New')], 'invisible': [('id', '=', False)] }" />
+							</h2>
+						</div>
+						<notebook>
+							<page name="requester" string="Requester">
+								<group>
+									<group>
+										<field name="employee_id" string="Name" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+										<field name="job_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+										<field name="requested_date" />
+										<field name="commercial_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+										<field name="processed_by" attrs="{'readonly': [('state', 'not in', ['draft', 'submitted'])] }" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+										<field name="transaction_type" />
+									</group>
+									<group>
+										<field name="due_date_payment" attrs="{'readonly': [('state', 'not in', 'draft')] }" />
+										<field name="purpose" />
+										<field name="site_manager" string="Site Manager" readonly="1" attrs="{'invisible': [('project_id', '=', False)] }" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+									</group>
+									<!--
+									<group string="">
+									<field name="amount_total" string="Total Advance" />
+									<field name="total_paid" string="Total Paid" />
+									<field name="sheet_total_amount" string="Total CVR" />
+									<field name="sheet_return_amount" string="Return to Company" />
+									<field name="sheet_returned_amount" string="Returned Amount"  />
+									<field name="sheet_balance" string="Balance" />
+									</group>
+									-->
+								</group>
+							</page>
+						</notebook>
+						<notebook>
+							<!-- <page name="visit_plan" string="Visit Plan" attrs="{'invisible': [('purpose', '!=', 'project')]}"> -->
+							<page name="visit_plan" string="Visit Plan">
+								<group string="Visit Plan">
+									<group>
+										<field name="project_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" attrs="{'required': [('purpose', '==', 'project')]}" />
+										<field name="project_manager" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+										<field name="kind_of_work" />
+										<field name="job_order_no" />
+									</group>
+									<group>
+										<field name="customer_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+										<field name="workplace" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+										<field name="location_id" />
+									</group>
+								</group>
+								<group>
+									<group>
+										<field name="visit_plan_from" />
+									</group>
+									<group>
+										<field name="visit_plan_to" />
+									</group>
+								</group>
+							</page>
+						</notebook>
+						<notebook>
+							<page name="perincian" string="Perincian Biaya Operasional">
+								<group style="max-width: 70%">
+									<field name="transportasi_line" options="{'no_open': True}" attrs="{'readonly': [('state', 'not in', ['draft', 'submitted'])]}">
+										<tree string="Transportasi" editable="bottom" open="false">
+											<field name="name"/>
+											<field name="biaya" sum="biaya"/>
+											<field name="Keterangan" />
+										</tree>
+									</field>
+								</group>
+								<group style="max-width: 70%">
+									<field name="material_line" options="{'no_open': True}" attrs="{'readonly': [('state', 'not in', ['draft', 'submitted'])]}">
+										<tree string="Material and Tools" editable="bottom" open="false">
+											<field name="name"/>
+											<field name="biaya" sum="biaya"/>
+											<field name="Keterangan" />
+										</tree>
+									</field>
+								</group>
+								<group style="max-width: 70%">
+									<field name="allowance_line" options="{'no_open': True}" attrs="{'readonly': [('state', 'not in', ['draft', 'submitted'])]}">
+										<tree string="Allowance" editable="bottom" open="false">
+											<field name="name"/>
+											<field name="biaya" sum="biaya"/>
+											<field name="Keterangan" />
+										</tree>
+									</field>
+								</group>
+								<group style="max-width: 70%">
+									<field name="akomodasi_line" options="{'no_open': True}" attrs="{'readonly': [('state', 'not in', ['draft', 'submitted'])]}">
+										<tree string="Akomodasi" editable="bottom" open="false">
+											<field name="name"/>
+											<field name="biaya" sum="biaya"/>
+											<field name="Keterangan" />
+										</tree>
+									</field>
+								</group>
+								<group style="max-width: 70%">
+									<field name="non_project_line" options="{'no_open': True}" attrs="{'readonly': [('state', 'not in', ['draft', 'submitted'])]}">
+										<tree string="Non Project Expense" editable="bottom" open="false">
+											<field name="name"/>
+											<field name="biaya" sum="biaya"/>
+											<field name="Keterangan" />
+										</tree>
+									</field>
+								</group>
+								<group style="max-width: 70%">
+									<field name="remark" />
+								</group>
+								
+								<!-- <notebook>
+									<page name="other_expenses" string="Other Expenses">
+										<group>
+											<group string="Allowance">
+												<field name="est_visit_days" />
+												<field name="currency_id" options="{'no_create': True, 'no_open': True}" readonly="1" />
+												<field name="allowance_per_day" />
+												<label for="total_allowance" />
+												<span class="font-weight-bold">
+													<field name="total_allowance" />
+												</span>
+											</group>
+											<group string="Other Expenses">
+												<field name="transport_expense" widget="monetary" />
+												<label for="transport_expense_note" string="">
+												</label>
+												<field name="transport_expense_note" nolabel="1" placeholder="e.g Mobilisasi Person" />
+												<field name="material_expense" widget="monetary" />
+												<label for="material_expense_note" string="">
+												</label>
+												<field name="material_expense_note" nolabel="1" placeholder="e.g Material + OP" />
+												<field name="other_expense" widget="monetary" />
+												<label for="other_expense_note" string="">
+												</label>
+												<field name="other_expense_note" nolabel="1" placeholder="e.g Sewa Crane" />
+												<label for="total_other_expense" />
+												<span class="font-weight-bold">
+													<field name="total_other_expense" />
+												</span>
+											</group>
+											<group string="Non Project Expenses">
+												<field name="private_expense" widget="monetary" />
+												<label for="private_expense_note" string="">
+												</label>
+												<field name="private_expense_note" nolabel="1" />
+												<field name="office_expense" widget="monetary" />
+												<label for="office_expense_note" string="">
+												</label>
+												<field name="office_expense_note" nolabel="1" />
+												<field name="other_nonproject_expense" widget="monetary" />
+												<label for="other_nonproject_note" string="">
+												</label>
+												<field name="other_nonproject_note" nolabel="1" />
+												<label for="total_nonproject_expense" />
+												<span class="font-weight-bold">
+													<field name="total_nonproject_expense" />
+												</span>
+											</group>
+										</group>
+									</page>
+								</notebook> -->
+								<group string="Total">
+									<group>
+										<field name="amount_total" widget="monetary" string="Total Advance" />
+										<label for="amount_total" string="">
+										</label>
+										<field name="total_paid" widget="monetary" string="Total Paid" />
+										<label for="total_paid" string="">
+										</label>
+										<field name="residual_amount" widget="monetary" string="Amount Due" />
+										<label for="residual_amount" string="">
+										</label>
+										<field name="reject_reason" attrs="{'invisible': [ ('state', 'not in', 'rejected_commercial')]}" />
+									</group>
+								</group>
+								<div class="oe_clear" />
+							</page>
+							<page string="Accounting Information" groups="hr_expense.group_hr_expense_manager">
+								<group col="4">
+									<field name="journal_id" />
+									<!-- <label for="paid_amount" />
+									<div name="amount_div" class="o_row">
+										<field name="paid_amount" />
+										<field name="currency_id" options="{'no_create': True, 'no_open': True}" groups="base.group_multi_currency" />
+									</div> -->
+									<field name="payment_date" invisible="1"/>
+									<field name="description" invisible="1"/>
+									<field name="payment_id" readonly="1" />
+								</group>
+							</page>
+						</notebook>
+					</sheet>
+				</xpath>
+			</field>
+		</record>
+		<record id="view_expenses_tree" model="ir.ui.view">
+			<field name="name">view.expenses.tree</field>
+			<field name="model">hr.expense</field>
+			<field name="inherit_id" ref="hr_expense.view_expenses_tree" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='date']" position="before">
+					<field name="seq" />
+				</xpath>
+				<xpath expr="//field[@name='analytic_account_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='analytic_tag_ids']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='payment_mode']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='total_amount']" position="after">
+					<field name="project" />
+				</xpath>
+				<xpath expr="//field[@name='name']" position="after">
+					<field name="account_id" />
+				</xpath>
+			</field>
+		</record>
+		<record model="ir.ui.view" id="rnet_expense_sheet_tree">
+			<field name="name">rnet.expense_sheet_tree</field>
+			<field name="model">hr.expense.sheet</field>
+			<field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_tree" />
+			<field name="arch" type="xml">
+				<!--
+				<field name="name" position="before">
+				<field name="expense_advance_id" string="BAR No."/>
+				</field>
+				-->
+				<field name="total_amount" position="replace">
+					<field name="total_amount" sum="Amount" />
+				</field>
+				<!--
+				<field name="total_amount" position="before">
+				<field name="advance_amount" string="BAR Amount"/>
+				</field>
+				-->
+				<field name="create_date" position="after">
+					<!-- <field name="returned_amount" string="Returned"/> -->
+					<!-- <field name="balance" string="Balance" sum="Balance" /> -->
+					<field name="payment_mode" string="Payment By" />
+				</field>
+				<xpath expr="//field[@name='accounting_date']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='name']" position="attributes">
+					<attribute name="string">
+						CVR No
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='employee_id']" position="attributes">
+					<attribute name="string">
+						Booked To
+					</attribute>
+				</xpath>
+				<field name="employee_id" position="after">
+					<field name="project" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+					<field name="project_manager_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}" />
+				</field>
+				<field name="name" position="after">
+                    <field name="state" position="move"/>
+                </field>
+				<field name="employee_id" position="after">
+                    <field name="total_amount" position="move"/>
+                </field>
+				 <field name="state" position="replace">
+                    <field name="state" string="Status" widget="label_selection" options="{'classes': {'draft': 'secondary', 'submit': 'primary', 'cancel': 'danger', 'approve': 'info', 'approve_cost_control': 'info', 'approve_technical_director': 'info', 'approve_finance_director': 'info', 'post': 'success', 'reject_control': 'danger', 'reject_technical': 'danger', 'reject_finance': 'danger'}}"/>
+                </field>
+			</field>
+		</record>
+		<record id="hr_expense_advance_tree_view" model="ir.ui.view">
+			<field name="name">hr.expense.advance.tree.view</field>
+			<field name="model">hr.expense.advance</field>
+			<field name="inherit_id" ref="hr_expense_request_advance.hr_expense_advance_tree_view" />
+			<field name="arch" type="xml">
+				<xpath expr="//tree" position="replace">
+					<tree>
+						<field name="name" />
+						<field name="state" string="Status" widget="label_selection" options="{'classes': {'draft': 'secondary', 'submitted': 'primary', 'cancel': 'danger', 'approved': 'info', 'approved_commercial': 'info', 'processed': 'info', 'partial': 'warning', 'paid': 'success', 'rejected': 'danger', 'rejected_commercial': 'danger','reported': 'dark'}}"/>
+						<field name="employee_id" string="Employee" />
+						<field name="project_manager" string="Project Manager" />
+						<field name="project_id" />
+						<field name="requested_date" />
+						<field name="currency_id" invisible="1" />
+						<field name="amount_total" sum="amount" string="Total Advance" widget="monetary" />
+						<field name="total_paid" sum="amount" string="Total Paid" widget="monetary" />
+						<!--
+						<field name="sheet_total_amount" sum="amount" string="Total CVR" widget="monetary" />
+						<field name="sheet_return_amount" sum="amount" string="Return to Company" widget="monetary" />
+						<field name="sheet_returned_amount" sum="amount" string="Returned Amount" widget="monetary" />
+						-->
+						<!-- <field name="sheet_balance" sum="amount" string="Balance" widget="monetary" /> -->
+					</tree>
+				</xpath>
+			</field>
+		</record>
+		<record id="hr_expense_filter_view" model="ir.ui.view">
+			<field name="name">hr.expense.filter.view</field>
+			<field name="model">hr.expense</field>
+			<field name="inherit_id" ref="hr_expense.view_hr_expense_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//filter[@name='report']" position="after">
+					<filter string="Project" name="project" domain="[]" context="{'group_by': 'project'}"/>
+				</xpath>
+				<xpath expr="//filter[@name='report']" position="attributes">
+					<attribute name="string">
+						CVR
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='my_team_expenses']" position="before">
+					<filter string="Archived" name="inactive" domain="[('active', '=', False)]" />
+				</xpath>
+				<xpath expr="//field[@name='date']" position="after">
+					<field name="project"/>
+					<field name="sheet_id" string="CVR No"/>
+				</xpath>
+			</field>
+		</record>
+		<record id="hr_expense_advance_filter_view" model="ir.ui.view">
+			<field name="name">hr.expense.advance.filter.view</field>
+			<field name="model">hr.expense.advance</field>
+			<field name="inherit_id" ref="hr_expense_request_advance.hr_expense_advance_filter_view" />
+			<field name="arch" type="xml">
+				<xpath expr="//filter[@name='advance_to_approve']" position="after">
+					<filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+					<separator />
+					<filter string="Draft" name="draft" domain="[('state', '=','draft' )]"/>
+					<filter string="Submitted" name="submitted" domain="[('state', '=','submitted' )]"/>
+					<filter string="Approved" name="approved" domain="[('state', '=','approved' )]"/>
+					<filter string="Approved Commercial" name="approved_commercial" domain="[('state', '=','approved_commercial' )]"/>
+					<filter string="Processed" name="processed" domain="[('state', '=','processed' )]"/>
+					<filter string="Partial" name="partial" domain="[('state', '=','partial' )]"/>
+					<filter string="Paid" name="paid" domain="[('state', '=','paid' )]"/>
+					<filter string="Rejected" name="rejected" domain="[('state', '=','rejected' )]"/>
+					<filter string="Rejected Commercial" name="rejected_commercial" domain="[('state', '=','rejected_commercial' )]"/>
+					<group expand="0" string="Group By">
+						<filter string="Employee" name="employee" domain="[]" context="{'group_by': 'employee_id'}" />
+						<filter string="Project" name="project_id" domain="[]" context="{'group_by': 'project_id'}" />
+						<filter string="Date" name="expenses_month" domain="[]" context="{'group_by': 'create_date'}" help="Expenses by Date" />
+					</group>
+				</xpath>
+				<xpath expr="//filter[@name='my_expense_advance_to_approve']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='advance_to_approve']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='employee_id']" position="after">
+					<field name="project_id"/>
+				</xpath>
+			</field>
+		</record>
+
+		<menuitem id="hr_expense_request_advance.menu_hr_expense_request" name="Expense Requests" sequence="0" parent="hr_expense.menu_hr_expense_root" active="False" />
+		<record id="view_hr_expense_sheet_filter" model="ir.ui.view">
+			<field name="name">hr.expense.sheet.filter</field>
+			<field name="model">hr.expense.sheet</field>
+			<field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//filter[@name='draft']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='submitted']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='to_post']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='approved']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='canceled']" position="after">
+					<filter string="Archived" name="inactive" domain="[('active', '=', False)]" />
+					<!-- <filter domain="[('transaction_type', '=', 'petty_cash')]" string="CVR" name="cash_advance_report" help="Cash Advance Report" />
+					<filter domain="[('transaction_type', '=', 'hutang_usaha')]" string="Reimbursement Report" name="reimbursement_report" help="Reimbursement Report" /> -->
+					<!-- <filter domain="[('transaction_type', '=', 'expense_report')]" string="Expense Report" name="expense_report" help="Expense Report" /> -->
+					<filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" help="Expenses in Draft" />
+					<filter domain="[('state', '=', 'approve_cost_control')]" string="Checked" name="checked" />
+					<filter domain="[('state', '=', 'submit')]" string="Submitted" name="submitted"  />
+					<filter domain="[('state', '=', 'approve')]" string="Approved by PM Project" name="approved" help="Approved Expenses" />
+					<filter domain="[('state', '=', 'approve_technical_director')]" string="Approved by Technical Director" name="approved_technical"/>
+					<filter domain="[('state', '=', 'post')]" string="Posted" name="posted" />
+					<filter domain="[('state', '=', 'cancel')]" string="Cancelled" name="canceled" />
+					<filter domain="[('state', 'in', ['reject_control','reject_technical','reject_finance'])]" string="Rejected" name="rejected" />
+					<group expand="0" string="Group By">
+						<filter string="Project" name="project" domain="[]" context="{'group_by': 'project'}" />
+					</group>
+				</xpath>
+				<xpath expr="//filter[@name='expenses_month']" position="replace">
+					<filter string="Date" name="expenses_month" domain="[]" context="{'group_by': 'create_date'}" help="Expenses by Date" />
+				</xpath>
+				<xpath expr="//filter[@name='canceled']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='activities_overdue']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='activities_today']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//filter[@name='activities_upcoming_all']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='department_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='journal_id']" position="attributes">
+					<attribute name="invisible">
+						True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='name']" position="attributes">
+					<attribute name="string">
+						CVR No
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='name']" position="after">
+					<field name="project"/>
+				</xpath>
+				<xpath expr="//field[@name='employee_id']" position="after">
+					<field name="expense_line_ids" string="Description"/>
+				</xpath>
+				<xpath expr="//field[@name='journal_id']" position="after">
+					<field name="bank_journal_id" string="Journal"/>
+				</xpath>
+			</field>
+		</record>
+		<record id="hr_expense.hr_expense_actions_my_unsubmitted" model="ir.actions.act_window">
+			<field name="name">Expenses</field>
+			<field name="res_model">hr.expense</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="hr_expense.view_hr_expense_filter" />
+			<field name="domain">[]</field>
+			<field name="context">
+				{}
+			</field>
+		</record>
+		<record id="action_hr_expense_cvr_report" model="ir.actions.act_window">
+			<field name="name">CVR</field>
+			<field name="res_model">hr.expense.sheet</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="view_hr_expense_sheet_filter" />
+			<field name="domain">['|', ('transaction_type', '=', 'petty_cash'),('payment_mode', '=', 'company_account')]</field>
+			<field name="context">
+				{ 'transaction_type': 'petty_cash',}
+			</field>
+		</record>
+		<record id="action_hr_expense_reimbursement_report" model="ir.actions.act_window">
+			<field name="name">Reimbursement Report</field>
+			<field name="res_model">hr.expense.sheet</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="view_hr_expense_sheet_filter" />
+			<field name="domain">
+				['|', ('transaction_type', '=', 'hutang_usaha'),('payment_mode', '=', 'own_account')]
+			</field>
+			<field name="context">
+				{ 'transaction_type': 'hutang_usaha'}
+			</field>
+		</record>
+		<record id="action_hr_expense_report" model="ir.actions.act_window">
+			<field name="name">Expense Report</field>
+			<field name="res_model">hr.expense.sheet</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="view_hr_expense_sheet_filter" />
+			<field name="domain">
+				[]
+			</field>
+			<field name="context">
+				{'search_default_expense_report': 1, 'search_default_my_reports': 0, 'transaction_type': 'expense_report'}
+			</field>
+		</record>
+		<record id="action_hr_expense_BAR" model="ir.actions.act_window">
+			<field name="name">BAR</field>
+			<field name="res_model">hr.expense.advance</field>
+			<field name="view_mode">tree,form</field>
+			<field name="search_view_id" ref="hr_expense_advance_filter_view" />
+			<field name="domain">
+				[]
+			</field>
+			<field name="context">
+				{'search_default_my_expense_advance': 0,}
+			</field>
+		</record>
+		<record model="ir.actions.act_window" id="open_product_cost_category">
+			<field name="name">Product Cost Category</field>
+			<field name="res_model">product.cost.category</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<record model="ir.actions.act_window" id="account.action_account_form">
+			<field name="name">Account Name</field>
+			<field name="res_model">account.account</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">
+				[]
+			</field>
+		</record>
+
+		<!-- open good receipt service dari purchase untuk user site admin-->
+		<record model="ir.actions.act_window" id="open_receipt_service_receipt_expense">
+            <field name="name">Service / Goods Receipt</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">['&amp;', ('picking_type_id.name', 'like', 'Receipt%'), ('product_id.type', '=', 'service'), ('show_asset_menu', '=', False)]</field>
+            <field name="context">{'type': 'receipt', 'is_purchase_service': True, 'is_asset_menu': True, 'is_inventory_menu': False, 'default_show_asset_menu': False}</field>
+        </record>
+
+		<menuitem id="hr_expense.menu_hr_expense_sheet_all_to_approve" name="To Approve" sequence="1" parent="hr_expense.menu_hr_expense_report" action="hr_expense.action_hr_expense_sheet_all_to_approve" active="False" />
+		<menuitem id="hr_expense.menu_hr_expense_sheet_all_to_post" name="To Post" sequence="2" parent="hr_expense.menu_hr_expense_report" action="hr_expense.action_hr_expense_sheet_all_to_post" groups="account.group_account_user" active="False" />
+		<menuitem id="hr_expense.menu_hr_expense_sheet_all_to_pay" name="To Pay" sequence="3" parent="hr_expense.menu_hr_expense_report" action="hr_expense.action_hr_expense_sheet_all_to_pay" groups="account.group_account_user" active="False" />
+		<menuitem id="menu_cvr_report" name="CVR" sequence="1" parent="hr_expense.menu_hr_expense_report" action="action_hr_expense_cvr_report" />
+		<menuitem id="menu_reimbursement_report" name="Reimbursement Report" sequence="3" parent="hr_expense.menu_hr_expense_report" action="action_hr_expense_reimbursement_report" />
+		<!-- hide expenses report -->
+		<menuitem id="expense_report" name="Expense Report" sequence="7" parent="hr_expense.menu_hr_expense_report" action="action_hr_expense_report" active="False" />
+		<menuitem id="expense_report" name="Expense Report" sequence="7" parent="hr_expense.menu_hr_expense_report" action="action_hr_expense_report" active="False" />
+		<!--  -->
+		<!-- hide menu my expenses -->
+		<menuitem id="hr_expense.menu_hr_expense_my_expenses_to_submit" name="My Expenses" sequence="0" parent="hr_expense.menu_hr_expense_report" active="False" />
+		<menuitem id="hr_expense.menu_hr_expense_my_expenses" name="My Expenses" sequence="1" parent="hr_expense.menu_hr_expense_root" groups="base.group_user" active="False" />
+		<menuitem id="hr_expense.menu_hr_expense_my_expenses_to_submit" sequence="2" name="Expenses" parent="hr_expense.menu_hr_expense_report" action="hr_expense.hr_expense_actions_my_unsubmitted" />
+		<!--  -->
+		<!-- hide menu advance to approve/to pay -->
+		<menuitem id="hr_expense_request_advance.menu_hr_expense_advance_to_approve" name="advance to approve" sequence="1" parent="hr_expense_request_advance.menu_hr_expense_advance" groups="base.group_user" active="False" />
+		<menuitem id="hr_expense_request_advance.menu_hr_expense_advance_to_pay" name="advance to pay" sequence="1" parent="hr_expense_request_advance.menu_hr_expense_advance" groups="base.group_user" active="False" />
+		<!--  -->
+		<!-- hide menu expense product -->
+		<menuitem id="hr_expense.menu_hr_product" action="hr_expense.hr_expense_product" name="Expense Products" sequence="1" parent="hr_expense.menu_hr_expense_configuration" groups="hr_expense.group_hr_expense_manager" active="False" />
+		<!--  -->
+		<!-- rename menu -->
+		<menuitem name="BAR" id="hr_expense_request_advance.menu_hr_expense_advance_my_requests" sequence="1" parent="hr_expense.menu_hr_expense_root" groups="base.group_user" />
+		<!--
+		<menuitem name="BAR" id="hr_expense_request_advance.menu_hr_expense_advance_my_requests" sequence="1"
+		parent="hr_expense_request_advance.menu_hr_expense_advance" groups="base.group_user"  action="action_hr_expense_BAR"/>
+		-->
+		<menuitem name="CVR" id="hr_expense.menu_hr_expense_report" sequence="2" parent="hr_expense.menu_hr_expense_root" groups="base.group_user" />
+		<!--  -->
+		<!-- menu cost category -->
+		<menuitem id="menu_product_cost_category" name="Cost Category" parent="hr_expense.menu_hr_expense_configuration" action="open_product_cost_category" sequence="5" />
+		<!-- menu Account Name -->
+		<menuitem id="hr_expense.menu_action_account_form" name="Account Name" parent="hr_expense.menu_hr_expense_configuration" groups="account.group_account_manager" action="account.action_account_form" sequence="6" />
+		<!-- group expense report -->
+		<menuitem id="hr_expense.menu_hr_expense_reports" name="Reporting" parent="hr_expense.menu_hr_expense_root" groups="account.group_account_invoice" sequence="3" />
+		<!-- menu Good receipt di menu expenses untuk receipt Purchase Service -->
+		<menuitem id="menu_expense_good_receipt" sequence="3" name="Good Receipt Service" action="open_receipt_service_receipt_expense" parent="hr_expense.menu_hr_expense_root"/>
+
+
+	</data>
+</odoo>

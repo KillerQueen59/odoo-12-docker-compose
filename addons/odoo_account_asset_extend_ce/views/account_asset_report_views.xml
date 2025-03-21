@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_asset_asset_report_search_inherit_filter" model="ir.ui.view">
+            <field name="name">asset.asset.report.custom.search.inherit.filter</field>
+            <field name="model">asset.asset.report.custom</field>
+            <field name="inherit_id" ref="odoo_account_asset.view_asset_asset_report_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date']" position="after">
+<!--                    <field name="asset_period"/-->
+                </xpath> 
+                <!--<xpath expr="//field[@name='asset_id']" position="after">
+                    <filter string="Period" domain="[('asset_period','!=', '0')]" help="Assets in period"/>
+                </xpath>-->
+            </field>
+        </record>
+
+    </data>
+</odoo>

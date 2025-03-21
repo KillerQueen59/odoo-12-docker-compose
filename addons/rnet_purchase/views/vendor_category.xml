@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+		<record id="vendor_category_form_2" model="ir.ui.view">
+            <field name="name">Vendor Category Form</field>
+            <field name="model">res.partner.industry</field>
+            <field name="inherit_id" ref="base.res_partner_industry_view_form"/>
+            <field name="arch" type="xml">
+            <xpath expr="//form" position="replace">
+                <form>
+                    <sheet>
+                        <div class="oe_button_box">
+                            <button class="oe_stat_button" type="object" icon="fa-th-list" name="open_vendor_category">
+                                <field string="Vendors" name="vendor_count" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <group>
+                            <field name="name" readonly="True"/>
+                            <field name="full_name" readonly="True"/>
+                        </group>
+                    </sheet>
+                </form>
+            </xpath>
+            </field>
+
+        </record>
+
+        <record id="vendor_category_tree" model="ir.ui.view">
+            <field name="name">Vendor Category Tree</field>
+            <field name="model">res.partner.industry</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="full_name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="open_vendor_category">
+            <field name="name">Purchase Vendor Category</field>
+            <field name="res_model">res.partner.industry</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="vendor_category_tree"/>
+        </record>
+
+		<menuitem id="menu_vendor_category"
+          name="Vendor Category"
+          parent="purchase.menu_product_in_config_purchase"
+          action="open_vendor_category" sequence="50"/>
+</odoo>

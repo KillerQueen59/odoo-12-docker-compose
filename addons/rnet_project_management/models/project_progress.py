@@ -105,40 +105,6 @@ class ProjectProgressPlan(models.Model):
     @api.model
     def get_actual_estimated_lines(self):
         res = []
-        for rec in self:
-            # compute list BAR
-            for expense in self.env['hr.expense.advance'].search(['&',('project_id', '=', rec.name.id),('state', 'in', ['partial','paid']),]):
-                expenses = {
-                        'code': 'BAR',
-                        'name': expense.name,
-                        'created_date': expense.requested_date,
-                        'amount': expense.total_paid,
-                        'project': expense.project_id,
-                    }
-                res.append(expenses)
-
-            # compute list PR
-            for pr in self.env['material.purchase.requisition'].search(['&',('project', '=', rec.name.id),('state', 'in', ['stock']),]):
-                requisitions = {
-                        'code': 'PR',
-                        'created_date': pr.request_date,
-                        'name': pr.name,
-                        'amount': 0.0,
-                        'project': pr.project,
-                        }
-                res.append(requisitions)
-
-            # compute list Purchase
-            for purchase in self.env['purchase.order'].search(['&',('project', '=', rec.name.id),('state', 'in', ['purchase']),]):
-                date_new = purchase.date_order.date()
-                purchases = {
-                        'code': 'PO',
-                        'created_date': date_new,
-                        'name': purchase.name,
-                        'amount': purchase.amount_total,
-                        'project': purchase.project,
-                        }
-                res.append(purchases)
 
         return res
 
@@ -160,44 +126,6 @@ class ProjectProgressPlan(models.Model):
     @api.model
     def get_actual_cashout_lines(self):
         res = []
-        for rec in self:
-
-            # compute list CVR
-            for expense in self.env['hr.expense.sheet'].search(
-                    ['&', ('project', '=', rec.name.id), ('state', 'in', ['approve', 'post']), ]):
-                expenses = {
-                    'code': 'CVR',
-                    'name': expense.name,
-                    'payment_date': expense.created_date,
-                    'amount': expense.total_amount,
-                    'project': expense.project,
-                }
-                res.append(expenses)
-
-            # compute list Purchase paid/ account payment
-            po_obj = self.env['purchase.order'].search([('project', '=', rec.name.id )])
-            for payment in self.env['account.payment'].search([('state', '!=', 'cancelled'), ('payment_type', '=', 'outbound')]):
-                amount = payment.amount_idr_curr if payment.currency_id != payment.company_id.currency_id else payment.amount
-                payments = {
-                    'code': 'PI',
-                    'payment_date': payment.payment_date,
-                    'name': payment.name,
-                    'amount': amount,
-                    'project': payment.project,
-                }
-                res.append(payments)
-
-
-             # compute list BAR paid
-            for payment in self.env['account.payment'].search(['&',('state','!=', 'cancelled'),('payment_type', '=', 'transfer'),]):
-                payments = {
-                        'code': 'BAR',
-                        'payment_date': payment.payment_date,
-                        'name': payment.name,
-                        'amount': payment.amount,
-                        'project': payment.project,
-                    }
-                res.append(payments)
 
         return res
 
@@ -219,18 +147,6 @@ class ProjectProgressPlan(models.Model):
     @api.model
     def get_actual_invoice_lines(self):
         res = []
-        for rec in self:
-            # compute list Invoice
-            for inv in self.env['account.invoice'].search(['&','&',('project', '=', rec.name.id),('type', '=', 'out_invoice'),('state', 'not in', ['draft','cancel']),]):
-                invoices = {
-                        'name': inv.number,
-                        'created_date': inv.date_invoice,
-                        'amount': inv.amount_total,
-                        'amount_company_signed' : inv.amount_untaxed_signed,
-                        'currency_id': inv.currency_id,
-                        'project': inv.project
-                    }
-                res.append(invoices)
 
         return res
 
@@ -862,18 +778,14 @@ class ProjectProgressPlan(models.Model):
     # statinfo  BAR & CVR di Project management
     @api.multi
     def _get_expense_sheet_count(self):
-        res = self.env['hr.expense.sheet'].search_count(['&', ('project', '=', self.name.id), (
-        'state', 'not in', ['draft', 'cancel', 'reject_control', 'reject_technical', 'reject_finance'])])
-        self.expense_sheet_count = res or 0
+        self.expense_sheet_count =  0
 
     @api.multi
     @api.depends('expense_sheet_count')
     def _get_expense_sheet_amount(self):
-        data_obj = self.env['hr.expense.sheet'].search(['&', ('project', '=', self.name.id), (
-        'state', 'not in', ['draft', 'cancel', 'reject_control', 'reject_technical', 'reject_finance'])])
-        total_amount = sum(data_obj.mapped('total_amount'))
+
         for record in self:
-            record.expense_sheet_amount = total_amount or False
+            record.expense_sheet_amount = False
 
     @api.multi
     def _get_expense_advance_count(self):
@@ -893,11 +805,9 @@ class ProjectProgressPlan(models.Model):
     # statinfo PO di Project management
     @api.multi
     def _get_purchase_order_amount(self):
-        data_obj = self.env['purchase.order'].search(
-            ['&', ('project', '=', self.name.id), ('state', 'not in', ['draft', 'cancel', 'refuse'])])
-        total_amount = sum(data_obj.mapped('amount_total'))
+
         for record in self:
-            record.purchase_order_amount = total_amount or False
+            record.purchase_order_amount =  False
 
     # open CVR
     @api.multi

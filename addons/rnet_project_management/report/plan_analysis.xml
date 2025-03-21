@@ -1,0 +1,168 @@
+<odoo>
+	<data>
+
+	<!-- Project Management Plan Cash In Analysis -->
+		<record model="ir.ui.view" id="view_project_plan_cashin_graph">
+			<field name="name">project.plan.cashin.graph</field>
+			<field name="model">project.plan.cashin</field>
+			<field name="arch" type="xml">
+				<graph string="project Plan Cash In Lines">
+					<field name="date" type="row" string="Tanggal"/>
+					<field name="name" type="measure" string="Cash In"/>
+					<field name="plan_plan_cashin_id" type="col"/>
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="act_project_plan_cashin_analysis_view">
+			<field name="name">Plan Cash In</field>
+			<field name="res_model">project.plan.cashin</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">graph,pivot</field>
+			<field name="view_id" eval="False"/>
+		</record>
+
+		<record id="view_project_plan_cashin_analysis_search" model="ir.ui.view">
+			<field name="name">project.plan.cashin.search</field>
+			<field name="model">project.plan.cashin</field>
+			<field name="arch" type="xml">
+				<search string="Plan Cash In">
+					<field name="plan_plan_cashin_id"/>
+					<group expand="0" string="Group By">
+						<filter name="plan_plan_cashin_id" string="Project" domain="[]" context="{'group_by':'plan_plan_cashin_id'}"/>
+					</group>
+				</search>
+			</field>
+		</record>
+	<!--  -->
+
+	<!-- Project Management Plan Cash Out Analysis -->
+		<record model="ir.ui.view" id="view_project_plan_cashout_graph">
+			<field name="name">project.plan.cashout.graph</field>
+			<field name="model">project.plan.cashout</field>
+			<field name="arch" type="xml">
+				<graph string="project Plan Cash Out Lines">
+					<field name="date" type="row" string="Tanggal"/>
+					<field name="name" type="measure" string="Cash Out"/>
+					<field name="plan_plan_cashout_id" type="col"/>
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="act_project_plan_cashout_analysis_view">
+			<field name="name">Plan Cash Out</field>
+			<field name="res_model">project.plan.cashout</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">graph,pivot</field>
+			<field name="view_id" eval="False"/>
+		</record>
+
+		<record id="view_project_plan_cashout_analysis_search" model="ir.ui.view">
+			<field name="name">project.plan.cashout.search</field>
+			<field name="model">project.plan.cashout</field>
+			<field name="arch" type="xml">
+				<search string="Plan Cash Out">
+					<field name="plan_plan_cashout_id"/>
+					<group expand="0" string="Group By">
+						<filter name="plan_plan_cashout_id" string="Project" domain="[]" context="{'group_by':'plan_plan_cashout_id'}"/>
+					</group>
+				</search>
+			</field>
+		</record>
+	<!--  -->
+
+	<!-- Project Management Plan Invoice Analysis -->
+		<record model="ir.ui.view" id="view_project_plan_invoice_graph">
+			<field name="name">project.plan.invoice.graph</field>
+			<field name="model">project.plan.invoice</field>
+			<field name="arch" type="xml">
+				<graph string="project Plan Invoice Lines">
+					<field name="date" type="row" string="Tanggal"/>
+					<field name="name" type="measure" string="Invoice"/>
+					<field name="plan_plan_invoice_id" type="col"/>
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="act_project_plan_invoice_analysis_view">
+			<field name="name">Plan Invoice</field>
+			<field name="res_model">project.plan.invoice</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">graph,pivot</field>
+			<field name="view_id" eval="False"/>
+		</record>
+
+		<record id="view_project_plan_invoice_analysis_search" model="ir.ui.view">
+			<field name="name">project.plan.invoice.search</field>
+			<field name="model">project.plan.invoice</field>
+			<field name="arch" type="xml">
+				<search string="Plan Invoice">
+					<field name="plan_plan_invoice_id"/>
+					<group expand="0" string="Group By">
+						<filter name="plan_plan_invoice_id" string="Project" domain="[]" context="{'group_by':'plan_plan_invoice_id'}"/>
+					</group>
+				</search>
+			</field>
+		</record>
+	<!--  -->
+
+	<!-- Project Management Plan Manhour Analysis -->
+		<record model="ir.ui.view" id="view_project_plan_manhour_graph">
+			<field name="name">project.plan.manhour.graph</field>
+			<field name="model">project.plan.manhour</field>
+			<field name="arch" type="xml">
+				<graph string="project Plan Manhour Lines" >
+					<field name="date" type="row" string="Tanggal"/>
+					<field name="name" type="measure" string="Manhour"/>
+					<field name="plan_plan_manhour_id" type="col"/>
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="act_project_plan_manhour_analysis_view">
+			<field name="name">Plan Manhour</field>
+			<field name="res_model">project.plan.manhour</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">graph,pivot</field>
+			<field name="view_id" eval="False"/>
+		</record>
+
+		<record id="view_project_plan_manhour_analysis_search" model="ir.ui.view">
+			<field name="name">project.plan.manhour.search</field>
+			<field name="model">project.plan.manhour</field>
+			<field name="arch" type="xml">
+				<search string="Plan Manhour">
+					<field name="plan_plan_manhour_id"/>
+					<group expand="0" string="Group By">
+						<filter name="plan_plan_manhour_id" string="Project" domain="[]" context="{'group_by':'plan_plan_manhour_id'}"/>
+					</group>
+				</search>
+			</field>
+		</record>
+	<!--  -->
+
+
+	<menuitem id="menu_project_progress_plan_analysis" sequence="2" name="Plan Analysis" parent="menu_project_progress_analysis"  groups="project.group_project_manager"/>
+
+	<!-- Menu Project Management Plan Cash Out Analysis -->
+		<menuitem id="menu_act_project_plan_cashout_analysis_view"
+				action="act_project_plan_cashout_analysis_view"
+				parent="menu_project_progress_plan_analysis" sequence="2"/>
+
+	<!-- Menu Project Management Plan Cash In Analysis -->
+		<menuitem id="menu_act_project_plan_cashin_analysis_view"
+				action="act_project_plan_cashin_analysis_view"
+				parent="menu_project_progress_plan_analysis" sequence="1"/>
+
+	<!-- Menu Project Management Plan Invoie Analysis -->
+		<menuitem id="menu_act_project_plan_invoice_analysis_view"
+				action="act_project_plan_invoice_analysis_view"
+				parent="menu_project_progress_plan_analysis" sequence="3"/>
+
+	<!-- Menu Project Management Plan Manhour Analysis -->
+		<menuitem id="menu_act_project_plan_manhour_analysis_view"
+				action="act_project_plan_manhour_analysis_view"
+				parent="menu_project_progress_plan_analysis" sequence="4"/>
+       
+	</data>
+</odoo>

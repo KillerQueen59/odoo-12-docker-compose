@@ -1,0 +1,155 @@
+<odoo>
+	<data>
+
+    <!-- Project Management Estimated Cash Out Analysis -->
+		<record model="ir.ui.view" id="view_project_estimated_cashout_graph">
+			<field name="name">project.estimated.cashout.graph</field>
+			<field name="model">project.estimated.cashout</field>
+			<field name="arch" type="xml">
+				<graph string="Project Estimated Cash Out Lines">
+					<field name="created_date" type="row" string="Date"/>
+                    <field name="amount" type="measure"/>
+					<field name="name" string="Estimated Cash Out"/>
+                    <field name="project" type="col"/>
+                    <field name="estimated_cashout_line_id" type="col"/>
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="act_project_estimated_cashout_analysis_view">
+			<field name="name">Estimated Cash Out Analysis</field>
+			<field name="res_model">project.estimated.cashout</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">graph,pivot</field>
+			<field name="view_id" eval="False"/>
+		</record>
+
+		<record id="view_project_estimated_cashout_analysis_search" model="ir.ui.view">
+			<field name="name">project.estimated.cashout.search</field>
+			<field name="model">project.estimated.cashout</field>
+			<field name="arch" type="xml">
+				<search string="Estimated Cash Out">
+					<field name="project"/>
+					<group expand="0" string="Group By">
+						<filter name="project" string="Project" domain="[]" context="{'group_by':'project'}"/>
+                        <filter name="code" string="Source" domain="[]" context="{'group_by':'code'}"/>
+					</group>
+				</search>
+			</field>
+		</record>
+    <!--  -->
+
+	<!-- Project Management Actual Cash Out Analysis -->
+		<record model="ir.ui.view" id="view_project_actual_cashout_graph">
+			<field name="name">project.actual.cashout.graph</field>
+			<field name="model">project.actual.cashout</field>
+			<field name="arch" type="xml">
+				<graph string="project Actual Cash Out Lines">
+					<field name="payment_date" type="row" string="Date"/>
+                    <field name="amount" type="measure"/>
+					<!-- <field name="name" string="Actual Cash Out"/> -->
+                    <field name="project"/>
+                    <field name="actual_cashout_line_id" type="col"/>
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="act_project_actual_cashout_analysis_view">
+			<field name="name">Actual Cash Out Analysis</field>
+			<field name="res_model">project.actual.cashout</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">graph,pivot</field>
+			<field name="view_id" eval="False"/>
+		</record>
+
+		<record id="view_project_actual_cashout_analysis_search" model="ir.ui.view">
+			<field name="name">project.actual.cashout.search</field>
+			<field name="model">project.actual.cashout</field>
+			<field name="arch" type="xml">
+				<search string="Actual Cash Out">
+					<field name="project"/>
+					<group expand="0" string="Group By">
+						<filter name="project" string="Project" domain="[]" context="{'group_by':'project'}"/>
+                        <filter name="code" string="Source" domain="[]" context="{'group_by':'code'}"/>
+					</group>
+				</search>
+			</field>
+		</record>
+    <!--  -->
+
+
+<!-- Project Management Actual Cash In Analysis -->
+		<record model="ir.ui.view" id="view_project_actual_cashin_graph">
+			<field name="name">project.actual.cashin.graph</field>
+			<field name="model">project.actual.cashin</field>
+			<field name="arch" type="xml">
+				<graph string="project Actual Cash In Lines">
+					<field name="payment_date" type="row" string="Date"/>
+                    <field name="amount" type="measure"/>
+					<!-- <field name="name" string="Actual Cash In"/> -->
+                    <field name="project"/>
+                    <field name="actual_cashin_line_id" type="col"/>
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="act_project_actual_cashin_analysis_view">
+			<field name="name">Actual Cash In Analysis</field>
+			<field name="res_model">project.actual.cashin</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">graph,pivot</field>
+			<field name="view_id" eval="False"/>
+		</record>
+    <!--  -->
+
+	<!-- Project Management Actual Invoice Analysis -->
+		<record model="ir.ui.view" id="view_project_actual_invoice_graph">
+			<field name="name">project.actual.invoice.graph</field>
+			<field name="model">project.actual.invoice</field>
+			<field name="arch" type="xml">
+				<graph string="project Actual Invoice Lines">
+					<field name="created_date" type="row" string="Date"/>
+                    <field name="amount" type="measure"/>
+					<!-- <field name="name" string="Actual Invoice"/> -->
+                    <field name="project"/>
+                    <field name="actual_invoice_line_id" type="col"/>
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="act_project_actual_invoice_analysis_view">
+			<field name="name">Actual Invoice Analysis</field>
+			<field name="res_model">project.actual.invoice</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">graph,pivot</field>
+			<field name="view_id" eval="False"/>
+			<field name="domain">[('project', '!=', False)]</field>
+		</record>
+    <!--  -->
+
+	<menuitem id="menu_project_progress_actual_analysis" sequence="3" name="Actual Analysis" parent="menu_project_progress_analysis"  groups="project.group_project_manager"/>
+
+
+	<!-- Menu Project Management Estimated Cash Out Analysis -->
+		<!-- <menuitem id="menu_act_project_estimated_cashout_analysis_view"
+				action="act_project_estimated_cashout_analysis_view"
+				parent="menu_project_progress_actual_analysis" sequence="7"/> -->
+
+	<!-- Menu Project Management Actual Cash Out Analysis -->
+		<menuitem id="menu_act_project_actual_cashout_analysis_view"
+				action="act_project_actual_cashout_analysis_view"
+				parent="menu_project_progress_actual_analysis" sequence="8"/>
+
+	<!-- Menu Project Management Actual Cash In Analysis -->
+		<menuitem id="menu_act_project_actual_cashin_analysis_view"
+				action="act_project_actual_cashin_analysis_view"
+				parent="menu_project_progress_actual_analysis" sequence="9"/>
+
+	<!-- Menu Project Management Actual Cash In Analysis -->
+		<menuitem id="menu_act_project_actual_invoice_analysis_view"
+				action="act_project_actual_invoice_analysis_view"
+				parent="menu_project_progress_actual_analysis" sequence="10"/>
+
+
+	</data>
+</odoo>

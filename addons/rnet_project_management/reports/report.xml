@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <report
+                id="report_project_management"
+                string="PMreport_' + (object.name.no or '') + '_' + object.current_date"
+                model="project.progress.plan"
+                report_type="qweb-pdf"
+                name="rnet_project_management.project_progress_plan"
+                file="rnet_project_management.project_progress_plan"
+                print_report_name="'PMreport_' + (object.name.no or '') + '_' + object.current_date"/>
+
+        <template id="project_progress_plan">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <!--Project Detail-->
+                    <div class="page">
+                        <h1>Project Management Report</h1>
+                        <h3>Job Order ID:
+                            <t t-esc="o.name.no"/>
+                        </h3>
+                        <h3>Project Name:
+                            <t t-esc="o.name.name"/>
+                        </h3>
+                        <h3>PO / Contract No:
+                            <t t-esc="o.name.no"/>
+                        </h3>
+                        <h3>Location:
+                            <t t-esc="o.name.location.name or 'N/A'"/>
+                        </h3>
+                        <h3>Project Manager:
+                            <t t-esc="o.name.project_manager.name or 'N/A'"/>
+                        </h3>
+                        <h3>Project Director:
+                            <t t-esc="o.name.project_director.name or 'N/A'"/>
+                        </h3>
+                        <h3>Start Date:
+                            <t t-esc="o.start_date"/> - Finish Date:
+                            <t t-esc="o.finish_date"/>
+                        </h3>
+                        <h3>Status Per:
+                            <t t-esc="o.current_date"/>
+                        </h3>
+
+                    </div>
+                    <div class="page" style="page-break-before: always;">
+                        <h2>1. Report Summary and Type Project</h2>
+                        <h3>a) Contract Data</h3>
+                        <h3>PO / Contract No:
+                            <t t-esc="o.name.no"/>
+                        </h3>
+                        <h3>Order Value:
+                            <t t-esc="o.name.order_value"/>
+                        </h3>
+                        <h3>b) Permit Documnent</h3>
+                        <h3>c) Contract Execution</h3>
+                        <h3>d) Certification</h3>
+                        <h3>e) Change Order and Claim Summary</h3>
+                        <h3>f) Contract Comment</h3>
+
+                    </div>
+
+
+                    <div class="page" style="page-break-before: always;">
+
+                        <h2>2. Performance Data</h2>
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.sCurveChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                        <!--S curve table-->
+                        <h3>Table 1. S-Curve</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan</th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_actual_plan_curve_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            <t t-esc="'%.2f' % line.plan"/>%
+                                        </td>
+
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            <t t-esc="'%.2f' % line.actual"/>%
+                                        </td>
+
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <h3>Table 2. S-Curve Accumulative</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan
+                                        Accumulative
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual
+                                        Accumulative
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_actual_plan_curve_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            <t t-esc="'%.2f' % line.accumulative_plan"/>%
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            <t t-esc="'%.2f' % line.accumulative_actual"/>%
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="page" style="page-break-before: always;">
+                        <h2>Cashflow Analysis</h2>
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.cashflowPlanChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                        <!--Cashflow table-->
+                        <h3>Table 3. Cash Flow Plan</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan Cash In
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan Cash
+                                        Out
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan Cash
+                                        Flow
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_cash_flow_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.cash_in_plan or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.cash_out_plan or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.cash_flow_plan or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+
+                        </table>
+
+                        <h3>Table 4. Cash Flow Plan Accumulative</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Plan Cash In
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Plan Cash Out
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Plan Cash Flow
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_cash_flow_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_cash_in_plan or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_cash_out_plan or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_cash_flow_plan or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+
+                        </table>
+
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.cashflowActualChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                        <h3>Table 5. Cash Flow Actual</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual Cash
+                                        In
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual Cash
+                                        Out
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual Cash
+                                        Flow
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_cash_flow_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.cash_in_actual or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.cash_out_actual or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.cash_flow_actual or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+
+                        </table>
+
+                        <h3>Table 6. Cash Flow Actual Accumulative</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Actual Cash In
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Actual Cash Out
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Actual Cash Flow
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_cash_flow_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_cash_in_actual or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_cash_out_actual or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_cash_flow_actual or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+
+                        </table>
+
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.cashflowChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page" style="page-break-before: always;">
+                        <h2>Budget Analysis</h2>
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.costChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                        <!--Cost table-->
+
+                        <h3>Table 7. Cash Out Estimated</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan Cash
+                                        Out
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Estimated Cash
+                                        Out
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual Cash
+                                        Out
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_cash_out_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.plan_cash_out or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.estimated_cash_out or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.actual_cash_out or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.remainingBudgetChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+
+                        <h3>Table 8. Remaining from budget</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual Cash
+                                        Out
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Remaining from
+                                        Budget
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                        Rp
+                                        <t t-esc="'{:,}'.format(int(o.total_actual_cash_out or 0))"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                        Rp
+                                        <t t-esc="'{:,}'.format(int((o.remaining_budget or 0)))"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                        <t t-set="usage_percentage"
+                                           t-value="((o.total_actual_cash_out or 0) / (o.remaining_budget or 1)) * 100"/>
+                                        <t t-esc="'{:.2f}%'.format(usage_percentage)"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                        <t t-set="usage_percentage"
+                                           t-value="(((o.remaining_budget or 1) - (o.total_actual_cash_out or 0)) / (o.remaining_budget or 1)) * 100"/>
+                                        <t t-esc="'{:.2f}%'.format(usage_percentage)"/>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.remainingSalesChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                        <h3>Table 9. Remaining from sales</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual Cash
+                                        Out
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Remaining from
+                                        Sales
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                        Rp
+                                        <t t-esc="'{:,}'.format(int(o.total_actual_cash_out or 0))"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                        Rp
+                                        <t t-esc="'{:,}'.format(int((o.remaining_sales or 0)))"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                        <t t-set="usage_percentage"
+                                           t-value="((o.total_actual_cash_out or 0) / (o.remaining_sales or 1)) * 100"/>
+                                        <t t-esc="'{:.2f}%'.format(usage_percentage)"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                        <t t-set="usage_percentage"
+                                           t-value="(((o.remaining_sales or 1) - (o.total_actual_cash_out or 0)) / (o.remaining_sales or 1)) * 100"/>
+                                        <t t-esc="'{:.2f}%'.format(usage_percentage)"/>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.remainingFromBoth()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page" style="page-break-before: always;">
+                        <h2>Revenue Analysis</h2>
+
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.invoiceChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                        <!--Invoice table-->
+                        <h3>Table 10. Invoice</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan Invoice
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual
+                                        Invoice
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_invoice_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.plan_invoice or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.actual_invoice or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!--Invoice table-->
+                        <h3>Table 11. Invoice Accumulative</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Plan Invoice
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Actual Invoice
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_invoice_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_plan_invoice or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_actual_invoice or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <!--Cash In table-->
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.paymentChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+                        <h3>Table 12. Cash In</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan Cash In
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual Cash
+                                        In
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_cash_in_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.plan_cash_in or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.actual_cash_in or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <!-- Row for Totals -->
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid black; text-align: right; font-weight: bold;">
+                                        Total
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black; font-weight: bold;">
+                                        Rp
+                                        <t t-esc="'{:.0f}'.format(o.total_plan_cash_in)"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black; font-weight: bold;">
+                                        Rp
+                                        <t t-esc="'{:.0f}'.format(o.total_actual_cash_in)"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3>Table 13. Cash In Accumulative</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Plan Cash In
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Actual Cash In
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_cash_in_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_plan_cash_in or 0))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            Rp
+                                            <t t-esc="'{:,}'.format(int(line.accumulative_actual_cash_in or 0))"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <!-- Row for Totals -->
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid black; text-align: right; font-weight: bold;">
+                                        Total
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black; font-weight: bold;">
+                                        Rp
+                                        <t t-esc="'{:.0f}'.format(o.total_plan_cash_in)"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid black; font-weight: bold;">
+                                        Rp
+                                        <t t-esc="'{:.0f}'.format(o.total_actual_cash_in)"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="page" style="page-break-before: always;">
+                        <h2>Manhour Analysis</h2>
+
+                        <!--Man hour table-->
+                        <h3>Table 14. Man hour</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Plan Man
+                                        Hour
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Actual Man
+                                        Hour
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_manhour_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            <t t-esc="'{:.0f}'.format(line.plan_manhour).replace(',', '')"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            <t t-esc="'{:.0f}'.format(line.actual_manhour).replace(',', '')"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!--Man hour table-->
+                        <h3>Table 15. Man hour Accumulative</h3>
+                        <table class="table table-bordered"
+                               style="border: 2px solid black; border-collapse: collapse; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black; width: 100px;">
+                                        Year - Week
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Plan Man Hour
+                                    </th>
+                                    <th style="text-align: right; padding: 8px; border: 1px solid black;">Accumulative
+                                        Actual Man Hour
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.project_manhour_report" t-as="line">
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid black; width: 100px;">
+                                            <t t-esc="line.year"/>
+                                            W
+                                            <t t-esc="line.weeks"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            <t t-esc="'{:.0f}'.format(line.accumulative_plan_manhour).replace(',', '')"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 8px; border: 1px solid black;">
+                                            <t t-esc="'{:.0f}'.format(line.accumulative_actual_manhour).replace(',', '')"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
+                            <div style="width: 100%; height: auto; text-align: center;">
+                                <img t-att-src="o.manHourChart()" style="width: 80%; height: auto;"/>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 3-->
+                    <div class="page" style="page-break-before: always;">
+                        <h2>3. Project Execution Experience</h2>
+                        <t t-esc="o.project_execution_experience_value"/>
+
+                        <h2>4. Procurement / Logistic Recommendation (Material)</h2>
+                        <t t-esc="o.procurement_recommendation_value"/>
+
+                        <h2>5. Subcon Performance (Service)</h2>
+                        <t t-esc="o.subcon_performance_service_value"/>
+
+                        <h2>6. Lesson learned</h2>
+                        <t t-esc="o.lesson_learned_value"/>
+
+                    </div>
+
+                </t>
+                <t t-call="rnet_project_management.project_progress_footer"/>
+
+            </t>
+        </template>
+
+        <template id="project_progress_footer" name="Project Progress Footer">
+            <div class="footer">
+                <span>Page
+                    <span class="page"/>
+                    of
+                    <span class="topage"/>
+                </span>
+            </div>
+            <style>
+                .footer {
+                font-size: 10px;
+                text-align: center;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                color: #888;
+                }
+            </style>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="seq_request_requisition" model="ir.sequence">
+            <field name="name">Progress Plan</field>
+            <field name="code">progress.plan</field>
+            <!-- <field name="prefix"></field> -->
+            <field name="padding">5</field>
+        </record>
+    </data>
+</odoo>

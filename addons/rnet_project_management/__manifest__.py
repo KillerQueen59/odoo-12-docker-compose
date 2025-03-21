@@ -10,6 +10,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/project_progress.xml',
+        'views/project_cashflow.xml',
         'data/data.xml',
         'security/security.xml',
         'report/plan_analysis.xml',

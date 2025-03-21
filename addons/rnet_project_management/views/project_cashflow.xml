@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View for Cashflow Summary -->
+        <record model="ir.ui.view" id="view_project_cashflow_summary_form">
+            <field name="name">project.cashflow.summary.form</field>
+            <field name="model">project.cashflow.summary</field>
+            <field name="arch" type="xml">
+                <form string="Cashflow Summary Overview" create="false" edit="false">
+                    <header>
+                        <button name="action_refresh" type="object" string="Refresh" class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="total_plan_cash_in"/>
+                            <field name="total_actual_cash_in"/>
+                            <field name="total_plan_cash_out"/>
+                            <field name="total_actual_cash_out"/>
+                            <field name="net_plan_cashflow"/>
+                            <field name="net_actual_cashflow"/>
+                        </group>
+                        <notebook>
+                            <page string="Cash Out Plan by Project">
+                                <field name="cashout_plan_lines" nolabel="1">
+                                    <tree editable="false" create="false" delete="false">
+                                        <field name="project_name" string="Project"/>
+                                        <field name="date" string="Tanggal"/>
+                                        <field name="total_cash_out" string="Cash Out" sum="Total Cash Out"/>
+                                    </tree>
+                                </field>
+                            </page>
+                             <page string="Cash Out Actual by Project">
+                                <field name="cashout_actual_lines" nolabel="1">
+                                    <tree editable="false" create="false" delete="false">
+                                        <field name="project_name" string="Project"/>
+                                        <field name="date" string="Tanggal"/>
+                                        <field name="total_cash_out" string="Cash Out" sum="Total Cash Out"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Cash In Plan by Project">
+                                <field name="cashin_plan_lines" nolabel="1">
+                                    <tree editable="false" create="false" delete="false">
+                                        <field name="project_name" string="Project"/>
+                                        <field name="date" string="Tanggal"/>
+                                        <field name="total_cash_in" string="Cash In" sum="Total Cash In"/>
+                                    </tree>
+                                </field>
+                            </page>
+                             <page string="Cash In Actual by Project">
+                                <field name="cashin_actual_lines" nolabel="1">
+                                    <tree editable="false" create="false" delete="false">
+                                        <field name="project_name" string="Project"/>
+                                        <field name="date" string="Tanggal"/>
+                                        <field name="total_cash_in" string="Cash In" sum="Total Cash In"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View (List View) to Prevent Direct New Form -->
+        <record model="ir.ui.view" id="view_project_cashflow_summary_tree">
+            <field name="name">project.cashflow.summary.tree</field>
+            <field name="model">project.cashflow.summary</field>
+            <field name="arch" type="xml">
+                <tree create="false" edit="false">
+                    <field name="name"/>
+                    <field name="total_plan_cash_in"/>
+                    <field name="total_actual_cash_in"/>
+                    <field name="total_plan_cash_out"/>
+                    <field name="total_actual_cash_out"/>
+                    <field name="net_plan_cashflow"/>
+                    <field name="net_actual_cashflow"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Action for Cashflow Summary -->
+        <record model="ir.actions.act_window" id="act_project_cashflow_summary">
+            <field name="name">Cashflow Summary Overview</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">project.cashflow.summary</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field> <!-- Only form view -->
+            <field name="create">false</field> <!-- Disable create action -->
+            <field name="edit">false</field>   <!-- Disable edit action -->
+            <field name="views" eval="[(False, 'form')]"/> <!-- Use form view directly -->
+            <field name="context">{'create': False, 'edit': False, 'form_view_initial_mode': 'readonly'}</field> <!-- Enforce read-only -->
+            <field name="domain">[('name', '=', 'Cashflow Summary')]</field> <!-- Target the default record by name -->
+        </record>
+
+        <!-- Menu Item for Cashflow Summary -->
+        <menuitem id="menu_project_progress_cashflow_summary"
+                  sequence="2"
+                  name="Project Cashflow Summary"
+                  action="act_project_cashflow_summary"
+                  parent="menu_project_progress_root"
+                  groups="project.group_project_manager"/>
+
+        <!-- Default Record -->
+        <record model="project.cashflow.summary" id="default_cashflow_summary">
+            <field name="name">Cashflow Summary</field>
+        </record>
+    </data>
+</odoo>

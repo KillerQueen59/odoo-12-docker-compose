@@ -15,11 +15,11 @@
         <field name="groups" eval="[(4, ref ('base.group_erp_manager'))]"/>
     </record>
 
-    <record id="ir_rule_view_project_management_dirctur" model="ir.rule">
-        <field name="model_id" ref="model_project_progress_plan" />
-        <field name="name">view Project Management for Directur</field>
-        <field name="domain_force">[(1,'=',1)]</field>
-        <field name="groups" eval="[(4, ref ('purchase_tripple_approval.group_purchase_director'))]"/>
-    </record>
+<!--    <record id="ir_rule_view_project_management_dirctur" model="ir.rule">-->
+<!--        <field name="model_id" ref="model_project_progress_plan" />-->
+<!--        <field name="name">view Project Management for Directur</field>-->
+<!--        <field name="domain_force">[(1,'=',1)]</field>-->
+<!--        <field name="groups" eval="[(4, ref ('purchase_tripple_approval.group_purchase_director'))]"/>-->
+<!--    </record>-->
 
 </odoo>

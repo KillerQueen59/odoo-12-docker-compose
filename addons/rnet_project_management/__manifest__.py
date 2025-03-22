@@ -1,9 +1,8 @@
-
 {
     'name': 'RNET - Project Management',
     'version': '1.0',
     'category': 'Project',
-    'author':'',
+    'author': '',
     'description': """
     Use Project module for Progress project Management.
     """,
@@ -18,7 +17,8 @@
         'report/actual_plan_analysis.xml',
         # 'views/project_dashboard.xml',
         # 'views/project_dashboard_detail.xml',
-        'reports/report.xml'
+        'reports/report.xml',
+        'reports/cashflow_report.xml'
     ],
     'depends': ['mail','account','project','hr_timesheet_sheet','purchase'],
     'installable': True,

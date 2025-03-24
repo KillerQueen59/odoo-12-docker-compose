@@ -9,6 +9,7 @@
                 <form string="Cashflow Summary Overview" create="false" edit="false">
                     <header>
                         <button name="action_refresh" type="object" string="Refresh" class="oe_highlight"/>
+                        <button name="print_report" type="object" string="Export Cashflow Summary" class="oe_highlight"/>
                     </header>
                     <sheet>
                         <group>

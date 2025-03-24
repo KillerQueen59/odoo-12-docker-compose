@@ -154,7 +154,7 @@
 
 							<page name="progress_actual_cash_out_id" string="Actual Cash Out">
 								<separator string="Actual Cash Out" />
-								<field name="project_actual_cashout_line" force_save="1" readonly="1">
+								<field name="project_actual_cashout_line" force_save="1"  attrs="{'readonly':[('active', '=', False)]}">
 									<tree string="Actual Cash Out" editable="top">
 										<field name="name" string="Number"/>
 										<field name="code"/>
@@ -181,7 +181,7 @@
 
 							<page name="progress_actual_cash_in" string="Actual Cash In">
 								<separator string="Actual Cash In" />
-								<field name="project_actual_cashin_line" force_save="1" readonly="1">
+								<field name="project_actual_cashin_line" force_save="1"  attrs="{'readonly':[('active', '=', False)]}">
 									<tree string="Actual Cash In" editable="top">
 										<field name="name" string="Number"/>
 										<field name="payment_date"/>

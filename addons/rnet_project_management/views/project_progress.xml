@@ -47,30 +47,38 @@
 								<field name="refresh_onchange_actual_value" invisible="1"/>
 							</group>
 						</group>
-                        <notebook attrs="{'invisible': [('show_experience_note', '=', False)]}">
-                            <page string="Experience Notes">
-                                <group string="Project Execution Experience">
-                                    <field name="project_execution_experience_date"/>
-                                    <field name="project_execution_experience_value" nolabel="1" colspan="4" rows="3"
-                                           class="oe_textarea"/>
-                                </group>
-                                <group string="Procurement/Logistic Recommendation">
-                                    <field name="procurement_recommendation_date"/>
-                                    <field name="procurement_recommendation_value" nolabel="1" colspan="4" rows="3"
-                                           class="oe_textarea"/>
-                                </group>
-                                <group string="Subcon Performance Service">
-                                    <field name="subcon_performance_service_date"/>
-                                    <field name="subcon_performance_service_value" nolabel="1" colspan="4" rows="3"
-                                           class="oe_textarea"/>
-                                </group>
-                                <group string="Lesson Learned">
-                                    <field name="lesson_learned_date"/>
-                                    <field name="lesson_learned_value" nolabel="1" colspan="4" rows="3"
-                                           class="oe_textarea"/>
-                                </group>
-                            </page>
-                        </notebook>
+						<notebook attrs="{'invisible': [('show_experience_note', '=', False)]}">
+							<page string="Experience Notes">
+								<group string="Project Execution Experience">
+									<field name="project_execution_experience_line" nolabel="1">
+										<tree editable="bottom">
+											<field name="value"/>
+										</tree>
+									</field>
+								</group>
+								<group string="Procurement/Logistic Recommendation">
+									<field name="procurement_recommendation_line" nolabel="1">
+										<tree editable="bottom">
+											<field name="value"/>
+										</tree>
+									</field>
+								</group>
+								<group string="Subcon Performance Service">
+									<field name="subcon_performance_service_line" nolabel="1">
+										<tree editable="bottom">
+											<field name="value"/>
+										</tree>
+									</field>
+								</group>
+								<group string="Lesson Learned">
+									<field name="lesson_learned_line" nolabel="1">
+										<tree editable="bottom">
+											<field name="value"/>
+										</tree>
+									</field>
+								</group>
+							</page>
+						</notebook>
 
                         <notebook attrs="{'invisible': [('show_experience_note', '=', True)]}">
 							<page name="progress_plan_curve" string="Plan S-Curve">

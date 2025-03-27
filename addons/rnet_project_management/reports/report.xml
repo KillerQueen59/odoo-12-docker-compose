@@ -17,48 +17,90 @@
                     <!--Project Detail-->
                     <div class="page">
                         <h1>Project Management Report</h1>
-                        <h3>Job Order ID:
-                            <t t-esc="o.name.no"/>
-                        </h3>
-                        <h3>Project Name:
-                            <t t-esc="o.name.name"/>
-                        </h3>
-                        <h3>PO / Contract No:
-                            <t t-esc="o.name.no"/>
-                        </h3>
-                        <h3>Location:
-                            <t t-esc="o.name.location.name or 'N/A'"/>
-                        </h3>
-                        <h3>Project Manager:
-                            <t t-esc="o.name.project_manager.name or 'N/A'"/>
-                        </h3>
-                        <h3>Project Director:
-                            <t t-esc="o.name.project_director.name or 'N/A'"/>
-                        </h3>
-                        <h3>Start Date:
-                            <t t-esc="o.start_date"/> - Finish Date:
-                            <t t-esc="o.finish_date"/>
-                        </h3>
-                        <h3>Status Per:
-                            <t t-esc="o.current_date"/>
-                        </h3>
-
+                        <ul style="list-style-type: disc; padding-left: 20px;">
+                            <li>
+                                <h3>Job Order ID:
+                                    <t t-esc="o.name.no"/>
+                                </h3>
+                            </li>
+                            <li>
+                                <h3>Project Name:
+                                    <t t-esc="o.name.name"/>
+                                </h3>
+                            </li>
+                            <li>
+                                <h3>PO / Contract No:
+                                    <t t-esc="o.name.no"/>
+                                </h3>
+                            </li>
+                            <li>
+                                <h3>Location:
+                                    <t t-esc="o.name.location.name or 'N/A'"/>
+                                </h3>
+                            </li>
+                            <li>
+                                <h3>Project Manager:
+                                    <t t-esc="o.name.project_manager.name or 'N/A'"/>
+                                </h3>
+                            </li>
+                            <li>
+                                <h3>Project Director:
+                                    <t t-esc="o.name.project_director.name or 'N/A'"/>
+                                </h3>
+                            </li>
+                            <li>
+                                <h3>
+                                    Start Date:
+                                    <t t-esc="o.start_date"/>
+                                    - Finish Date:
+                                    <t t-esc="o.finish_date"/>
+                                </h3>
+                            </li>
+                            <li>
+                                <h3>Status Per:
+                                    <t t-esc="o.current_date"/>
+                                </h3>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="page" style="page-break-before: always;">
-                        <h2>1. Report Summary and Type Project</h2>
-                        <h3>a) Contract Data</h3>
-                        <h3>PO / Contract No:
-                            <t t-esc="o.name.no"/>
-                        </h3>
-                        <h3>Order Value:
-                            <t t-esc="o.name.order_value"/>
-                        </h3>
-                        <h3>b) Permit Documnent</h3>
-                        <h3>c) Contract Execution</h3>
-                        <h3>d) Certification</h3>
-                        <h3>e) Change Order and Claim Summary</h3>
-                        <h3>f) Contract Comment</h3>
 
+                    <div class="page"
+                         style="page-break-before: always; font-family: Arial, sans-serif; margin: 20px; padding: 15px;">
+                        <h2 style="color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 5px; margin-bottom: 15px;">
+                            1. Report Summary and Type Project
+                        </h2>
+
+                        <h3 style="color: #34495e; margin: 10px 0 5px 0;">a) Contract Data</h3>
+
+                        <h3 style="color: #34495e; margin: 10px 0 5px 0;">PO / Contract No:
+                            <span style="color: #7f8c8d; font-weight: normal;">
+                                <t t-esc="o.name.no"/>
+                            </span>
+                        </h3>
+
+                        <h3 style="color: #34495e; margin: 10px 0 5px 0;">Order Value:
+                            <span style="color: #7f8c8d; font-weight: normal;">
+                                <t t-esc="o.name.order_value"/>
+                            </span>
+                        </h3>
+
+                        <h3 style="color: #34495e; margin: 10px 0 5px 0;">b) Permit Document</h3>
+
+                        <h3 style="color: #34495e; margin: 10px 0 5px 0;">c) Contract Execution</h3>
+                        <div style="margin-left: 20px; color: #7f8c8d;">
+                            Start Date <t t-esc="o.start_date"/>
+                            - Finish Date:
+                            <t t-esc="o.finish_date"/>
+                        </div>
+
+                        <h3 style="color: #34495e; margin: 10px 0 5px 0;">d) Certification</h3>
+                        <h3 style="color: #7f8c8d; margin-left: 20px;">N/A</h3>
+
+                        <h3 style="color: #34495e; margin: 10px 0 5px 0;">e) Change Order and Claim Summary</h3>
+                        <h3 style="color: #7f8c8d; margin-left: 20px;">N/A</h3>
+
+                        <h3 style="color: #34495e; margin: 10px 0 5px 0;">f) Contract Comment</h3>
+                        <h3 style="color: #7f8c8d; margin-left: 20px;">N/A</h3>
                     </div>
 
 
@@ -774,17 +816,52 @@
                     <!-- 3-->
                     <div class="page" style="page-break-before: always;">
                         <h2>3. Project Execution Experience</h2>
-                        <t t-esc="o.project_execution_experience_value"/>
+                        <ul>
+                            <t t-foreach="o.project_execution_experience_line" t-as="line">
+                                <li>
+                                    <t t-esc="line.value"/>
+                                </li>
+                            </t>
+                        </ul>
+                        <t t-if="not o.project_execution_experience_line">
+                            <p>No entries available.</p>
+                        </t>
 
                         <h2>4. Procurement / Logistic Recommendation (Material)</h2>
-                        <t t-esc="o.procurement_recommendation_value"/>
+                        <ul>
+                            <t t-foreach="o.procurement_recommendation_line" t-as="line">
+                                <li>
+                                    <t t-esc="line.value"/>
+                                </li>
+                            </t>
+                        </ul>
+                        <t t-if="not o.procurement_recommendation_line">
+                            <p>No entries available.</p>
+                        </t>
 
                         <h2>5. Subcon Performance (Service)</h2>
-                        <t t-esc="o.subcon_performance_service_value"/>
+                        <ul>
+                            <t t-foreach="o.subcon_performance_service_line" t-as="line">
+                                <li>
+                                    <t t-esc="line.value"/>
+                                </li>
+                            </t>
+                        </ul>
+                        <t t-if="not o.subcon_performance_service_line">
+                            <p>No entries available.</p>
+                        </t>
 
-                        <h2>6. Lesson learned</h2>
-                        <t t-esc="o.lesson_learned_value"/>
-
+                        <h2>6. Lesson Learned</h2>
+                        <ul>
+                            <t t-foreach="o.lesson_learned_line" t-as="line">
+                                <li>
+                                    <t t-esc="line.value"/>
+                                </li>
+                            </t>
+                        </ul>
+                        <t t-if="not o.lesson_learned_line">
+                            <p>No entries available.</p>
+                        </t>
                     </div>
 
                 </t>

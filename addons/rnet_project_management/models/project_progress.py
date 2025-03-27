@@ -43,20 +43,19 @@ class ProjectProgressPlan(models.Model):
     purchase_order_amount = fields.Integer( compute='_get_purchase_order_amount')
 
     # Project Execution Experience
-    project_execution_experience_date = fields.Date(string='Experience Date')
-    project_execution_experience_value = fields.Text(string='Experience Value')
-
-    # Lesson Learned
-    lesson_learned_date = fields.Date(string='Lesson Date')
-    lesson_learned_value = fields.Text(string='Lesson Value')
-
-    # Subcon Performance Service
-    subcon_performance_service_date = fields.Date(string='Subcon Date')
-    subcon_performance_service_value = fields.Text(string='Subcon Value')
-
-    # Procurement / Logistic Recommendation
-    procurement_recommendation_date = fields.Date(string='Procurement Date')
-    procurement_recommendation_value = fields.Text(string='Procurement Value')
+    project_execution_experience_line = fields.One2many(
+        'project.execution.experience', 'project_execution_experience_id', string='Project Execution Experience'
+    )
+    lesson_learned_line = fields.One2many(
+        'project.lesson.learned', 'lesson_learned_id', string='Lesson Learned'
+    )
+    subcon_performance_service_line = fields.One2many(
+        'project.subcon.performance.service', 'subcon_performance_service_id', string='Subcon Performance Service'
+    )
+    procurement_recommendation_line = fields.One2many(
+        'project.procurement.recommendation', 'procurement_recommendation_id',
+        string='Procurement/Logistic Recommendation'
+    )
 
     def toggle_notebook(self):
         for record in self:
@@ -71,7 +70,7 @@ class ProjectProgressPlan(models.Model):
     def _compute_project_manager(self):
         for record in self:
             record.project_manager = record.name.project_manager if record.name else None
-    
+
     # trigger untuk onchange update actual value
     def action_update_actual_value(self):
         self.write({
@@ -1077,3 +1076,32 @@ class ProjectActualPlanManhour(models.Model):
     code = fields.Char('Source', help="The code that can be used")
     total = fields.Float(string="Total", help="Amount of Total")
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
+
+# New models for each One2many field
+class ProjectExecutionExperienceLine(models.Model):
+    _name = 'project.execution.experience'
+    _description = 'Project Execution Experience Line'
+
+    project_execution_experience_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade')
+    value = fields.Text(string='Project Execution Experience Value')
+
+class LessonLearnedLine(models.Model):
+    _name = 'project.lesson.learned'
+    _description = 'Lesson Learned Line'
+
+    lesson_learned_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade')
+    value = fields.Text(string='Lesson Value')
+
+class SubconPerformanceServiceLine(models.Model):
+    _name = 'project.subcon.performance.service'
+    _description = 'Subcon Performance Service Line'
+
+    subcon_performance_service_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade')
+    value = fields.Text(string='Subcon Value')
+
+class ProcurementRecommendationLine(models.Model):
+    _name = 'project.procurement.recommendation'
+    _description = 'Procurement Recommendation Line'
+
+    procurement_recommendation_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade')
+    value = fields.Text(string='Procurement Value')

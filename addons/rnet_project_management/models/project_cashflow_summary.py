@@ -2,13 +2,7 @@ import math
 
 from odoo.exceptions import UserError
 from odoo import api, fields, models, _
-from datetime import datetime, date
-from io import BytesIO
-import pytz
-import xlsxwriter
-import base64
 from datetime import datetime, timedelta
-from pytz import timezone
 import json
 
 class ProjectCashflowSummary(models.Model):
@@ -17,13 +11,22 @@ class ProjectCashflowSummary(models.Model):
     _rec_name = 'name'
     _auto = True  # Automatically create the table in the database
 
+    def _default_start_date(self):
+        return datetime(1900, 1, 1).date()
+
+    def _default_end_date(self):
+        return datetime(9999, 12, 31).date()
+
     name = fields.Char(string='Name', default='Cashflow Summary', readonly=True)
+    start_date = fields.Date(string='Start Date', readonly=True, default=_default_start_date)
+    end_date = fields.Date(string='End Date', readonly=True, default=_default_end_date)
     total_plan_cash_in = fields.Float(string='Total Plan Cash In', compute='_compute_totals', store=False, readonly=True)
     total_actual_cash_in = fields.Float(string='Total Actual Cash In', compute='_compute_totals', store=False, readonly=True)
     total_plan_cash_out = fields.Float(string='Total Plan Cash Out', compute='_compute_totals', store=False, readonly=True)
     total_actual_cash_out = fields.Float(string='Total Actual Cash Out', compute='_compute_totals', store=False, readonly=True)
     net_plan_cashflow = fields.Float(string='Net Plan Cashflow', compute='_compute_net_cashflow', store=False, readonly=True)
     net_actual_cashflow = fields.Float(string='Net Actual Cashflow', compute='_compute_net_cashflow', store=False, readonly=True)
+    total_projects = fields.Integer(string='Total Projects', compute='_compute_totals', store=False, readonly=True)
     cashout_plan_lines = fields.One2many(
         'project.cashflow.plan.cashout.line', 'summary_id', string='Cash Out Plan by Project', compute='_compute_lines', store=True
     )
@@ -69,6 +72,15 @@ class ProjectCashflowSummary(models.Model):
         action['res_id'] = summary.id
         return action
 
+    def open_date_filter_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'cashflow.date.filter.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_summary_id': self.id},
+        }
+
     @api.model
     def default_get(self, fields_list):
         """Override default_get to load the singleton record and compute values."""
@@ -85,13 +97,55 @@ class ProjectCashflowSummary(models.Model):
                 summary._compute_net_cashflow()
         return res
 
-    @api.depends()
+    @api.depends('start_date', 'end_date')
     def _compute_totals(self):
-        progress_plans = self.env['project.progress.plan'].search([])
-        self.total_plan_cash_in = sum(progress_plans.mapped('project_plan_cashin_line').mapped('name'))
-        self.total_plan_cash_out = sum(progress_plans.mapped('project_plan_cashout_line').mapped('name'))
-        self.total_actual_cash_in = sum(self.env['project.actual.cashin'].search([]).mapped('amount'))
-        self.total_actual_cash_out = sum(self.env['project.actual.cashout'].search([]).mapped('amount'))
+        for record in self:
+            progress_plans = self.env['project.progress.plan'].search([])
+
+            # Check if dates are the default "all time" values
+            is_all_time = (record.start_date == self._default_start_date() and
+                           record.end_date == self._default_end_date())
+
+            if is_all_time:
+                plan_cashin_lines = progress_plans.mapped('project_plan_cashin_line')
+                plan_cashout_lines = progress_plans.mapped('project_plan_cashout_line')
+                actual_cashin_lines = self.env['project.actual.cashin'].search([])
+                actual_cashout_lines = self.env['project.actual.cashout'].search([])
+                project_ids = set(progress_plans.mapped('name.id'))
+            else:
+                plan_cashin_lines = progress_plans.mapped('project_plan_cashin_line').filtered(
+                    lambda x: (not record.start_date or x.date >= record.start_date) and
+                              (not record.end_date or x.date <= record.end_date)
+                )
+                plan_cashout_lines = progress_plans.mapped('project_plan_cashout_line').filtered(
+                    lambda x: (not record.start_date or x.date >= record.start_date) and
+                              (not record.end_date or x.date <= record.end_date)
+                )
+                actual_cashin_lines = self.env['project.actual.cashin'].search([]).filtered(
+                    lambda x: (not record.start_date or x.payment_date >= record.start_date) and
+                              (not record.end_date or x.payment_date <= record.end_date)
+                )
+                actual_cashout_lines = self.env['project.actual.cashout'].search([]).filtered(
+                    lambda x: (not record.start_date or x.payment_date >= record.start_date) and
+                              (not record.end_date or x.payment_date <= record.end_date)
+                )
+
+                project_ids = set()
+                for plan in progress_plans:
+                    has_relevant_lines = (
+                            any(line in plan_cashin_lines for line in plan.project_plan_cashin_line) or
+                            any(line in plan_cashout_lines for line in plan.project_plan_cashout_line) or
+                            any(line in actual_cashin_lines for line in plan.project_actual_cashin_line) or
+                            any(line in actual_cashout_lines for line in plan.project_actual_cashout_line)
+                    )
+                    if has_relevant_lines:
+                        project_ids.add(plan.name.id)
+
+            record.total_plan_cash_in = sum(plan_cashin_lines.mapped('name'))
+            record.total_plan_cash_out = sum(plan_cashout_lines.mapped('name'))
+            record.total_actual_cash_in = sum(actual_cashin_lines.mapped('amount'))
+            record.total_actual_cash_out = sum(actual_cashout_lines.mapped('amount'))
+            record.total_projects = len(project_ids)
 
     @api.depends()
     def _compute_net_cashflow(self):
@@ -99,53 +153,109 @@ class ProjectCashflowSummary(models.Model):
             record.net_plan_cashflow = record.total_plan_cash_in - record.total_plan_cash_out
             record.net_actual_cashflow = record.total_actual_cash_in - record.total_actual_cash_out
 
-    @api.depends()
+    @api.depends('start_date', 'end_date')
     def _compute_lines(self):
-        progress_plans = self.env['project.progress.plan'].search([])
         for record in self:
+            progress_plans = self.env['project.progress.plan'].search([])
             record.report = [(5, 0, 0)]
             result = []
             cashout_plan_data = []
             cashin_plan_data = []
             actual_cashout_data = []
             actual_cashin_data = []
+
+            # Check if dates are the default "all time" values
+            is_all_time = (record.start_date == self._default_start_date() and
+                           record.end_date == self._default_end_date())
+
             for plan in progress_plans:
                 for line in plan.project_plan_cashin_line:
-                    cashin_plan_data.append({
-                        'project_id': plan.name.id,
-                        'project_name': plan.name.name,
-                        'date': line.date,
-                        'total_cash_in': line.name,
-                    })
+                    if is_all_time or \
+                            ((not record.start_date or line.date >= record.start_date) and
+                             (not record.end_date or line.date <= record.end_date)):
+                        cashin_plan_data.append({
+                            'project_id': plan.name.id,
+                            'project_name': plan.name.name,
+                            'date': line.date,
+                            'total_cash_in': line.name,
+                        })
                 for line in plan.project_plan_cashout_line:
-                    cashout_plan_data.append({
-                        'project_id': plan.name.id,
-                        'project_name': plan.name.name,
-                        'date': line.date,
-                        'total_cash_out': line.name,
-                    })
+                    if is_all_time or \
+                            ((not record.start_date or line.date >= record.start_date) and
+                             (not record.end_date or line.date <= record.end_date)):
+                        cashout_plan_data.append({
+                            'project_id': plan.name.id,
+                            'project_name': plan.name.name,
+                            'date': line.date,
+                            'total_cash_out': line.name,
+                        })
                 for line in plan.project_actual_cashout_line:
-                    actual_cashout_data.append({
-                        'project_id': plan.name.id,
-                        'project_name': plan.name.name,
-                        'date': line.payment_date,
-                        'total_cash_out': line.name,
-                    })
+                    if is_all_time or \
+                            ((not record.start_date or line.payment_date >= record.start_date) and
+                             (not record.end_date or line.payment_date <= record.end_date)):
+                        actual_cashout_data.append({
+                            'project_id': plan.name.id,
+                            'project_name': plan.name.name,
+                            'date': line.payment_date,
+                            'total_cash_out': line.name,
+                        })
                 for line in plan.project_actual_cashin_line:
-                    actual_cashin_data.append({
-                        'project_id': plan.name.id,
-                        'project_name': plan.name.name,
-                        'date': line.payment_date,
-                        'total_cash_out': line.name,
-                    })
+                    if is_all_time or \
+                            ((not record.start_date or line.payment_date >= record.start_date) and
+                             (not record.end_date or line.payment_date <= record.end_date)):
+                        actual_cashin_data.append({
+                            'project_id': plan.name.id,
+                            'project_name': plan.name.name,
+                            'date': line.payment_date,
+                            'total_cash_in': line.name,
+                        })
 
-            # Write computed lines to One2many fields
             record.cashout_plan_lines = [(5, 0, 0)] + [(0, 0, vals) for vals in cashout_plan_data]
             record.cashin_plan_lines = [(5, 0, 0)] + [(0, 0, vals) for vals in cashin_plan_data]
             record.cashout_actual_lines = [(5, 0, 0)] + [(0, 0, vals) for vals in actual_cashout_data]
             record.cashin_actual_lines = [(5, 0, 0)] + [(0, 0, vals) for vals in actual_cashin_data]
 
-            # Initialize accumulative values
+            weekly_data = {}
+            for cash_in in record.cashin_plan_lines:
+                if cash_in.date:
+                    year_start = datetime(cash_in.date.year, 1, 1).date()
+                    week_number = math.ceil((cash_in.date - year_start).days / 7.0)
+                    year = cash_in.date.year
+                    key = str(year) + "-" + str(week_number)
+                    weekly_data.setdefault(key, {'cash_in_plan': 0, 'cash_out_plan': 0, 'cash_in_actual': 0,
+                                                 'cash_out_actual': 0})
+                    weekly_data[key]['cash_in_plan'] += cash_in.total_cash_in
+
+            for cash_out in record.cashout_plan_lines:
+                if cash_out.date:
+                    year_start = datetime(cash_out.date.year, 1, 1).date()
+                    week_number = math.ceil((cash_out.date - year_start).days / 7.0)
+                    year = cash_out.date.year
+                    key = str(year) + "-" + str(week_number)
+                    weekly_data.setdefault(key, {'cash_in_plan': 0, 'cash_out_plan': 0, 'cash_in_actual': 0,
+                                                 'cash_out_actual': 0})
+                    weekly_data[key]['cash_out_plan'] += cash_out.total_cash_out
+
+            for cash_in in record.cashin_actual_lines:
+                if cash_in.date:
+                    year_start = datetime(cash_in.date.year, 1, 1).date()
+                    week_number = math.ceil((cash_in.date - year_start).days / 7.0)
+                    year = cash_in.date.year
+                    key = str(year) + "-" + str(week_number)
+                    weekly_data.setdefault(key, {'cash_in_plan': 0, 'cash_out_plan': 0, 'cash_in_actual': 0,
+                                                 'cash_out_actual': 0})
+                    weekly_data[key]['cash_in_actual'] += cash_in.total_cash_in
+
+            for cash_out in record.cashout_actual_lines:
+                if cash_out.date:
+                    year_start = datetime(cash_out.date.year, 1, 1).date()
+                    week_number = math.ceil((cash_out.date - year_start).days / 7.0)
+                    year = cash_out.date.year
+                    key = str(year) + "-" + str(week_number)
+                    weekly_data.setdefault(key, {'cash_in_plan': 0, 'cash_out_plan': 0, 'cash_in_actual': 0,
+                                                 'cash_out_actual': 0})
+                    weekly_data[key]['cash_out_actual'] += cash_out.total_cash_out
+
             accumulative_cash_in_plan = 0
             accumulative_cash_out_plan = 0
             accumulative_cash_flow_plan = 0
@@ -153,53 +263,6 @@ class ProjectCashflowSummary(models.Model):
             accumulative_cash_out_actual = 0
             accumulative_cash_flow_actual = 0
 
-            # Use existing One2many fields
-            weekly_data = {}
-            # Process cash-in plan data
-            for cash_in in record.cashin_plan_lines:
-                if cash_in.date:
-                    year_start = datetime(cash_in.date.year, 1, 1).date()
-                    week_number = math.ceil((cash_in.date - year_start).days / 7.0)
-                    year = cash_in.date.year
-                    key = str(year) + "-" + str(week_number)  # Use a tuple for the key
-                    weekly_data.setdefault(key, {'cash_in_plan': 0, 'cash_out_plan': 0, 'cash_in_actual': 0,
-                                                 'cash_out_actual': 0})
-                    weekly_data[key]['cash_in_plan'] += cash_in.total_cash_in
-
-            # Process cash-out plan data
-            for cash_out in record.cashout_plan_lines:
-                if cash_out.date:
-                    year_start = datetime(cash_out.date.year, 1, 1).date()
-                    week_number = math.ceil((cash_out.date - year_start).days / 7.0)
-                    year = cash_out.date.year
-                    key = str(year) + "-" + str(week_number)  # Use a tuple for the key
-                    weekly_data.setdefault(key, {'cash_in_plan': 0, 'cash_out_plan': 0, 'cash_in_actual': 0,
-                                                 'cash_out_actual': 0})
-                    weekly_data[key]['cash_out_plan'] += cash_out.total_cash_out
-
-            # Process cash-in actual data
-            for cash_in in record.cashin_actual_lines:
-                if cash_in.date:
-                    year_start = datetime(cash_in.date.year, 1, 1).date()
-                    week_number = math.ceil((cash_in.date - year_start).days / 7.0)
-                    year = cash_in.date.year
-                    key = str(year) + "-" + str(week_number)  # Use a tuple for the key
-                    weekly_data.setdefault(key, {'cash_in_plan': 0, 'cash_out_plan': 0, 'cash_in_actual': 0,
-                                                 'cash_out_actual': 0})
-                    weekly_data[key]['cash_in_actual'] += cash_in.total_cash_in
-
-            # Process cash-out actual data
-            for cash_out in record.cashout_actual_lines:
-                if cash_out.date:
-                    year_start = datetime(cash_out.date.year, 1, 1).date()
-                    week_number = math.ceil((cash_out.date - year_start).days / 7.0)
-                    year = cash_out.date.year
-                    key = str(year) + "-" + str(week_number)  # Use a tuple for the key
-                    weekly_data.setdefault(key, {'cash_in_plan': 0, 'cash_out_plan': 0, 'cash_in_actual': 0,
-                                                 'cash_out_actual': 0})
-                    weekly_data[key]['cash_out_actual'] += cash_out.total_cash_out
-
-            # Create report data
             for key in sorted(weekly_data.keys(), key=lambda x: (int(x.split('-')[0]), int(x.split('-')[1]))):
                 year, week_number = map(int, key.split('-'))
                 data = weekly_data[key]
@@ -210,7 +273,6 @@ class ProjectCashflowSummary(models.Model):
                 cash_out_actual = data['cash_out_actual']
                 cash_flow_actual = cash_in_actual - cash_out_actual
 
-                # Update accumulative values
                 accumulative_cash_in_plan += cash_in_plan
                 accumulative_cash_out_plan += cash_out_plan
                 accumulative_cash_flow_plan += cash_flow_plan
@@ -345,21 +407,36 @@ class ProjectCashflowSummary(models.Model):
             cash_out_plan = []
             cash_flow_plan = []
 
+            # Determine if any value exceeds 1,000,000 to adjust units
+            use_juta = any(
+                r.cash_in_plan >= 1000000 or
+                r.cash_out_plan >= 1000000 or
+                abs(r.accumulative_cash_flow_plan) >= 1000000
+                for r in records
+            )
+
             sorted_records = sorted(records, key=lambda r: (r.year, r.weeks))
 
             for record in sorted_records:
                 labels.append(str(record.year) + " W" + str(record.weeks))
-                cash_in_plan.append(record.cash_in_plan)
-                cash_out_plan.append(-record.cash_out_plan)
-                cash_flow_plan.append(record.accumulative_cash_flow_plan)
+                if use_juta:
+                    cash_in_plan.append(record.cash_in_plan / 1000000)
+                    cash_out_plan.append(-record.cash_out_plan / 1000000)
+                    cash_flow_plan.append(record.accumulative_cash_flow_plan / 1000000)
+                else:
+                    cash_in_plan.append(record.cash_in_plan)
+                    cash_out_plan.append(-record.cash_out_plan)
+                    cash_flow_plan.append(record.accumulative_cash_flow_plan)
 
+            # Adjust labels based on whether we're using Juta
+            unit_label = " (Juta)" if use_juta else ""
             chart_data = {
                 'type': 'bar',
                 'data': {
                     'labels': labels,
                     'datasets': [
                         {
-                            'label': 'Accumulative Plan Cash Flow',
+                            'label': 'Accumulative Plan Cash Flow' + unit_label,
                             'data': cash_flow_plan,
                             'fill': False,
                             'backgroundColor': 'rgb(124, 17, 88)',
@@ -368,12 +445,12 @@ class ProjectCashflowSummary(models.Model):
                             'type': 'line',
                         },
                         {
-                            'label': 'Plan Cash In',
+                            'label': 'Plan Cash In' + unit_label,
                             'data': cash_in_plan,
                             'backgroundColor': 'rgb(66, 112, 193)',
                         },
                         {
-                            'label': 'Plan Cash Out',
+                            'label': 'Plan Cash Out' + unit_label,
                             'data': cash_out_plan,
                             'backgroundColor': 'rgb(233, 124, 48)',
                         },
@@ -382,6 +459,8 @@ class ProjectCashflowSummary(models.Model):
                  'options': {
                     'plugins': {
                         'tickFormat': {
+                            'separator': '.',
+                            'suffix': ' Juta' if use_juta else ''
                         }
                     }
                 }
@@ -398,14 +477,28 @@ class ProjectCashflowSummary(models.Model):
             cash_out_actual = []
             cash_flow_actual = []
 
+            use_juta = any(
+                r.cash_in_actual >= 1000000 or
+                r.cash_out_actual >= 1000000 or
+                abs(r.accumulative_cash_flow_actual) >= 1000000
+                for r in records
+            )
+
             sorted_records = sorted(records, key=lambda r: (r.year, r.weeks))
 
             for record in sorted_records:
                 labels.append(str(record.year) + " W" + str(record.weeks))
-                cash_in_actual.append(record.cash_in_actual)
-                cash_out_actual.append(-record.cash_out_actual)
-                cash_flow_actual.append(record.accumulative_cash_flow_actual)
+                if use_juta:
+                    cash_in_actual.append(record.cash_in_actual / 1000000)
+                    cash_out_actual.append(-record.cash_out_actual / 1000000)
+                    cash_flow_actual.append(record.accumulative_cash_flow_actual / 1000000)
+                else:
+                    cash_in_actual.append(record.cash_in_actual)
+                    cash_out_actual.append(-record.cash_out_actual)
+                    cash_flow_actual.append(record.accumulative_cash_flow_actual)
 
+
+            unit_label = " (Juta)" if use_juta else ""
 
             chart_data = {
                 'type': 'bar',
@@ -436,6 +529,8 @@ class ProjectCashflowSummary(models.Model):
                 'options': {
                     'plugins': {
                         'tickFormat': {
+                            'separator': '.',
+                            'suffix': ' Juta' if use_juta else ''
                         }
                     }
                 }
@@ -455,24 +550,44 @@ class ProjectCashflowSummary(models.Model):
             cash_out_actual = []
             cash_flow_actual = []
 
+            use_juta = any(
+                r.cash_in_plan >= 1000000 or
+                r.cash_out_plan >= 1000000 or
+                r.cash_in_actual >= 1000000 or
+                r.cash_out_actual >= 1000000 or
+                abs(r.accumulative_cash_flow_plan) >= 1000000 or
+                abs(r.accumulative_cash_flow_actual) >= 1000000
+                for r in records
+            )
+
             sorted_records = sorted(records, key=lambda r: (r.year, r.weeks))
 
             for record in sorted_records:
                 labels.append(str(record.year) + " W" + str(record.weeks))
-                cash_in_plan.append(record.cash_in_plan)
-                cash_out_plan.append(-record.cash_out_plan)
-                cash_flow_plan.append(record.accumulative_cash_flow_plan)
-                cash_in_actual.append(record.cash_in_actual)
-                cash_out_actual.append(-record.cash_out_actual)
-                cash_flow_actual.append(record.accumulative_cash_flow_actual)
+                if use_juta:
+                    cash_in_plan.append(record.cash_in_plan / 1000000)
+                    cash_out_plan.append(-record.cash_out_plan / 1000000)
+                    cash_flow_plan.append(record.accumulative_cash_flow_plan / 1000000)
+                    cash_in_actual.append(record.cash_in_actual / 1000000)
+                    cash_out_actual.append(-record.cash_out_actual / 1000000)
+                    cash_flow_actual.append(record.accumulative_cash_flow_actual / 1000000)
+                else:
+                    cash_in_plan.append(record.cash_in_plan)
+                    cash_out_plan.append(-record.cash_out_plan)
+                    cash_flow_plan.append(record.accumulative_cash_flow_plan)
+                    cash_in_actual.append(record.cash_in_actual)
+                    cash_out_actual.append(-record.cash_out_actual)
+                    cash_flow_actual.append(record.accumulative_cash_flow_actual)
 
+
+            unit_label = " (Juta)" if use_juta else ""
             chart_data = {
                 'type': 'bar',
                 'data': {
                     'labels': labels,
                     'datasets': [
                         {
-                            'label': 'Accumulative Plan Cash Flow',
+                            'label': 'Accumulative Plan Cash Flow' + unit_label,
                             'data': cash_flow_plan,
                             'fill': False,
                             'backgroundColor': 'rgb(253, 204, 229)',
@@ -481,7 +596,7 @@ class ProjectCashflowSummary(models.Model):
                             'type': 'line',
                         },
                         {
-                            'label': 'Accumulative Actual Cash Flow',
+                            'label': 'Accumulative Actual Cash Flow' + unit_label,
                             'data': cash_flow_actual,
                             'fill': False,
                             'backgroundColor': 'rgb(124, 17, 88)',
@@ -490,30 +605,32 @@ class ProjectCashflowSummary(models.Model):
                             'type': 'line',
                         },
                         {
-                            'label': 'Plan Cash In',
+                            'label': 'Plan Cash In' + unit_label,
                             'data': cash_in_plan,
                             'backgroundColor': 'rgb(179, 212, 255)',
                         },
                         {
-                            'label': 'Plan Cash Out',
+                            'label': 'Plan Cash Out' + unit_label,
                             'data': cash_out_plan,
                             'backgroundColor': 'rgb(253, 220, 120)',
                         },
                         {
-                            'label': 'Actual Cash In',
+                            'label': 'Actual Cash In' + unit_label,
                             'data': cash_in_actual,
                             'backgroundColor': 'rgb(26, 83, 255)',
                         },
                         {
-                            'label': 'Actual Cash Out',
+                            'label': 'Actual Cash Out' + unit_label,
                             'data': cash_out_actual,
                             'backgroundColor': 'rgb(255, 163, 0)',
                         },
                     ]
                 },
-                 'options': {
+                'options': {
                     'plugins': {
                         'tickFormat': {
+                            'separator': '.',
+                            'suffix': ' Juta' if use_juta else ''
                         }
                     }
                 }
@@ -616,3 +733,28 @@ class ProjectCashInReport(models.Model):
     actual_cash_in = fields.Float(string='Actual Cash In', required=True)
     accumulative_plan_cash_in = fields.Float(string='Accumulative Plan Cash In', required=True)
     accumulative_actual_cash_in = fields.Float(string='Accumulative Actual Cash In', required=True)
+
+class CashflowDateFilterWizard(models.TransientModel):
+    _name = 'cashflow.date.filter.wizard'
+    _description = 'Cashflow Date Filter Wizard'
+
+    summary_id = fields.Many2one('project.cashflow.summary', string='Summary', required=True)
+    start_date = fields.Date(string='Start Date')
+    end_date = fields.Date(string='End Date')
+
+    def apply_filter(self):
+        self.ensure_one()
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise UserError(_("Start Date must be before End Date"))
+        self.summary_id.write({
+            'start_date': self.start_date,
+            'end_date': self.end_date,
+        })
+        self.summary_id.action_refresh()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'project.cashflow.summary',
+            'view_mode': 'form',
+            'res_id': self.summary_id.id,
+            'target': 'current',
+        }

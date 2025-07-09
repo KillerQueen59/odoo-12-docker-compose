@@ -9,8 +9,11 @@
                 <form string="Cashflow Summary Overview" create="false" edit="false">
                     <header>
                         <button name="action_refresh" type="object" string="Refresh" class="oe_highlight"/>
-                        <button name="print_report" type="object" string="Export Cashflow Summary" class="oe_highlight"/>
-                          <button name="open_date_filter_wizard" type="object" string="Filter by Date" class="oe_highlight"/>
+                        <button name="print_report" type="object" string="Export Cashflow Summary"
+                                class="oe_highlight"/>
+                        <button name="action_export_progress_to_excel_v2" type="object" string="Export CSV Cashflow Summary" class="oe_highlight"/>
+                        <button name="open_date_filter_wizard" type="object" string="Filter by Date"
+                                class="oe_highlight"/>
                     </header>
                     <sheet>
                         <group>
@@ -67,6 +70,7 @@
             </field>
         </record>
 
+
         <!-- Wizard Form View for Date Filter -->
         <record id="view_cashflow_date_filter_wizard_form" model="ir.ui.view">
             <field name="name">cashflow.date.filter.wizard.form</field>
@@ -120,7 +124,7 @@
 
         <!-- Menu Item for Cashflow Summary -->
         <menuitem id="menu_project_progress_cashflow_summary"
-                  sequence="2"
+                  sequence="8"
                   name="Project Cashflow Summary"
                   action="action_open_cashflow_summary"
                   parent="menu_project_progress_root"

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_task_gantt" model="ir.ui.view">
+        <field name="name">project.plan.task.gantt</field>
+        <field name="model">project.plan.task</field>
+        <field name="priority">10</field>
+        <field name="type">ganttview</field>
+        <field name="arch" type="xml">
+            <ganttview
+                date_start="start_date"
+                date_stop="end_date"
+                progress="progress"
+                default_group_by="project_id"
+                string="Tasks Gantt"
+                show_links="true"
+                link_model="project.plan.task.link"
+                task_type="task_type"
+                baseline_start="baseline_start"
+                baseline_end="baseline_end"
+                round_dnd_dates="false"
+                default_scale="month"
+                highlight_critical_path="true"
+            />
+        </field>
+    </record>
+
+    <record id="view_task_tree" model="ir.ui.view">
+        <field name="name">project.plan.task.tree</field>
+        <field name="model">project.plan.task</field>
+        <field name="arch" type="xml">
+            <tree string="Tasks" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancelled'">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="supervisor_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="duration"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_task_form" model="ir.ui.view">
+        <field name="name">project.plan.task.form</field>
+        <field name="model">project.plan.task</field>
+        <field name="arch" type="xml">
+            <form string="Task">
+                <header>
+                    <button name="action_view_gantt" string="View Gantt" type="object" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Task Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="supervisor_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="task_type"/>
+                            <field name="baseline_start"/>
+                            <field name="baseline_end"/>
+                        </group>
+                        <group>
+                            <field name="duration"/>
+                            <field name="progress" widget="percentage"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Task Links">
+                            <field name="task_link_ids">
+                                <tree editable="bottom">
+                                    <field name="target_task_id"/>
+                                    <field name="link_type"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_task_search" model="ir.ui.view">
+        <field name="name">project.plan.task.search</field>
+        <field name="model">project.plan.task</field>
+        <field name="arch" type="xml">
+            <search string="Tasks">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="supervisor_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Supervisor" name="supervisor" context="{'group_by': 'supervisor_id'}"/>
+                    <filter string="State" name="state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_project_task" model="ir.actions.act_window">
+        <field name="name">Tasks</field>
+        <field name="res_model">project.plan.task</field>
+        <field name="view_mode">tree,form,ganttview</field>
+        <field name="search_view_id" ref="view_task_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new task
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_project_task"
+        name="Tasks"
+        action="action_project_task"
+        parent="project.menu_main_pm"
+        sequence="10"/>
+</odoo> 

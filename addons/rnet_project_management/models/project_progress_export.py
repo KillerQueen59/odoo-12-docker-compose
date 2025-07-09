@@ -803,7 +803,7 @@ class ProjectProgressExport(models.Model):
             worksheet.write(start_row, start_col, "Table 3 Cashflow Plan", cell_format['sub-title'])
             start_row += 1
             colunms = [
-                'Year - Week', 'Plan Cash Out', 'Plan Cash In', 'Plan CashFlow'
+                'Year - Week', 'Plan Cash In', 'Plan Cash Out', 'Plan CashFlow'
             ]
             for col_idx, col_name in enumerate(colunms):
                 worksheet.write(start_row, start_col + col_idx, col_name, cell_format['header'])
@@ -824,7 +824,7 @@ class ProjectProgressExport(models.Model):
             worksheet.write(start_row, start_col, "Table 4 Cashflow Plan Accumulative", cell_format['sub-title'])
             start_row += 1
             colunms = [
-                'Year - Week', 'Accumulative Plan Cash Out', 'Accumulative Plan Cash In', 'Accumulative Plan CashFlow'
+                'Year - Week', 'Accumulative Plan Cash In', 'Accumulative Plan Cash Out', 'Accumulative Plan CashFlow'
             ]
             for col_idx, col_name in enumerate(colunms):
                 worksheet.write(start_row, start_col + col_idx, col_name, cell_format['header'])
@@ -845,7 +845,7 @@ class ProjectProgressExport(models.Model):
             worksheet.write(start_row, start_col, "Table 5 Cashflow Actual", cell_format['sub-title'])
             start_row += 1
             colunms = [
-                'Year - Week', 'Actual Cash Out', 'Actual Cash In', 'Actual CashFlow'
+                'Year - Week', 'Actual Cash In', 'Actual Cash Out', 'Actual CashFlow'
             ]
             for col_idx, col_name in enumerate(colunms):
                 worksheet.write(start_row, start_col + col_idx, col_name, cell_format['header'])
@@ -863,7 +863,7 @@ class ProjectProgressExport(models.Model):
             worksheet.write(start_row, start_col, "Table 6 Cashflow Actual Accumulative", cell_format['sub-title'])
             start_row += 1
             colunms = [
-                'Year - Week', 'Accumulative Actual Cash Out', 'Accumulative Actual Cash In',
+                'Year - Week', 'Accumulative Actual Cash In', 'Accumulative Actual Cash Out', 
                 'Accumulative Actual CashFlow'
             ]
             for col_idx, col_name in enumerate(colunms):

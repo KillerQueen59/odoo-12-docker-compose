@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" name="rnet_project_management assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <!-- No custom Gantt assets needed; using web_project_gantt_view assets -->
+        </xpath>
+    </template>
+</odoo> 

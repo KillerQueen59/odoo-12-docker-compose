@@ -1,15 +1,19 @@
 import math
 
+from io import BytesIO
+
 from odoo.exceptions import UserError
 from odoo import api, fields, models, _
 from datetime import datetime, timedelta
 import json
+import xlsxwriter
+import base64
 
 class ProjectCashflowSummary(models.Model):
     _name = 'project.cashflow.summary'
     _description = 'Project Cashflow Summary'
     _rec_name = 'name'
-    _auto = True  # Automatically create the table in the database
+    _auto = True
 
     def _default_start_date(self):
         return datetime(1900, 1, 1).date()
@@ -49,6 +53,195 @@ class ProjectCashflowSummary(models.Model):
         Prepare data and trigger the PDF report.
         """
         return self.env.ref('rnet_project_management.report_project_cashflow_summary').report_action(self)
+
+    file_data = fields.Binary('File', readonly=True)
+
+    def cell_format(self, workbook):
+        cell_format = {}
+        cell_format['title'] = workbook.add_format({
+            'bold': True,
+            'align': 'left',
+            'valign': 'vcenter',
+            'font_size': 20,
+            'font_name': 'Arial',
+        })
+        cell_format['sub-title'] = workbook.add_format({
+            'align': 'left',
+            'valign': 'vcenter',
+            'font_size': 14,
+            'font_name': 'Arial',
+        })
+        cell_format['no'] = workbook.add_format({
+            'align': 'left',
+            'valign': 'vcenter',
+            'border': True,
+        })
+        cell_format['header'] = workbook.add_format({
+            'align': 'left',
+            'border': True,
+            'font_name': 'Arial',
+        })
+
+        cell_format['content'] = workbook.add_format({
+            'font_size': 11,
+            'align': 'left',
+            'border': True,
+            'font_name': 'Arial',
+        })
+        cell_format['content_float'] = workbook.add_format({
+            'font_size': 11,
+            'border': True,
+            'num_format': '#,##0.00',
+            'font_name': 'Arial',
+        })
+        cell_format['content_integer'] = workbook.add_format({
+            'font_size': 11,
+            'border': True,
+            'num_format': '0',
+            'font_name': 'Arial',
+        })
+        cell_format['total'] = workbook.add_format({
+            'bold': True,
+            'bg_color': '#d9d9d9',
+            'num_format': '#,##0.00',
+            'border': True,
+            'font_name': 'Arial',
+        })
+        cell_format['percentage'] = workbook.add_format({
+            'font_size': 11,
+            'border': True,
+            'num_format': '#,##0.00%',  # Format for percentage values
+            'font_name': 'Arial',
+        })
+        return cell_format, workbook
+
+    def action_export_progress_to_excel_v2(self):
+        fp = BytesIO()
+        workbook = xlsxwriter.Workbook(fp)
+        cell_format, workbook = self.cell_format(workbook)
+        report_name = 'Project Cashflow Summary'
+
+        # Validate and truncate sheet name
+        sheet_name = "Project Cashflow Summary"
+        sheet_name = sheet_name[:31]  # Excel sheet name limit
+        worksheet = workbook.add_worksheet(sheet_name)
+
+        worksheet.set_column('B:B', 15)
+        worksheet.set_column('C:C', 40)
+        worksheet.set_column('D:G', 40)
+
+        # Offset for headers and data
+        start_row = 2  # Start from B5
+        start_col = 1  # Start headers in column 1 (B column)
+
+        for rec in self:
+            # Progress Analysis
+            worksheet.write(start_row, start_col, 'Progress Analysis', cell_format['title'])
+            start_row += 1
+
+            # Cashflow Analysis
+            worksheet.write(start_row, start_col, "Cashflow Analysis", cell_format['title'])
+            start_row += 1
+            worksheet.write(start_row, start_col, "Table 1 Cashflow Plan", cell_format['sub-title'])
+            start_row += 1
+            colunms = [
+                'Year - Week', 'Plan Cash Out', 'Plan Cash In', 'Plan CashFlow'
+            ]
+            for col_idx, col_name in enumerate(colunms):
+                worksheet.write(start_row, start_col + col_idx, col_name, cell_format['header'])
+            start_row += 1
+            dataCashFlow = rec.report
+
+            for record in dataCashFlow:
+                worksheet.write(start_row, start_col, str(record.year) + " - " + str(record.weeks),
+                                cell_format['content'])
+                worksheet.write(start_row, start_col + 1, record.cash_in_plan, cell_format['content_float'])
+                worksheet.write(start_row, start_col + 2, record.cash_out_plan, cell_format['content_float'])
+                worksheet.write(start_row, start_col + 3, record.cash_flow_plan, cell_format['content_float'])
+                start_row += 1
+            start_row += 1
+
+            worksheet.write(start_row, start_col, "Table 2 Cashflow Plan Accumulative", cell_format['sub-title'])
+            start_row += 1
+            colunms = [
+                'Year - Week', 'Accumulative Plan Cash Out', 'Accumulative Plan Cash In', 'Accumulative Plan CashFlow'
+            ]
+            for col_idx, col_name in enumerate(colunms):
+                worksheet.write(start_row, start_col + col_idx, col_name, cell_format['header'])
+            start_row += 1
+
+            for record in dataCashFlow:
+                worksheet.write(start_row, start_col, str(record.year) + " - " + str(record.weeks),
+                                cell_format['content'])
+                worksheet.write(start_row, start_col + 1, record.accumulative_cash_in_plan,
+                                cell_format['content_float'])
+                worksheet.write(start_row, start_col + 2, record.accumulative_cash_out_plan,
+                                cell_format['content_float'])
+                worksheet.write(start_row, start_col + 3, record.accumulative_cash_flow_plan,
+                                cell_format['content_float'])
+                start_row += 1
+            start_row += 1
+
+            worksheet.write(start_row, start_col, "Table 3 Cashflow Actual", cell_format['sub-title'])
+            start_row += 1
+            colunms = [
+                'Year - Week', 'Actual Cash Out', 'Actual Cash In', 'Actual CashFlow'
+            ]
+            for col_idx, col_name in enumerate(colunms):
+                worksheet.write(start_row, start_col + col_idx, col_name, cell_format['header'])
+            start_row += 1
+
+            for record in dataCashFlow:
+                worksheet.write(start_row, start_col, str(record.year) + " - " + str(record.weeks),
+                                cell_format['content'])
+                worksheet.write(start_row, start_col + 1, record.cash_in_actual, cell_format['content_float'])
+                worksheet.write(start_row, start_col + 2, record.cash_out_actual, cell_format['content_float'])
+                worksheet.write(start_row, start_col + 3, record.cash_flow_actual, cell_format['content_float'])
+                start_row += 1
+            start_row += 1
+
+            worksheet.write(start_row, start_col, "Table 4 Cashflow Actual Accumulative", cell_format['sub-title'])
+            start_row += 1
+            colunms = [
+                'Year - Week', 'Accumulative Actual Cash Out', 'Accumulative Actual Cash In',
+                'Accumulative Actual CashFlow'
+            ]
+            for col_idx, col_name in enumerate(colunms):
+                worksheet.write(start_row, start_col + col_idx, col_name, cell_format['header'])
+            start_row += 1
+
+            for record in dataCashFlow:
+                worksheet.write(start_row, start_col, str(record.year) + " - " + str(record.weeks),
+                                cell_format['content'])
+                worksheet.write(start_row, start_col + 1, record.accumulative_cash_in_actual,
+                                cell_format['content_float'])
+                worksheet.write(start_row, start_col + 2, record.accumulative_cash_out_actual,
+                                cell_format['content_float'])
+                worksheet.write(start_row, start_col + 3, record.accumulative_cash_flow_actual,
+                                cell_format['content_float'])
+                start_row += 1
+            start_row += 1
+
+        workbook.close()
+        result = base64.encodestring(fp.getvalue())
+
+        if not self:
+            print("No records found for export")
+            raise UserError("No records found for export")
+        record = self[0]  # Use the first record for singleton
+        record.write({'file_data': result})
+
+        filename = report_name + ".xlsx"
+        self.write({'file_data': result})
+        url = "web/content/?model=" + self._name + "&id=" + str(
+            self[:1].id) + "&field=file_data&download=true&filename=" + filename
+        return {
+            'name': 'Generic Excel Report',
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+
 
     @api.model
     def _get_or_create_singleton(self):
@@ -114,20 +307,32 @@ class ProjectCashflowSummary(models.Model):
                 project_ids = set(progress_plans.mapped('name.id'))
             else:
                 plan_cashin_lines = progress_plans.mapped('project_plan_cashin_line').filtered(
-                    lambda x: (not record.start_date or x.date >= record.start_date) and
-                              (not record.end_date or x.date <= record.end_date)
+                    lambda x: is_all_time or (
+                            x.date and
+                            (record.start_date is None or x.date >= record.start_date) and
+                            (record.end_date is None or x.date <= record.end_date)
+                    )
                 )
                 plan_cashout_lines = progress_plans.mapped('project_plan_cashout_line').filtered(
-                    lambda x: (not record.start_date or x.date >= record.start_date) and
-                              (not record.end_date or x.date <= record.end_date)
+                    lambda x: is_all_time or (
+                            x.date and
+                            (record.start_date is None or x.date >= record.start_date) and
+                            (record.end_date is None or x.date <= record.end_date)
+                    )
                 )
                 actual_cashin_lines = self.env['project.actual.cashin'].search([]).filtered(
-                    lambda x: (not record.start_date or x.payment_date >= record.start_date) and
-                              (not record.end_date or x.payment_date <= record.end_date)
+                    lambda x: is_all_time or (
+                            x.payment_date and
+                            (record.start_date is None or x.payment_date >= record.start_date) and
+                            (record.end_date is None or x.payment_date <= record.end_date)
+                    )
                 )
                 actual_cashout_lines = self.env['project.actual.cashout'].search([]).filtered(
-                    lambda x: (not record.start_date or x.payment_date >= record.start_date) and
-                              (not record.end_date or x.payment_date <= record.end_date)
+                    lambda x: is_all_time or (
+                            x.payment_date and
+                            (record.start_date is None or x.payment_date >= record.start_date) and
+                            (record.end_date is None or x.payment_date <= record.end_date)
+                    )
                 )
 
                 project_ids = set()
@@ -170,9 +375,9 @@ class ProjectCashflowSummary(models.Model):
 
             for plan in progress_plans:
                 for line in plan.project_plan_cashin_line:
-                    if is_all_time or \
-                            ((not record.start_date or line.date >= record.start_date) and
-                             (not record.end_date or line.date <= record.end_date)):
+                    if line.date and (is_all_time or
+                                              (record.start_date is None or line.date >= record.start_date) and
+                                              (record.end_date is None or line.date <= record.end_date)):
                         cashin_plan_data.append({
                             'project_id': plan.name.id,
                             'project_name': plan.name.name,
@@ -180,9 +385,10 @@ class ProjectCashflowSummary(models.Model):
                             'total_cash_in': line.name,
                         })
                 for line in plan.project_plan_cashout_line:
-                    if is_all_time or \
-                            ((not record.start_date or line.date >= record.start_date) and
-                             (not record.end_date or line.date <= record.end_date)):
+                    if (line.date and
+                            (is_all_time or
+                             (record.start_date is None or line.date >= record.start_date) and
+                             (record.end_date is None or line.date <= record.end_date))):
                         cashout_plan_data.append({
                             'project_id': plan.name.id,
                             'project_name': plan.name.name,
@@ -190,24 +396,24 @@ class ProjectCashflowSummary(models.Model):
                             'total_cash_out': line.name,
                         })
                 for line in plan.project_actual_cashout_line:
-                    if is_all_time or \
-                            ((not record.start_date or line.payment_date >= record.start_date) and
-                             (not record.end_date or line.payment_date <= record.end_date)):
+                    if line.payment_date and (is_all_time or
+                                              (record.start_date is None or line.payment_date >= record.start_date) and
+                                              (record.end_date is None or line.payment_date <= record.end_date)):
                         actual_cashout_data.append({
                             'project_id': plan.name.id,
                             'project_name': plan.name.name,
                             'date': line.payment_date,
-                            'total_cash_out': line.name,
+                            'total_cash_out': line.amount,
                         })
                 for line in plan.project_actual_cashin_line:
-                    if is_all_time or \
-                            ((not record.start_date or line.payment_date >= record.start_date) and
-                             (not record.end_date or line.payment_date <= record.end_date)):
+                    if line.payment_date and (is_all_time or
+                                              (record.start_date is None or line.payment_date >= record.start_date) and
+                                              (record.end_date is None or line.payment_date <= record.end_date)):
                         actual_cashin_data.append({
                             'project_id': plan.name.id,
                             'project_name': plan.name.name,
                             'date': line.payment_date,
-                            'total_cash_in': line.name,
+                            'total_cash_in': line.amount,
                         })
 
             record.cashout_plan_lines = [(5, 0, 0)] + [(0, 0, vals) for vals in cashout_plan_data]
@@ -456,7 +662,7 @@ class ProjectCashflowSummary(models.Model):
                         },
                     ]
                 },
-                 'options': {
+                'options': {
                     'plugins': {
                         'tickFormat': {
                             'separator': '.',
@@ -496,7 +702,6 @@ class ProjectCashflowSummary(models.Model):
                     cash_in_actual.append(record.cash_in_actual)
                     cash_out_actual.append(-record.cash_out_actual)
                     cash_flow_actual.append(record.accumulative_cash_flow_actual)
-
 
             unit_label = " (Juta)" if use_juta else ""
 
@@ -578,7 +783,6 @@ class ProjectCashflowSummary(models.Model):
                     cash_in_actual.append(record.cash_in_actual)
                     cash_out_actual.append(-record.cash_out_actual)
                     cash_flow_actual.append(record.accumulative_cash_flow_actual)
-
 
             unit_label = " (Juta)" if use_juta else ""
             chart_data = {
@@ -733,6 +937,7 @@ class ProjectCashInReport(models.Model):
     actual_cash_in = fields.Float(string='Actual Cash In', required=True)
     accumulative_plan_cash_in = fields.Float(string='Accumulative Plan Cash In', required=True)
     accumulative_actual_cash_in = fields.Float(string='Accumulative Actual Cash In', required=True)
+
 
 class CashflowDateFilterWizard(models.TransientModel):
     _name = 'cashflow.date.filter.wizard'

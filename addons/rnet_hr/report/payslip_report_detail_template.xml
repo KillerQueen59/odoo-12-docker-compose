@@ -1,0 +1,169 @@
+<odoo>
+    <template id="report_payslipdetails" inherit_id="hr_payroll.report_payslipdetails">
+        <xpath expr="//t[1]/t[1]" position="replace">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+
+                    <!-- header -->
+                    <div class="header">
+                        <div class="row">
+                            <div class="col-7 first-page small">
+                                <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 70px;"/>
+                            </div>
+                            <div class="col-5  text-right small">
+                                <img t-att-src="'/ogut_asset/static/src/img/dqs-logo.png'" style="max-height: 50px;"/>
+                                <img t-att-src="'/ogut_asset/static/src/img/iqnet-logo.png'" style="max-height: 50px;"/>
+                                <br/>
+                                <p class="text-center" style="margin-left:210px">Cert. No. 422970</p>
+                            </div>
+                        </div>
+                        <h5 class="text-center" style="font-weight: bold;">SLIP GAJI</h5>
+                        <p class="text-center">Periode <span t-field="o.date_from" t-options="{'format': 'MMMM yyyy'}" />
+                        </p>
+                    </div>
+
+                    <!-- page -->
+                    <div class="row">
+                        <div class="col-6 small">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td>Nama Karyawan</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.employee_id"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nomor Induk Karyawan</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.employee_id.gut_nik"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jabatan</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.employee_id.job_id.name"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6 small">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td>Group / Grade</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.employee_id.employee_grade.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status Karyawan</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.employee_id.status_karyawan"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status Keluarga</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.employee_id.status"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+<br/>
+
+                    <style type="text/css">
+                    table.table-bordered > thead > tr > th {
+                        border:1px solid;
+                    }
+                    table.table-bordered > tbody > tr > td {
+                        border:1px solid;
+                    }
+                    </style>
+                    <div class="row">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" width="5%">No</th>
+                                        <th width="25%">Deskripsi</th>
+                                        <th width="15%">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="i" t-value="1" />
+                                    <tr t-foreach="o.line_ids" t-as="line">
+                                        <td style="font-weight:normal;" class="text-center">
+                                            <span t-esc="i"/>
+                                            <t t-set="i" t-value="i+1"/>
+                                        </td>
+                                        <td style="font-weight:normal;">
+                                            <span t-field="line.name"/>
+                                        </td>
+                                        <td style="font-weight:normal;">
+                                            <t t-if= "line.amount == 0">
+                                               -
+                                            </t>
+                                            <t t-else="">
+                                             Rp  <t t-esc="line.amount" t-options='{"widget": "float", "precision": 0}'/>
+                                            </t>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="footer">
+                        <div class="row">
+                            <div class="col-12 last-page small">
+                                <table class="table table-bordered table-sm small">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 50%; color:white; background-color: #FFA500;">
+                                                <div class="row">
+                                                    <div class="col-6">http://www.ptgut.co.id</div>
+                                                </div>
+                                            </td>
+                                            <td style="width: 50%; color:white; background-color: #4682B4;">
+                                                <div class="row">
+
+                                                    <div class="col-6">
+                                                        <div class="text-right">
+                                                        Tel: +62 21 8378 7333&amp;nbsp;
+                                                            <br/>
+                                                        Fax: +62 21 8378 7222&amp;nbsp;
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <span t-field="o.company_id.partner_id.street"/>
+&amp;nbsp;
+                                                        <span t-field="o.company_id.partner_id.street2"/>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- end page -->
+                </t>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

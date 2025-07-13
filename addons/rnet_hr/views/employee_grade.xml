@@ -1,0 +1,83 @@
+<odoo>
+    <data>
+    <!-- inherited contract -->
+        <!-- <record id="hr_contract_salary_regular" model="ir.ui.view">
+            <field name="name">Contract Salary Regular</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <group name="salary_and_advantages" position="after">
+                    <group name="Allowance" string="Regular Allowance">
+                        <field name="alw_out" context="{'out': True}" options='{"always_reload": True}'/>
+                        <field name="alw_in" context="{'in': True}" options='{"always_reload": True}' />
+                    </group>
+                </group>
+                  <xpath expr="//div[@name='wage']" position="after">                     
+                    <label for="wage_hourly"/>
+                    <div class="o_row" name="wage_hourly">
+                        <field name="wage_hourly" nolabel="1"/>
+                        <span>/ Hour</span>
+                    </div>
+                </xpath>
+            </field>
+        </record> -->
+
+        <record id="employee_grade_form" model="ir.ui.view">
+            <field name="name">Employee Grade Form</field>
+            <field name="model">employee.grade</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_button_box">
+                            <button class="oe_stat_button" type="object" icon="fa-th-list" name="open_employees">
+                                <field string="Employees" name="employee_count" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <!-- <div class="oe_title">
+                            <h1>
+                                <field name="code" placeholder="Employee Grade code (unique)"/>
+                            </h1>
+                        </div> -->
+                    <group>
+                        <group>
+                            <field name="active" invisible="1"/>
+                            <field name="name"/>
+                            <field name="tunjangan_harian" widget="monetary"/>
+                            <field name="tunjangan_akomodasi" widget="monetary"/>
+                            <field name="alw_out" widget="monetary"/>
+                            <field name="alw_in" widget="monetary"/>
+                        </group>
+                    </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="employee_grade_tree" model="ir.ui.view">
+            <field name="name">emoloyee grade Tree</field>
+            <field name="model">employee.grade</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <!-- <field name="code"/> -->
+                    <field name="name"/>
+                    <field name="tunjangan_harian" widget="monetary"/>
+                    <field name="tunjangan_akomodasi" widget="monetary"/>
+                    <field name="alw_out" widget="monetary"/>
+                    <field name="alw_in" widget="monetary"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="open_hr_employee_grade">
+            <field name="name">Employee Grade</field>
+            <field name="res_model">employee.grade</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="employee_grade_tree"/>
+        </record>
+
+        <menuitem id="menu_employee_grade" name="Employee Grade"
+            parent="hr.menu_human_resources_configuration" 
+            action="open_hr_employee_grade" sequence="6"/>
+    </data>
+</odoo>

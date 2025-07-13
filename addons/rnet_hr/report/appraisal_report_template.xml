@@ -1,0 +1,497 @@
+<odoo>
+	<template id="report_appraisal_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+			<t t-call="web.basic_layout">
+				<!-- header -->
+				<div class="page">
+					<style type="text/css">
+						table.table-bordered > thead > tr > th {
+						border:1px solid;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+					<t t-foreach="docs" t-as="o">
+						<div class="row">
+							<div class="col first-page">
+								<table class="table table-bordered table-sm small ">
+									<tbody>
+										<tr>
+											<td t-att-rowspan="3" colspan="4">
+												<img src="/web/binary/company_logo" alt="Logo" style="max-height: 70px;" />
+											</td>
+											<td class="text-left" colspan="2">
+												Doc No : 2.1.23
+											</td>
+										</tr>
+										<tr>
+											<td class="text-left" colspan="2">
+												Revision : 01
+											</td>
+										</tr>
+										<tr>
+											<td class="text-left" colspan="2">
+												Release Date : 03.03.2009
+											</td>
+										</tr>
+										<tr>
+											<td style="font-weight: bold;" class="text-center" colspan="6">
+												<h6 style="vertical-align : middle;text-align:center;font-weight: bold;">
+													PENILAIAN PRESTASI (untuk Golongan EG dan SG)
+												</h6>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2" class="text-left">
+												Nomor Record
+											</td>
+											<td colspan="4"> 
+												<span t-field="o.name" />
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2" class="text-left">
+												Jenis Penilaian
+											</td>
+											<td colspan="4">
+												<t t-if="o.jenis_penilaian == 'berkala'">
+													<input type="checkbox" checked="checked" />
+													Berkala
+												</t>
+												<t t-else="">
+													<input type="checkbox" />
+													Berkala
+												</t>
+												&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+												<t t-if="o.jenis_penilaian == 'khusus'">
+													<input type="checkbox" checked="checked" />
+													Khusus
+												</t>
+												<t t-else="">
+													<input type="checkbox" />
+													Khusus
+												</t>
+											</td>
+										</tr>
+                                        <tr>
+											<td style="font-weight: bold;" class="text-left" colspan="4">
+													KARYAWAN
+											</td>
+                                            <td style="font-weight: bold;" class="text-left" colspan="2">
+													ATASAN KARYAWAN
+											</td>
+										</tr>
+                                        <tr>
+											<td class="text-left">
+												Nama    &#160;
+											</td>
+                                            <td class="text-left">
+                                                <t t-esc="o.employee_id.name"/>
+											</td>
+                                            <td class="text-left">
+												Periode Penilaian   &#160;
+											</td>
+                                            <td class="text-left">
+												<t t-esc="o.periode.strftime('%B %Y')"  />
+											</td>
+                                            <td class="text-left">
+												Nama    &#160;
+											</td>
+                                            <td class="text-left">
+												<t t-esc="o.atasan.name"/>
+											</td>
+										</tr>
+                                        <tr>
+											<td class="text-left">
+												Tgl. Lahir &#160; 
+											</td>
+                                            <td class="text-left">
+                                               <t t-esc="o.birthday"/>
+											</td>
+                                            <td class="text-left">
+												Rank / Sejak &#160;
+											</td>
+                                             <td class="text-left">
+												&amp;nbsp;
+											</td>
+                                            <td class="text-left">
+												Unit &#160;
+											</td>
+                                            <td class="text-left">
+												&amp;nbsp;
+											</td>
+										</tr>
+                                        <tr>
+											<td class="text-left">
+												Posisi &#160; 
+											</td>
+                                            <td class="text-left">
+                                               <t t-esc="o.employee_id.job_title"/>
+											</td>
+                                            <td class="text-left">
+												Tgl. Mulai Bekerja &#160;
+											</td>
+                                             <td class="text-left">
+												&amp;nbsp;
+											</td>
+                                            <td class="text-left">
+												Posisi &#160;
+											</td>
+                                            <td class="text-left">
+												<t t-esc="o.atasan.job_title"/>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2" class="text-left">
+												Posisi / Jabatan
+											</td>
+                                            <td colspan="4" class="text-left">
+                                               <t t-esc="o.employee_id.job_title"/>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2" class="text-left">
+												Departemen
+											</td>
+                                            <td colspan="4" class="text-left">
+                                               <t t-esc="o.department.name"/>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2" class="text-left">
+												Nomor ID
+											</td>
+                                            <td colspan="4" class="text-left">
+                                               <t t-esc="o.identification_id"/>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2" class="text-left">
+												Pendidikan Terakhir
+											</td>
+                                            <td colspan="4" class="text-left">
+                                               &amp;nbsp;
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<table class="table table-bordered table-sm">
+									<thead>
+										<tr>
+											<th style="font-weight: bold;" width="8%" class="text-center">
+												A
+											</th>
+											<th colspan="5" style="font-weight: bold;" class="text-left">
+												ASPEK-ASPEK YANG DINILAI
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: bold;" width="8%"  class="text-center">
+												A1
+											</th>
+											<th colspan="5" style="font-weight: bold;" class="text-left">
+												A.	Lingkari angka yang sesuai sebagai penilaian kerja selama periode tersebut diatas
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												1
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kehadiran / Ketepatan Waktu
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.kehadiran"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												2
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Disiplin
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.disiplin"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												3
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Tingkat Ketrampilan
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.tingkatan_keterampilan"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												4
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kuantitas Kerja
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.kuantitas_kerja"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												5
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kualitas Kerja
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.kualitas_kerja"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												6
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Sikap Kerja
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.sikap_kerja"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												7
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kemampuan untuk Belajar / Adaptasi terhadap Perubahan
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.adaptasi"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												8
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Daya tahan terhadap stress / tekanan
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.tekanan"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												9
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kerjasama
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.kerjasama"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												10
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Pemahaman Tugas (Teknis / Fungsional)
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.pemahaman_tugas"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												11
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kreativitas / Inovasi
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.kreativitas"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												12
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kemandirian dan Inisiatif
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.kemandirian"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												13
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kemampuan Bahasa
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.kemampuan_bahasa"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												14
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Kemampuan Analisa
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.kemampuan_analisa"/>
+											</th>
+										</tr>
+										<tr>
+											<th style="font-weight: normal;" width="8%"  class="text-center">
+												15
+											</th>
+											<th style="font-weight: normal;" colspan="4" class="text-left">
+												Penilaian dan Pengambilan Keputusan
+											</th>
+											<th style="font-weight: normal;" width="8%" class="text-center">
+												<t t-esc="o.pengambilan_keputusan"/>
+											</th>
+										</tr>
+										<tr>
+											<th width="8%" >
+												&amp;nbsp;
+											</th>
+											<th colspan="4"  style="font-weight: bold;" class="text-left">
+												TOTAL
+											</th>
+											<th width="8%" class="text-center">
+												123
+											</th>
+										</tr>
+										<tr>
+											<th width="8%" class="text-center">
+												A2
+											</th>
+											<th colspan="4" style="font-weight: normal;" class="text-left">
+												Penilaian terhadap Safety
+											</th>
+											<th  width="8%" style="font-weight: normal;" class="text-center">
+												<t t-esc="o.penilaian_safety"/>
+											</th>
+										</tr>
+										<tr>
+											<th width="8%" >
+												&amp;nbsp;
+											</th>
+											<th colspan="4" style="font-weight: normal;" class="text-left">
+												Penilaian terhadap Quality
+											</th>
+											<th  width="8%" style="font-weight: normal;" class="text-center">
+												<t t-esc="o.penilaian_quality"/>
+											</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+						</div>
+						<div class="row mt-2">
+							<style type="text/css">
+								table.table-bordered > thead > tr > th {
+								border:1px solid;
+								}
+								table.table-bordered > tbody > tr > td {
+								border:1px solid;
+								}
+							</style>
+							<div class="col  text-center mr-0">
+								<table class="table table-bordered table-sm">
+									<tbody>
+										<tr>
+											<th class="border border-dark font-smaller text-center">
+												Karyawan
+											</th>
+											<th class="border border-dark" width="40%" t-att-rowspan="6">
+											</th>
+											<th class="border border-dark font-smaller text-center">
+												Atasan
+											</th>
+										</tr>
+										<tr>
+											<td class="border border-dark ">
+												<p>
+													&#160;
+												</p>
+												<p>
+													&#160;
+												</p>
+												<p>
+													&#160;
+												</p>
+											</td>
+											<td class="border border-dark ">
+												<p>
+													&#160;
+												</p>
+												<p>
+													&#160;
+												</p>
+												<p>
+													&#160;
+												</p>
+											</td>
+										</tr>
+                                        <tr>
+											<td class="border border-dark text-left">
+												Name :&#160;
+											</td>
+											<td class="border border-dark text-left">
+												Name :&#160;
+											</td>
+										</tr>
+										<tr>
+											<td class="border border-dark text-left">
+												Date :&#160;
+											</td>
+											<td class="border border-dark text-left">
+												Date :&#160;
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</t>
+				</div>
+				<div class="footer">
+					<div class="row">
+						<div class="col-6 small">
+							<div class="text-left">
+								Appraisal
+								<span t-field="o.employee_id.name" />
+								<span t-field="o.periode" t-options="{'format': 'MMMM yyyy'}" />
+							</div>
+						</div>
+						<div class="col-6 small">
+							<div class="text-right">
+								Page
+								<span class="page" />
+								of
+								<span class="topage" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="report_appraisal">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_hr.report_appraisal_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="bi_financial_pdf_reports_action_cash_flow" model="ir.actions.act_window">
+            <field name="name">Cash Flow Statement</field>
+            <field name="res_model">accounting.report.bi</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="bi_financial_pdf_reports_form_account_report_custom"/>
+            <field name="context" eval="{'default_account_report_id':ref('bi_financial_pdf_reports.account_financial_report_cash_flow0')}"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_account_report_cash_flow" 
+        name="Cash Flow" 
+        action="bi_financial_pdf_reports_action_cash_flow"
+        parent="bi_menu_finance_report"/>
+
+    </data>
+</odoo>

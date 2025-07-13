@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+
+ Categories PTKP
+     <record id="hr_salary_rule_categories_ptkp" model="hr.salary.rule.category">
+        <field name="code">PTKP</field>
+        <field name="name">Ptkp</field>
+        <field name="sequence" eval="9"/>
+    </record>
+
+     Categories PPh21 Setahun
+     <record id="hr_salary_rule_categories_pph21" model="hr.salary.rule.category">
+        <field name="code">PPH21</field>
+        <field name="name">PPH21 Setahun</field>
+        <field name="sequence" eval="10"/>
+    </record>
+
+     Categories Potongan
+     <record id="hr_salary_rule_categories_potongan" model="hr.salary.rule.category">
+        <field name="code">POT</field>
+        <field name="name">Potongan</field>
+        <field name="sequence" eval="11"/>
+    </record>
+
+     Categories Netto
+     <record id="hr_salary_rule_categories_netto" model="hr.salary.rule.category">
+        <field name="code">NETTO</field>
+        <field name="name">Netto</field>
+        <field name="sequence" eval="12"/>
+    </record>
+
+
+      Categories PKP Setahun
+     <record id="hr_salary_rule_categories_pkp" model="hr.salary.rule.category">
+        <field name="code">PKP</field>
+        <field name="name">PKP</field>
+        <field name="sequence" eval="12"/>
+    </record>
+
+
+
+ Gaji Pokok
+     <record id="hr_salary_rule_gapok" model="hr.salary.rule">
+        <field name="code">GAPOK</field>
+        <field name="name">Gaji Pokok </field>
+        <field name="category_id" ref="hr_payroll.BASIC"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.wage
+        </field>
+        <field name="sequence" eval="1"/>
+        <field name="note">
+            THR = Input THR
+        </field>
+    </record>
+
+ THR
+     <record id="hr_salary_rule_thr" model="hr.salary.rule">
+        <field name="code">THR</field>
+        <field name="name">THR</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = inputs.THR.amount 
+        </field>
+        <field name="sequence" eval="2"/>
+        <field name="note">
+            THR = Input THR
+        </field>
+    </record>
+
+    <record id="hr_rule_input_thr" model="hr.rule.input">
+            <field name="code">THR</field>
+            <field name="name">THR</field>
+            <field name="input_id" ref="hr_salary_rule_thr"/>
+    </record>
+
+ overtime class 1
+     <record id="hr_salary_rule_overtime_class1" model="hr.salary.rule">
+        <field name="code">OVT1</field>
+        <field name="name">Overtime Class 1</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+
+number_of_hours = 0
+
+for line in payslip.worked_days_line_ids:
+    if line.code == 'CLASS1':
+      number_of_hours += line.number_of_hours
+      overtime_class1 = ((contract.wage_hourly * number_of_hours ) * 1.5)
+
+result = overtime_class1
+        </field>
+        <field name="sequence" eval="3"/>
+        <field name="note">
+            overtime class 1 = gaji perjam * total overtim class 1 * 150%
+        </field>
+    </record>
+
+     overtime class 2
+     <record id="hr_salary_rule_overtime_class2" model="hr.salary.rule">
+        <field name="code">OVT2</field>
+        <field name="name">Overtime Class 2</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+
+for line in payslip.worked_days_line_ids:
+    if line.code == 'CLASS2':
+      number_of_hours += line.number_of_hours
+      overtime_class2 = ((contract.wage_hourly * number_of_hours ) * 2)
+
+result = overtime_class2
+        </field>
+        <field name="sequence" eval="4"/>
+        <field name="note">
+            overtime class 2 = gaji perjam * total overtim class 2 * 200%
+        </field>
+    </record>
+
+     overtime class 3
+     <record id="hr_salary_rule_overtime_class3" model="hr.salary.rule">
+        <field name="code">OVT3</field>
+        <field name="name">Overtime Class 3</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+
+for line in payslip.worked_days_line_ids:
+    if line.code == 'CLASS2':
+      number_of_hours += line.number_of_hours
+      overtime_class3 = ((contract.wage_hourly * number_of_hours ) * 3)
+
+result = overtime_class3
+        </field>
+        <field name="sequence" eval="5"/>
+        <field name="note">
+            overtime class 3 = gaji perjam * total overtim class 3 * 300%
+        </field>
+    </record>
+
+       overtime class 4
+     <record id="hr_salary_rule_overtime_class4" model="hr.salary.rule">
+        <field name="code">OVT4</field>
+        <field name="name">Overtime Class 4</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+
+for line in payslip.worked_days_line_ids:
+    if line.code == 'CLASS2':
+      number_of_hours += line.number_of_hours
+      overtime_class4 = ((contract.wage_hourly * number_of_hours ) * 4)
+
+result = overtime_class4
+<!-- hour = payslip.timesheet_id.total_class4
+result = ((contract.wage_hourly * hour) * 4) -->
+        </field>
+        <field name="sequence" eval="6"/>
+        <field name="note">
+         overtime class 4 = gaji perjam * total overtim class 4 * 400%
+        </field>
+    </record>
+
+
+      All overtime
+     <record id="hr_salary_rule_overtime" model="hr.salary.rule">
+        <field name="code">ALLOVT</field>
+        <field name="name">Overtime</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = OVT1 + OVT2 + OVT3 + OVT4
+        </field>
+        <field name="sequence" eval="7"/>
+        <field name="note">
+          All overtime =  total overtim class 1 +  total overtim class 2 +  total overtim class 3 +  total overtim class 4 
+        </field>
+    </record>
+
+     Allowance this mont
+     <record id="hr_salary_rule_allowance" model="hr.salary.rule">
+        <field name="code">ALWMON</field>
+        <field name="name">Allowance</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = payslip.alw_pay
+        </field>
+        <field name="sequence" eval="8"/>
+        <field name="note">
+         Allowance this month = Allowance yang dibayar berdasarkan yang di timesheet
+        </field>
+    </record>
+    
+
+
+
+ JHT 3
+     <record id="hr_salary_rule_jht37" model="hr.salary.rule">
+        <field name="code">JHT37</field>
+        <field name="name">JHT 37</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.bpjs_peru 
+        </field>
+        <field name="sequence" eval="9"/>
+        <field name="note">
+            JHT 37 =  JHT 37 di contract
+        </field>
+    </record>
+
+     JKM 0
+     <record id="hr_salary_rule_jkm03" model="hr.salary.rule">
+        <field name="code">JKM03</field>
+        <field name="name">JKM 03</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.jkm03 
+        </field>
+        <field name="sequence" eval="10"/>
+        <field name="note">
+         JKM 03 =  JKM 03 di contract
+        </field>
+    </record>
+
+     JKK 02
+     <record id="hr_salary_rule_jkk024" model="hr.salary.rule">
+        <field name="code">JKK024</field>
+        <field name="name">JKK 024</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.jkk024
+        </field>
+        <field name="sequence" eval="11"/>
+        <field name="note">
+          JKK 024 =  JKK 024 di contract
+        </field>
+    </record>
+    
+      BPJS Perusahaan
+     <record id="hr_salary_rule_bpjsperu" model="hr.salary.rule">
+        <field name="code">BPJSPER</field>
+        <field name="name">BPJS dibayarkan Perusahaan</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+                <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+result = contract.bpjs_peru 
+        </field>
+        <field name="sequence" eval="12"/>
+        <field name="note">
+          BPJS Perusahaan =   bpjs kes. Perusahaan di contract
+        </field>
+    </record>
+
+ Pinjaman
+     <record id="hr_salary_rule_pinjaman" model="hr.salary.rule">
+        <field name="code">LOAN</field>
+        <field name="name">Pinjaman</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = inputs.LOAN.amount 
+        </field>
+        <field name="sequence" eval="13"/>
+        <field name="note">
+            Pinjaman = Input Pinjaman di line input ids
+        </field>
+    </record>
+
+    <record id="hr_rule_input_loan" model="hr.rule.input">
+            <field name="code">LOAN</field>
+            <field name="name">LOAN</field>
+            <field name="input_id" ref="hr_salary_rule_pinjaman"/>
+    </record>
+
+ JHT 3
+     <record id="hr_salary_rule_jht37_ded" model="hr.salary.rule">
+        <field name="code">JHT37DED</field>
+        <field name="name">JHT 37</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.bpjs_peru 
+        </field>
+        <field name="sequence" eval="14"/>
+        <field name="note">
+            JHT 37 =  JHT 37 di contract
+        </field>
+    </record>
+
+     JKM 0
+     <record id="hr_salary_rule_jkm03_ded" model="hr.salary.rule">
+        <field name="code">JKM03DED</field>
+        <field name="name">JKM 03</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.jkm03 
+        </field>
+        <field name="sequence" eval="15"/>
+        <field name="note">
+             JKM 03 =  JKM 03 di contract
+        </field>
+    </record>
+
+     JKK 02
+     <record id="hr_salary_rule_jkk024_ded" model="hr.salary.rule">
+        <field name="code">JKK024DED</field>
+        <field name="name">JKK 024</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.jkk024
+        </field>
+        <field name="sequence" eval="16"/>
+        <field name="note">
+           JKK 024 =  JKK 024 di contract
+        </field>
+    </record>
+
+     JHT 2
+     <record id="hr_salary_rule_jht2_ded" model="hr.salary.rule">
+        <field name="code">JHT2</field>
+        <field name="name">JHT 2</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.jht2
+        </field>
+        <field name="sequence" eval="17"/>
+        <field name="note">
+            JHT 2 = JHt 2 di contract
+        </field>
+    </record>
+
+    
+  BRUTO Bulan
+     <record id="hr_salary_rule_burto_bulan" model="hr.salary.rule">
+        <field name="code">BRUBUL</field>
+        <field name="name"> BRUTO Bulan</field>
+        <field name="category_id" ref="hr_payroll.GROSS"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+if payslip.struct_id.name == 'Head Office':
+    result = GAPOK + ALLOVT + ALWMON + JHT37 + JKM03 + JKK024
+elif payslip.struct_id.name != 'Head Office':
+    result = GAPOK + ALLOVTSITE + ALWMON + JHT37 + JKM03 + JKK024
+else:
+    00
+        </field>
+        <field name="sequence" eval="18"/>
+        <field name="note">
+            BRUTO Bulan = Jumlah BRUTO Bulan
+        </field>
+    </record>
+
+      BRUTO Tahun
+     <record id="hr_salary_rule_burto_tahun" model="hr.salary.rule">
+        <field name="code">BRUTAH</field>
+        <field name="name"> BRUTO Tahun</field>
+        <field name="category_id" ref="hr_payroll.GROSS"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = BRUBUL * 12
+        </field>
+        <field name="sequence" eval="19"/>
+        <field name="note">
+           BRUTO Tahun = Jumlah BRUTO Bulan * 12
+        </field>
+    </record>
+
+     Jaminan Pensiun 1%
+     <record id="hr_salary_rule_jp" model="hr.salary.rule">
+        <field name="code">JP1</field>
+        <field name="name">JP 1</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.jp 
+        </field>
+        <field name="sequence" eval="20"/>
+        <field name="note">
+            Jaminan Pensiun 1% = Jaminan Pensiun 1% di contract
+        </field>
+    </record>
+
+      BPJS Kes. Karyawan
+     <record id="hr_salary_rule_bpjs_kary" model="hr.salary.rule">
+        <field name="code">BPJSKAR</field>
+        <field name="name">BPJS Kesehatan</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = contract.bpjs_kary 
+        </field>
+        <field name="sequence" eval="21"/>
+        <field name="note">
+           BPJS Kes. Karyawan =  bpjs kes. Karyawan di contract
+        </field>
+    </record>
+
+      Asuransi di Setahunkan
+     <record id="hr_salary_rule_asu" model="hr.salary.rule">
+        <field name="code">ASUR</field>
+        <field name="name">Asuransi di Setahunkan</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+result = (contract.jp + contract.jht2) * 12
+        </field>
+        <field name="sequence" eval="22"/>
+        <field name="note">
+          Asuransi di Setahunkan = (JHT2 + JP) * 12
+        </field>
+    </record>
+
+     Biaya Jabatan
+     <record id="hr_salary_rule_biaya_jabatan" model="hr.salary.rule">
+        <field name="code">JABA</field>
+        <field name="name">Biaya Jabatan</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+result = 6000000 if BRUTAH * 0.05 >= 6000000  else BRUTAH * 0.05
+        </field>
+        <field name="sequence" eval="23"/>
+        <field name="note">
+           Biaya Jabatan =  Biaya Jabatan
+        </field>
+    </record>
+
+     Jumlah Pengurang
+     <record id="hr_salary_rule_jumlah_pengurang" model="hr.salary.rule">
+        <field name="code">PENGU</field>
+        <field name="name">Jumlah Pengurang</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+result = JABA + ASUR
+        </field>
+        <field name="sequence" eval="24"/>
+        <field name="note">
+          Jumlah Pengurang =  Biaya Jabatan +  Asuransi di Setahunkan
+        </field>
+    </record> 
+
+ NETTO Tahun
+     <record id="hr_salary_rule_netto_tahun" model="hr.salary.rule">
+        <field name="code">NETTAH</field>
+        <field name="name">NETTO Tahun</field>
+        <field name="category_id" ref="hr_payroll.NET"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+result = BRUTAH - PENGU
+        </field>
+        <field name="sequence" eval="25"/>
+        <field name="note">
+           NETTO Tahun =  BRUTO Tahun - jumlah Pengurang
+        </field>
+    </record>
+
+     PTKP
+     <record id="hr_salary_rule_ptkp" model="hr.salary.rule">
+        <field name="code">PTKP</field>
+        <field name="name">PTKP</field>
+        <field name="category_id" ref="hr_payroll.GROSS"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+if payslip.status_kawin == 'tk0':
+    result = 54000000
+if payslip.status_kawin == 'tk1':
+    result = 58500000
+if payslip.status_kawin == 'tk2':
+    result = 63000000
+if payslip.status_kawin == 'tk3':
+    result = 67500000
+if payslip.status_kawin == 'k0':
+    result = 58500000
+if payslip.status_kawin == 'k1':
+    result = 63000000
+if payslip.status_kawin == 'k2':
+    result = 67500000
+if payslip.status_kawin == 'k3':
+    result = 72000000
+else:
+    00
+        </field>
+        <field name="sequence" eval="26"/>
+        <field name="note">
+           PTKP =  Jika status kawin =
+        </field>
+    </record>
+
+ PKP Setahun
+     <record id="hr_salary_rule_pkp" model="hr.salary.rule">
+        <field name="code">PKP</field>
+        <field name="name"> PKP Setahun</field>
+        <field name="category_id" ref="hr_payroll.GROSS"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = NETTAH - PTKP
+        </field>
+        <field name="sequence" eval="27"/>
+        <field name="note">
+          PKP Setahun=  NETTO Tahun   - PTKP
+        </field>
+    </record>
+
+PPh21 Setahun
+     <record id="hr_salary_rule_pph21_setahun" model="hr.salary.rule">
+        <field name="code">PPHSETA </field>
+        <field name="name">PPh21 Setahun</field>
+        <field name="category_id" ref="hr_payroll.GROSS"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+
+<!-- if  PKP >= 60000000 and payslip.npwp :
+   result = (60000000 * 0.05) +  ((PKP  - 60000000) * 0.15)
+
+elif  PKP >= 60000000 and not payslip.npwp :
+   result = (60000000 * 0.05) +  ((PKP  - 60000000) * 0.15 * 1.2)
+
+elif  PKP < 60000000 and payslip.npwp :
+      result = PKP * 0.05
+
+elif  PKP < 60000000 and not payslip.npwp :
+      result = PKP * 0.05 * 1.2
+else:
+     0 -->
+
+<!-- result = (60000000 * 0.05) +  ((PKP  - 60000000) * 0.15) if PKP >= 60000000 and payslip.npwp  else (60000000 * 0.05) +  ((PKP  - 60000000) * 0.15 * 1.2) if PKP >= 60000000 and not payslip.npwp else PKP * 0.05 if PKP < 60000000 and payslip.npwp else PKP * 0.05 * 1.2 if PKP < 60000000 and not payslip.npwp else 0 -->
+        </field>
+        <field name="sequence" eval="28"/>
+        <field name="note">
+           PPh21 Setahun =  PKP Setahun * 5%
+        </field>
+    </record>
+
+ PPh21 Sebulan
+     <record id="hr_salary_rule_pph21_sebulan" model="hr.salary.rule">
+        <field name="code">PPHSEBU</field>
+        <field name="name">PPh 21</field>
+        <field name="category_id" ref="hr_payroll.DED"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = PPHSETA  / 12        
+        </field>
+        <field name="sequence" eval="29"/>
+        <field name="note">
+           PPh21 Tahun =  PPh21 Setahun / 12
+        </field>
+    </record>
+
+     Penghasilan teratur
+     <record id="hr_salary_rule_penghasilan_teratur" model="hr.salary.rule">
+        <field name="code">PENGHA</field>
+        <field name="name">Penghasilan teratur</field>
+        <field name="category_id" ref="hr_payroll.GROSS"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+
+if payslip.struct_id.name == 'Head Office':
+    result = GAPOK + ALLOVT + ALWMON 
+elif payslip.struct_id.name != 'Head Office':
+    result = GAPOK + ALLOVTSITE + ALWMON 
+else:
+    00
+        </field>
+        <field name="sequence" eval="30"/>
+        <field name="note">
+           Penghasilan teratur =  gaji + Allowance + Lembur 
+        </field>
+    </record>
+
+     Potongan Penghasilan
+     <record id="hr_salary_rule_potongan_penghasilan" model="hr.salary.rule">
+        <field name="code">POTOPENG</field>
+        <field name="name">Potongan Penghasilan</field>
+        <field name="category_id" ref="hr_payroll.GROSS"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result =  PPHSEBU + contract.jht2 + contract.bpjs_kary  + contract.jp  + LOAN
+        </field>
+        <field name="sequence" eval="31"/>
+        <field name="note">
+          Potongan Penghasilan =  PPh21 sebulan + JHT 2 + BPJS Karyawan + JP 1% + Pinjaman + TL  
+        </field>
+    </record>
+
+<!-- Penghasilan Di Proyek -->
+     <record id="hr_salary_rule_penghasilan_proyek" model="hr.salary.rule">
+        <field name="code">PENGPRO</field>
+        <field name="name">Penghasilan Di Proyek (4) </field>
+        <field name="category_id" ref="hr_payroll.NET"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result =  ALWMON 
+        </field>
+        <field name="sequence" eval="32"/>
+        <field name="note">
+        Penghasilan Proyek=  Allowance di Proyek
+        </field>
+    </record> 
+
+     <!-- Take Home Pay  -->
+     <record id="hr_salary_rule_penghasilan_thp" model="hr.salary.rule">
+        <field name="code">THP</field>
+        <field name="name">Take Home Pay (8 - 17 - 18) </field>
+        <field name="category_id" ref="hr_payroll.NET"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result =  PENGHA -  POTOPENG - ALWMON
+        </field>
+        <field name="sequence" eval="33"/>
+        <field name="note">
+        Penghasilan HRD =  Penghasilan teratur  - TL -  Potongan Penghasilan
+        </field>
+    </record>
+
+<!-- perhitungan overtime lapangan flat 1 -->
+    overtime Site class 1
+     <record id="hr_salary_rule_overtime_site_class1" model="hr.salary.rule">
+        <field name="code">OVTSITE1</field>
+        <field name="name">Overtime Site Class 1</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+number_of_hours = 0
+
+for line in payslip.worked_days_line_ids:
+    if line.code == 'CLASS1':
+      number_of_hours += line.number_of_hours
+      overtime_site_class1 = ((contract.wage_hourly * number_of_hours ) * 1)
+
+result = overtime_site_class1
+        </field>
+        <field name="sequence" eval="3"/>
+        <field name="note">
+            overtime class 1 = gaji perjam * total overtim class 1 * 100%
+        </field>
+    </record>
+
+     overtime Site class 2
+     <record id="hr_salary_rule_overtime_site_class2" model="hr.salary.rule">
+        <field name="code">OVTSITE2</field>
+        <field name="name">Overtime Site Class 2</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+number_of_hours = 0
+
+for line in payslip.worked_days_line_ids:
+    if line.code == 'CLASS2':
+      number_of_hours += line.number_of_hours
+      overtime_site_class2 = ((contract.wage_hourly * number_of_hours ) * 1)
+
+result = overtime_site_class2
+        </field>
+        <field name="sequence" eval="4"/>
+        <field name="note">
+            overtime class 2 = gaji perjam * total overtim class 2 * 100%
+        </field>
+    </record>
+
+     overtime Site class 3
+     <record id="hr_salary_rule_overtime_site_class3" model="hr.salary.rule">
+        <field name="code">OVTSITE3</field>
+        <field name="name">Overtime Site Class 3</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+number_of_hours = 0
+
+for line in payslip.worked_days_line_ids:
+    if line.code == 'CLASS3':
+      number_of_hours += line.number_of_hours
+      overtime_site_class3= ((contract.wage_hourly * number_of_hours ) * 1)
+
+result = overtime_site_class3
+        </field>
+        <field name="sequence" eval="5"/>
+        <field name="note">
+            overtime class 3 = gaji perjam * total overtim class 3 * 100%
+        </field>
+    </record>
+
+       overtime Site class 4
+     <record id="hr_salary_rule_overtime_site_class4" model="hr.salary.rule">
+        <field name="code">OVTSITE4</field>
+        <field name="name">Overtime Site Class 4</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="appears_on_payslip">False</field>
+        <field name="amount_python_compute">
+number_of_hours = 0
+
+for line in payslip.worked_days_line_ids:
+    if line.code == 'CLASS4':
+      number_of_hours += line.number_of_hours
+      overtime_site_class4= ((contract.wage_hourly * number_of_hours ) * 1)
+
+result = overtime_site_class4
+        </field>
+        <field name="sequence" eval="6"/>
+        <field name="note">
+         overtime class 4 = gaji perjam * total overtim class 4 * 100%
+        </field>
+    </record>
+
+
+    All overtime Site
+     <record id="hr_salary_rule_overtime_site" model="hr.salary.rule">
+        <field name="code">ALLOVTSITE</field>
+        <field name="name">ALl Overtime Site</field>
+        <field name="category_id" ref="hr_payroll.ALW"/>
+        <field name="amount_select">code</field>
+        <field name="amount_python_compute">
+result = OVTSITE1 + OVTSITE2 + OVTSITE3 + OVTSITE4
+        </field>
+        <field name="sequence" eval="7"/>
+        <field name="note">
+          All overtime =  total overtime site class 1 +  total overtime site class 2 +  total overtime site class 3 +  total overtime site class 4 
+        </field>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,239 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_employee_form">
+            <field name="name">hr employee form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='toggle_active']" position="after">
+                    <button class="oe_stat_button"  type="object" icon="fa-bookmark"  name="open_employees_cetificate" groups="hr.group_hr_manager">
+                        <field string="Certificates" name="employee_count_certificate" widget="statinfo" groups="hr.group_hr_manager"/>
+                    </button>
+                    <button class="oe_stat_button" type="object" icon="fa-file" name="open_employees_cv" groups="hr.group_hr_manager">
+                        <field string="CV" name="employee_count_cv" widget="statinfo" groups="hr.group_hr_manager"/>
+                    </button>
+                </xpath>
+                <xpath expr="//field[@name='department_id']" position="before">
+                    <field name="gut_nik"/>
+                    <field name="employee_grade"/>
+                    <field name="status_karyawan"/>
+                    <field name="work_schedule_id"/>
+                </xpath>
+                <xpath expr="//field[@name='passport_id']" position="after">
+                    <field name="gut_npwp"/>
+                </xpath>
+                <xpath expr="//field[@name='children']" position="after">
+                    <field name="status"/>
+                </xpath>
+                <xpath expr="//field[@name='gender']" position="before">
+                    <field name="region"/>
+                </xpath>
+                <xpath expr="//field[@name='birthday']" position="after">
+                    <field name="age" attrs="{'invisible': [('birthday','=', False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='coach_id']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//notebook/page/group/group[1]/field[@name='work_phone']" position="after">
+                    <field name="resource_calendar_id"  position="move"/>
+                    <field name="tz"  position="move"/>
+                </xpath>
+                <xpath expr="//notebook/page/group/group[2]" position="after">
+                    <group string="Work Experience">
+                        <field name="pendidikan"  widget="many2many_tags"  readonly="1"/>
+                        <field name="keahlian"  widget="many2many_tags" readonly="1"/>
+                        <field name="pelatihan"  widget="many2many_tags" readonly="1"/>
+                        <field name="pengalaman_kerja_gut"  widget="many2many_tags" readonly="1"/>
+                        <field name="employee_location_history" readonly="1" invisible="1"/>
+                        <field name="job_on_site" readonly="1"/>
+                        <field name="employee_penilaian" readonly="1" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+
+<!--Hr Employee inherit search view timesheet - hide timesheet button -->
+    <record id="hr_employee_timesheet_form" model="ir.ui.view">
+        <field name="name">hr.employee.form.timesheet</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_employee_view_form_inherit_timesheet"/>
+        <field name="arch" type="xml">
+            <button name="618" position="replace"/>
+        </field>
+    </record>
+
+
+<!-- tree view Employee -->
+        <record  model="ir.ui.view" id="rnet_employee_tree_view">
+            <field name="name">emoloyee.Tree.View</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="identification_id" string="NIK"/>
+                    <field name="age" />
+                    <field name="status_karyawan"/>
+                    <field name="pendidikan" widget="many2many_tags"/>
+                    <field name="keahlian" widget="many2many_tags"/>
+                    <field name="pelatihan" widget="many2many_tags"/>
+                    <field name="pengalaman_kerja_gut" widget="many2many_tags"/>
+                    <field name="employee_location_history" readonly="1" invisible="1"/>
+                    <field name="job_on_site" readonly="1"/>
+                    <field name="employee_penilaian" readonly="1" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    <field name="penilaian_not" invisible="1"/>
+                </xpath>
+                <xpath expr="//tree[1]" position="attributes">
+                    <attribute name="decoration-warning">penilaian_not == True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='work_phone']" position="replace">
+                    <field name="mobile_phone"/>
+                </xpath>
+            </field>
+        </record>
+
+
+<!-- search view Employee -->
+        <record  model="ir.ui.view" id="rnet_employee_search_view">
+            <field name="name">emoloyee.search.View</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_filter" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='department_id']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='category_ids']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='job_id']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="before">
+                    <field name="name" string="All" filter_domain="[
+                                '|','|','|','|','|','|','|','|','|','|','|','|','|','|','|','|','|','|','|',
+                                ('name', 'ilike', self),
+                                ('job_title', 'ilike', self),
+                                ('status_karyawan', 'ilike', self),
+                                ('employee_grade', 'ilike', self),
+                                ('department_id', 'ilike', self),
+                                ('parent_id', 'ilike', self),
+                                ('identification_id', 'ilike', self),
+                                ('gut_npwp', 'ilike', self),
+                                ('age', 'ilike', self),
+                                ('work_email', 'ilike', self),
+                                ('place_of_birth', 'ilike', self),
+                                ('gender', 'ilike', self),
+                                ('marital', 'ilike', self),
+                                ('region', 'ilike', self), 
+                                ('keahlian', 'ilike', self),
+                                ('pelatihan', 'ilike', self),
+                                ('pengalaman_kerja_gut', 'ilike', self),
+                                ('pendidikan', 'ilike', self),
+                                ('employee_location_history', 'ilike', self),
+                                ('job_on_site', 'ilike', self),
+                                ]"/>
+                </xpath>
+                <xpath expr="//filter[@name='group_manager']" position="after">
+                  <filter name="group_kontrak_karyawan" string="Status Karyawan" domain="[]" context="{'group_by':'status_karyawan'}"/>
+                  <filter name="job_position" string="Job Position" domain="[]" context="{'group_by':'job_id'}"/>
+                  <filter name="location_history" string="Location History" domain="[]" context="{'group_by':'employee_location_history'}"/>
+                  <filter name="employee_grade" string="Grade" domain="[]" context="{'group_by':'employee_grade'}"/>
+                  <filter name="group_kontrak_karyawan_project" string="Site Employee" domain="[('status_karyawan', '=', 'PKWT Project')]"/> 
+                  <filter name="group_kontrak_karyawan_project" string="HO Employee" domain="[('status_karyawan', '!=', 'PKWT Project')]"/> 
+                  <filter name="employee_penilaian" string="Penilaian NOT" domain="[('employee_penilaian', '=', 'not')]"/>
+               </xpath>
+                <xpath expr="//filter[@name='group_job']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='group_coach']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='group_company']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='message_needaction']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='activities_overdue']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='activities_today']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//filter[@name='activities_upcoming_all']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+    <!--Hr Employee inherit search view-->
+    <record id="hr_employee_view_search" model="ir.ui.view">
+        <field name="name">hr.employee.search.view.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_holidays.hr_employee_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='is_absent_totay']" position="replace">
+                <filter name="is_absent_totay" invisible="1" string="Absent Today" domain="[('is_absent_totay', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--Hr Employee inherit search view attendance-->
+    <record id="hr_employee_filter_inherit_attendance" model="ir.ui.view">
+        <field name="name">hr.employee.filter.inherit.attendance</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_attendance.view_employee_filter_inherit_hr_attendance"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='signed_in']" position="replace">
+                <filter name="signed_in" invisible="1" string="Absent Today" domain="[('is_absent_totay', '=', True)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='signed_out']" position="replace">
+                <filter name="signed_out" invisible="1" string="Absent Today" domain="[('is_absent_totay', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+<!-- graph view employee -->
+        <!-- <record id="rnet_employee_graph_view" model="ir.ui.view">
+            <field name="name">hr.employee.graph</field>
+            <field name="model">hr.employee</field>
+            <field name="arch" type="xml">
+                <graph string="Employee Summary" groupby="name">
+					<field name="birthday" type="row" string="Tanggal"/>
+					<field name="status_karyawan" type="measure"/>
+					<field name="name" type="col"/>
+                </graph>
+            </field>
+        </record> -->
+
+        <!-- <record model="ir.ui.view" id="rnet_employee_pivot_view">
+            <field name="name">hr.employee.pivot</field>
+            <field name="model">hr.employee</field>
+            <field name="arch" type="xml">
+                <pivot string="Employee">
+					<field name="name" type="col"/>
+                </pivot>
+            </field>
+        </record> -->
+
+
+    <!-- mass update on change employee-->
+    <record id="Rnet_update_employee_mass" model="ir.actions.server">
+        <field name="name">Refresh(s)</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                records.filtered(lambda x: x.km_home_work >= 0).action_update_employee_value()
+        </field>
+    </record>
+
+
+
+    </data>
+</odoo>

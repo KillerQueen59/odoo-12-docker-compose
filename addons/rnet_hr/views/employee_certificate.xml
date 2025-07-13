@@ -1,0 +1,65 @@
+<odoo>
+    <data>
+        <record id="employee_certificate_form" model="ir.ui.view">
+            <field name="name">Employee Certificate Form</field>
+            <field name="model">hr.employee.certificate</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="gut_nik"/>
+                                <field name="jabatan" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Sertifikasi">
+                                <field name="certificate_line_ids">
+                                    <tree string="Sertifikasi" editable="buttom">
+                                        <field name="seq"/>
+                                        <field name="name" string="Pelatihan / Sertifikasi"/>
+                                        <field name="bidang_sertifikasi"/>
+                                        <field name="badan_penerbit"/>
+                                        <field name="tanggal_sertifikasi"/>
+                                        <field name="deskripsi"/>
+                                        <field name="attachment_ids" widget="many2many_binary"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="employee_certificate_tree" model="ir.ui.view">
+            <field name="name">emoloyee Certificate Tree</field>
+            <field name="model">hr.employee.certificate</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="gut_nik"/>
+                    <field name="jabatan"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="open_employee_certificate">
+            <field name="name">Employee Certificate</field>
+            <field name="res_model">hr.employee.certificate</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="employee_certificate_tree"/>
+        </record>
+
+        <menuitem id="menu_employee_certificate" name="Empoyee Certificate"
+            parent="hr.menu_open_view_employee_list_my" groups="hr.group_hr_manager"
+            action="open_employee_certificate" sequence="4"/>
+    </data>
+</odoo>

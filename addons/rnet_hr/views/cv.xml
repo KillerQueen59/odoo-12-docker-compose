@@ -1,0 +1,240 @@
+<odoo>
+    <data>
+        <!-- form CV -->
+
+        <record id="employee_cv_form" model="ir.ui.view">
+            <field name="name">Employee CV Form</field>
+            <field name="model">hr.employee.cv</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field name="active" invisible="1"/>
+                        <field name="foto" widget="image" class="oe_avatar" />
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Employee's Name" required="True"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group >
+                            <field name="nik" string="NIK"/>
+                            <field name="jabatan" string="Jabatan Sekarang"/>
+                            <field name="department" string="Departemen"/>
+                            <field name="atasan" string="Atasan Langsung"/>
+                            <field name="status_karyawan"/>
+                        </group>
+                    </group>
+                <notebook>
+                            <page name="personal" string="Data Diri">
+                                <group>
+                                    <group string="Data Diri">
+                                        <field name="identification_id"/>
+                                        <field name="gut_npwp"/>
+                                        <field name="passport_id"/>
+                                        <field name="street" string="Alamat" />
+                                        <field name="city" string="Kota/Kabupaten"/>
+                                        <!-- <field name="state" string="Provinsi" context="{'provinsi': True}" options='{"always_reload": True}'/> -->
+                                        <field name="phone" string="Telp Rumah" context="{'phone': True}" options='{"always_reload": True}'/>
+                                        <field name="mobile" string="No HP" context="{'hp': True}" options='{"always_reload": True}'/>
+                                        <field name="email" string="Email" context="{'email': True}" options='{"always_reload": True}'/>
+                                        <field name="birthday"/>
+                                        <field name="place_of_birth"/>
+                                        <field name="gender"/>
+                                        <field name="marital"/>
+                                        <field name="region"/>
+
+                                    </group>
+                                    <group string="Contact Keadaan Darurat">
+                                        <field name="emergency_contact"/>
+                                        <field name="emergency_phone"/>
+                                    </group>
+                                    <group string="Sosial Media">
+                                        <field name="ms_office" />
+                                        <field name="internet" />
+                                        <field name="akun_fb" />
+                                        <field name="akun_ig"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="pendidikan" string="Latar Belakang Pendidikan" >
+                                <group invisible="1">
+                                    <group string="Kuliah">
+                                        <field name="nama_kampus"/>
+                                        <field name="lokasi_kampus" placeholder="e.g Bandung"/>
+                                        <field name="jurusan_kuliah"/>
+                                        <field name="jenjang_kuliah" placeholder="e.g S1"/>
+                                        <field name="ipk"/>
+                                        <field name="judul_ta"/>
+                                        <field name="tahun_lulus_kuliah"/>
+                                    </group>
+                                    <group string="SMA">
+                                        <field name="nama_sma"/>
+                                        <field name="lokasi_sma"/>
+                                        <field name="jurusan_sma"/>
+                                        <field name="tahun_lulus_sma"/>
+                                    </group>
+                                    <group string="SMP">
+                                        <field name="nama_smp"/>
+                                        <field name="lokasi_smp"/>
+                                        <field name="tahun_lulus_smp"/>
+                                    </group>
+                                    <group string="SD">
+                                        <field name="nama_sd"/>
+                                        <field name="lokasi_sd"/>
+                                        <field name="tahun_lulus_sd"/>
+                                    </group>
+                                </group>
+                                <separator string="Pendidikan"/>
+                                <field name="pendidikan_line_ids">
+                                    <tree string="Organisasi" editable="bottom">
+                                        <field name="name"/>
+                                        <field name="nama_sekolah"/>
+                                        <field name="lokasi_sekolah"/>
+                                        <field name="tahun_lulus"/>
+                                        <field name="jurusan"/>
+                                        <field name="jenjang"/>
+                                        <field name="ipk"/>
+                                        <field name="judul_ta"/>
+                                    </tree>
+                                </field>
+                                <separator string="Pengalaman Organisasi"/>
+                                <field name="organisasi_line_ids">
+                                    <tree string="Organisasi" editable="bottom">
+                                        <field name="name"/>
+                                        <field name="jabatan"/>
+                                        <field name="tahun_aktif"/>
+                                    </tree>
+                                </field>
+                                </page>
+                                <page name="pelatihan" string="Pelatihan">
+                                    <separator string="Pelatihan / Seminar"/>
+                                    <field name="seminar_line_ids">
+                                        <tree string="Seminar" editable="bottom">
+                                            <field name="name"/>
+                                            <field name="lembaga_penyenggara"/>
+                                            <field name="tahun_pelatihan"/>
+                                        </tree>
+                                    </field>
+                                    <separator string="Keahlian Yang Dikuasai"/>
+                                    <field name="spesialisasi_line_ids">
+                                        <tree string="Spesialisasi" editable="bottom">
+                                            <field name="name"/>
+                                            <field name="deskripsi"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                                <page name="pengalaman" string="Pengalaman Kerja">
+                                    <separator string="Pengalaman Kerja Sebelum di PT GUT"/>
+                                    <field name="pengalaman_line_ids">
+                                        <tree string="Pengalaman" editable="bottom">
+                                            <field name="nama_perusahaan"/>
+                                            <field name="name"/>
+                                            <field name="nama_atasan"/>
+                                            <field name="nama_proyek"/>
+                                            <field name="area"/>
+                                            <field name="tahun_masuk"/>
+                                            <field name="tahun_keluar"/>
+                                        </tree>
+                                    </field>
+                                    <separator string="Proyek Yang Pernah Ditangani di PT GUT"/>
+                                    <field name="pengalaman_gut_line_ids">
+                                        <tree string="Pengalaman Proyek di GUT" editable="bottom">
+                                            <field name="name"/>
+                                            <field name="jabatan"/>
+                                            <field name="nama_atasan_gut"/>
+                                            <field name="work_date"/>
+                                            <!-- <field name="tahun"/> -->
+                                        </tree>
+                                    </field>
+                                </page>
+                                <!-- <page string="Location History">
+                                <field name="employee_location_line_ids">
+                                    <tree string="Employee Employee" editable="buttom">
+                                        <field name="name" string="Project"/>
+                                        <field name="jabatan_project"/>
+                                        <field name="work_date"/>
+                                    </tree>
+                                </field>
+                                </page> -->
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="employee_cv_search">
+            <field name="name">Employee CV Search</field>
+            <field name="model">hr.employee.cv</field>
+            <field name="arch" type="xml">
+            <search>
+            <field name="name" string="All" filter_domain="[
+            '|','|','|','|','|','|','|','|','|','|','|','|','|','|','|',
+            '|','|','|','|','|','|','|','|','|','|','|',
+            ('name', 'ilike', self),
+            ('nik', 'ilike', self), 
+            ('jabatan', 'ilike', self),
+            ('department', 'ilike', self),
+            ('atasan', 'ilike', self),
+            ('identification_id', 'ilike', self),
+            ('gut_npwp', 'ilike', self),
+            ('street', 'ilike', self),
+            ('city', 'ilike', self),
+            ('phone', 'ilike', self),
+            ('email', 'ilike', self),
+            ('place_of_birth', 'ilike', self),
+            ('gender', 'ilike', self),
+            ('marital', 'ilike', self),
+            ('region', 'ilike', self),
+            ('nama_kampus', 'ilike', self),
+            ('lokasi_kampus', 'ilike', self),
+            ('jurusan_kuliah', 'ilike', self),
+            ('jenjang_kuliah', 'ilike', self),
+            ('tahun_lulus_kuliah', 'ilike', self),
+            ('nama_sma', 'ilike', self),
+            ('lokasi_sma', 'ilike', self),
+            ('jurusan_sma', 'ilike', self),
+            ('nama_smp', 'ilike', self),
+            ('lokasi_smp', 'ilike', self),
+            ('nama_sd', 'ilike', self),
+            ('lokasi_sd', 'ilike', self)]" />
+
+            <!-- <field name="name" string="Employee"/>
+            <field name="atasan" string="Atasan"/>
+            <field name="nama_kampus" string="Nama Kampus"/> -->
+            <field name="spesialisasi_line_ids" string="Keahlian" filter_domain="['|',('spesialisasi_line_ids.name', 'ilike', self),('spesialisasi_line_ids.deskripsi', 'ilike', self)]"/>
+            <field name="seminar_line_ids" string="Pelatihan" filter_domain="['|','|',('seminar_line_ids.name', 'ilike', self),('seminar_line_ids.lembaga_penyenggara', 'ilike', self),('seminar_line_ids.tahun_pelatihan', 'ilike', self)]"/>
+            <field name="pengalaman_line_ids" string="Pengalaman kerja" filter_domain="['|','|','|','|','|','|',('pengalaman_line_ids.name', 'ilike', self),('pengalaman_line_ids.nama_perusahaan', 'ilike', self),('pengalaman_line_ids.nama_atasan', 'ilike', self),('pengalaman_line_ids.nama_proyek', 'ilike', self),('pengalaman_line_ids.area', 'ilike', self),('pengalaman_line_ids.tahun_masuk', 'ilike', self),('pengalaman_line_ids.tahun_keluar', 'ilike', self)]"/>
+            <field name="organisasi_line_ids" string="Organisasi" filter_domain="['|','|',('organisasi_line_ids.name', 'ilike', self),('organisasi_line_ids.jabatan', 'ilike', self),('organisasi_line_ids.tahun_aktif', 'ilike', self)]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <filter string="Kuliah S1" name="jenjang_kuliah" domain="[('jenjang_kuliah', 'ilike', 'S1')]"/>
+            </search>
+            </field>
+        </record>
+
+        <record id="employee_cv_tree" model="ir.ui.view">
+            <field name="name">Employee CV Tree</field>
+            <field name="model">hr.employee.cv</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" string="Employee"/>
+                </tree>
+            </field>
+        </record>
+        
+
+        <record model="ir.actions.act_window" id="open_hr_employee_cv">
+            <field name="name">Employee CV</field>
+            <field name="res_model">hr.employee.cv</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="employee_cv_tree"/>
+        </record>
+
+          <menuitem id="menu_employee_cv" name="Employee CV"
+             parent="hr.menu_open_view_employee_list_my"
+            action="open_hr_employee_cv" sequence="7" groups="hr.group_hr_manager" />
+
+</data>
+</odoo>

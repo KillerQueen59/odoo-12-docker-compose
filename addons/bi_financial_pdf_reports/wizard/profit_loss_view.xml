@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="bi_financial_pdf_reports_action_profit_loss" model="ir.actions.act_window">
+            <field name="name">Profit Loss Sheet</field>
+            <field name="res_model">accounting.report.bi</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="bi_financial_pdf_reports_form_account_report_custom"/>
+            <field name="context" eval="{'default_account_report_id':ref('bi_financial_pdf_reports.bi_account_financial_report_profitandloss0')}"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="bi_financial_pdf_reports_menu_profit_loss" name="Profit Loss" action="bi_financial_pdf_reports_action_profit_loss"
+                  parent="bi_menu_finance_report"/>
+
+
+
+    </data>
+</odoo>

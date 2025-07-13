@@ -1,0 +1,160 @@
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="hr_attendance_form">
+			<field name="name">hr attendance form</field>
+			<field name="model">hr.attendance</field>
+			<field name="inherit_id" ref="hr_attendance.hr_attendance_view_form" />
+			<field name="view_mode">tree,form</field>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='check_out']" position="after">
+					<field name="actual_hours" widget="float_time" />
+					<field name="gut_day" />
+					<field name="gut_normal_hours" sum="Normal" attrs="{'invisible':[('gut_normal_hours', '==', 0)] ,'readonly': [('hari_libur','==',False)]}" force_save="1" />
+					<field name="gut_class1" sum="Class 1" attrs="{'invisible':[('gut_class1', '==', 0)], }" force_save="1" />
+					<field name="gut_class2" sum="Class 2" attrs="{'invisible':[('gut_class2', '==', 0)], }" force_save="1" />
+					<field name="gut_class3" sum="Class 3" attrs="{'invisible':[('gut_class3', '==', 0)], }" force_save="1" />
+					<field name="gut_class4" sum="Class 4" attrs="{'invisible':[('gut_class4', '==', 0)], }" force_save="1" />
+					<field name="gut_travel" sum="gut_travel" attrs="{'invisible':[('is_travel', '==', False)]}"/>
+					<field name="start_overtime_hours" />
+					<field name="waktu_telat" widget="float_time" attrs="{'invisible':['|', ('waktu_telat', '&lt;', 00.00), ('waktu_telat', '==', 0.00)]}" />
+					<field name="gut_early_hours" widget="float_time" attrs="{'invisible':['|', ('gut_early_hours', '&lt;', 0.00), ('gut_early_hours', '==', 0.00)]}" />
+					<field name="total_waktu_telat" widget="float_time" attrs="{'invisible':['|', ('total_waktu_telat', '&lt;', 0.00), ('total_waktu_telat', '==', 0.00)]}" />
+					<field name="hari_libur" />
+					<field name="public_holiday" attrs="{'invisible':[('hari_libur', '==', False)]}" />
+				</xpath>
+				<xpath expr="//field[@name='employee_id']" position="after">
+					<field name="contract_type_id" options="{'no_quick_create': True, 'no_open': True, 'no_create_edit': True}"/> <!-- New field added before task -->
+					<field name="job_id" options="{'no_quick_create': True, 'no_open': True, 'no_create_edit': True}"/> <!-- New field added before task -->
+					<field name="task"/>
+					<field name="jo_no"/>
+					<field name="project" options="{'no_quick_create': True, 'no_open': True, 'no_create_edit': True}"/>
+					<field name="gut_code" force_save="1"/>
+					<field name="is_travel"/>
+					<field name="active" invisible="1"/>
+				</xpath>
+				<xpath expr="//field[@name='employee_id']" position="attributes">
+					<attribute name="options">
+						{'no_create': True, 'no_create_edit':True, 'no_open': True,}
+					</attribute>
+				</xpath>
+                <xpath expr="//field[@name='check_in']" position="replace">
+					<field name="check_in" groups="hr_attendance.group_hr_attendance_manager"/>
+				</xpath>
+                <xpath expr="//field[@name='check_out']" position="replace">
+					<field name="check_out" groups="hr_attendance.group_hr_attendance_manager"/>
+				</xpath>
+			</field>
+		</record>
+
+		<!-- hr_attendance inherited tree view -->
+		<record id="view_attendance_tree" model="ir.ui.view">
+			<field name="name">hr.attendance.tree</field>
+			<field name="model">hr.attendance</field>
+			<field name="inherit_id" ref="hr_attendance.view_attendance_tree" />
+			<field name="arch" type="xml">
+				<xpath expr="//tree" position="attributes">
+					<attribute name="decoration-danger">
+						gut_day in ( "Saturday", "Sunday") or hari_libur == True
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='check_in']" position="attributes">
+					<attribute name="attrs">
+						{'invisible':[('gut_normal_hours', '==', 0),('gut_class2', '==', 0)]}
+					</attribute>
+				</xpath>
+				<xpath expr="//field[@name='check_out']" position="attributes">
+					<attribute name="attrs">
+						{'invisible':[('gut_normal_hours', '==', 0),('gut_class2', '==', 0)]}
+					</attribute>
+				</xpath>
+				<field name="employee_id" position="after">
+					<field name="contract_type_id" string="Kontrak"/>
+					<field name="gut_day" />
+					<field name="hari_libur" />
+					<field name="public_holiday" attrs="{'invisible':[('hari_libur', '==', False)]}" />
+				</field>
+				<field name="check_out" position="after">
+					<field name="actual_hours" widget="float_time" />
+					<field name="gut_normal_hours" sum="Normal" attrs="{'invisible':[('gut_normal_hours', '==', 0)]}" />
+					<field name="gut_class1" sum="Class 1" attrs="{'invisible':[('gut_class1', '==', 0)]}" />
+					<field name="gut_class2" sum="Class 2" attrs="{'invisible':[('gut_class2', '==', 0)]}" />
+					<field name="gut_class3" sum="Class 3" attrs="{'invisible':[('gut_class3', '==', 0)]}" />
+					<field name="gut_class4" sum="Class 4" attrs="{'invisible':[('gut_class4', '==', 0)]}" />
+					<field name="gut_travel" sum="gut_travel" />
+					<field name="gut_code" attrs="{'invisible':[('gut_code', '==', 0)]}" />
+					<field name="waktu_telat" widget="float_time" sum="Total Telat" attrs="{'invisible':['|', ('waktu_telat', '&lt;', 00.00), ('waktu_telat', '==', 0.00)]}" />
+					<field name="gut_early_hours" widget="float_time" attrs="{'invisible':['|', ('gut_early_hours', '&lt;', 00.00), ('gut_early_hours', '==', 0.00)]}" />
+					<field name="total_waktu_telat" widget="float_time" attrs="{'invisible':['|', ('total_waktu_telat', '&lt;', 0.00), ('total_waktu_telat', '==', 0.00)]}" />
+					<field name="task" />
+					<field name="project" />
+				</field>
+			</field>
+		</record>
+
+		<!-- filter employee attendance -->
+		<record id="hr_attendance_search_form_view" model="ir.ui.view">
+			<field name="name">hr_attendance_view_filter</field>
+			<field name="model">hr.attendance</field>
+			<field name="inherit_id" ref="hr_attendance.hr_attendance_view_filter" />
+			<field name="arch" type="xml">
+				<search>
+					<filter string="Archived" name="inactive" domain="[('active', '=', False)]" />
+					<field name="task" />
+					<field name="project" />
+					<group expand="0" string="Group By">
+						<filter string="Project" name="group_project" context="{'group_by':'project'}" />
+						<filter string="Kontrak" name="group_kontrak" context="{'group_by':'contract_type_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+
+<!-- pivot view -->
+		<record id="rnet_hr_attendance_view_pivot" model="ir.ui.view">
+			<field name="name">hr_attendance_view_pivot</field>
+			<field name="model">hr.attendance</field>
+			<field name="inherit_id" ref="hr_attendance.hr_attendance_view_pivot" />
+			<field name="arch" type="xml">
+			<xpath expr="//pivot" position="replace">
+				<pivot string="Attendance">
+					<field name="employee_id" type="row"/>
+					<field name="check_in" type="col"/>
+					<field name="actual_hours" type="measure"/>
+				</pivot>
+			</xpath>
+			</field>
+		</record>
+
+<!-- graph view -->
+		<record id="rnet_hr_attendance_view_graph" model="ir.ui.view">
+			<field name="name">hr_attendance_view_graph</field>
+			<field name="model">hr.attendance</field>
+			<field name="inherit_id" ref="hr_attendance.hr_attendance_view_graph" />
+			<field name="arch" type="xml">
+			<xpath expr="//graph" position="replace">
+				<graph string="Attendance">
+					<field name="jo_no"/>
+					<field name="check_in"/>
+					<field name="actual_hours" type="measure"/>
+            	</graph>
+			</xpath>
+			</field>
+		</record>
+
+<!-- menu site employee Only -->
+	<record model="ir.actions.act_window" id="rnet_open_view_employee_list_my">
+            <field name="name">Site Employee</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+			<field name="domain">[('status_karyawan', '=', 'PKWT Project')]</field>
+        </record>
+
+    <menuitem id="menu_site_employee_only" name="Site Employee"
+            parent="hr_attendance.menu_hr_attendance_manage_attendances"
+            action="rnet_open_view_employee_list_my" sequence="10" groups="hr_attendance.group_hr_attendance_manager" />
+<!--  -->
+
+	</data>
+</odoo>

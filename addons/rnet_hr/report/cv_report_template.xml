@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_cv_document">
+        <xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+            <t t-call="web.basic_layout">
+                <!-- header -->
+                <div class="header">
+                    <style type="text/css">
+                    table.table-bordered > thead > tr > th {
+                        border:1px solid;
+                    }
+                    table.table-bordered > tbody > tr > td {
+                        border:1px solid;
+                    }
+                    </style>
+                    <t t-foreach="docs" t-as="o">
+                        <div class="row">
+                            <div class="col-6  first-page small" >
+                                <img src="/web/binary/company_logo" alt="Logo" style="max-height: 90px;"/>
+                            </div>
+                            <div class="col-6  first-page">
+                                <div id="picture" class="text-right">
+                                    <img t-if="o.foto" t-att-src="image_data_uri(o.foto)" style="max-height: 85px;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                <!-- page -->
+                <div class="page">
+                    <style type="text/css">
+                    table.table-bordered > thead > tr > th {
+                        border:1px solid;
+                    }
+                    table.table-bordered > tbody > tr > td {
+                        border:1px solid;
+                    }
+                    </style>
+                    <div class="row mb-3">
+                        <div class="col  ">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td >Nomor Induk Karyawan</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.nik"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td >Jabatan</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.jabatan"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td >Departemen</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.department"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td >Nama Atasan Langsung Saat Ini</td>
+                                        <td>:&amp;nbsp;</td>
+                                        <td>
+                                            <span t-field="o.atasan"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Data Diri</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <thead>
+
+                                </thead>
+                                <tbody>
+                                 <style type="text/css">
+                                    .highlight  {
+                                    background-color: #D3D3D3 !important;
+                                    }
+                                    </style>
+
+                                    <tr>
+                                        <td class="highlight">Nama</td>
+                                        <td class="highlight">
+                                            <span t-field="o.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>No KTP</td>
+                                        <td>
+                                            <span t-field="o.identification_id"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>No NPWP</td>
+                                        <td>
+                                            <span t-field="o.gut_npwp"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>No Paspor</td>
+                                        <td>
+                                            <span t-field="o.passport_id"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Alamat</td>
+                                        <td>
+                                            <span t-field="o.street.street"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>kota/Kabupaten</td>
+                                        <td>
+                                            <span t-field="o.city.city"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Provinsi</td>
+                                        <td>
+                                            <span t-field="o.state.state_id"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>No Telp Rumah</td>
+                                        <td>
+                                            <span t-field="o.phone.phone"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>No HP</td>
+                                        <td>
+                                            <span t-field="o.mobile.mobile"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email</td>
+                                        <td>
+                                        
+                                            <span t-field="o.email.email" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tanggal Lahir</td>
+                                        <td>
+                                            <span t-field="o.birthday" t-options="{'format': 'dd MMMM yyyy'}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tempat Lahir</td>
+                                        <td>
+                                            <span t-field="o.place_of_birth"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jenis Kelamin</td>
+                                        <td>
+                                            <span t-field="o.gender"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status Pernikahan</td>
+                                        <td>
+                                            <span t-field="o.marital"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Agama</td>
+                                        <td>
+                                            <span t-field="o.region"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Narahubung Apabila Ada keadaan Darurat</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td  class="highlight">Nama</td>
+                                        <td  class="highlight">
+                                            <span t-field="o.emergency_contact"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>No HP/Telepon</td>
+                                        <td>
+                                            <span t-field="o.emergency_phone"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Latar Belakang Pendidikan</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <tbody>
+                                    <style type="text/css">
+                                    .highlight  {
+                                    background-color: #D3D3D3 !important;
+                                    }
+                                    </style>
+
+                                    <tr>
+                                        <td class="highlight">Nama Kampus</td>
+                                        <td class="highlight">
+                                            <span t-field="o.nama_kampus"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kota/kabupaten</td>
+                                        <td>
+                                            <span t-field="o.lokasi_kampus"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jurusan</td>
+                                        <td>
+                                            <span t-field="o.jurusan_kuliah"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jenjang</td>
+                                        <td>
+                                            <span t-field="o.jenjang_kuliah"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>IPK</td>
+                                        <td>
+                                            <span t-field="o.ipk"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Judul Tugas Akhir</td>
+                                        <td>
+                                            <span t-field="o.judul_ta"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tahun Lulus</td>
+                                        <td>
+                                            <span t-field="o.tahun_lulus_kuliah"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="highlight">Nama SMA/Sederajat</td>
+                                        <td class="highlight">
+                                            <span t-field="o.nama_sma"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jurusan</td>
+                                        <td>
+                                            <span t-field="o.jurusan_sma"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kota/Kabupaten</td>
+                                        <td>
+                                            <span t-field="o.lokasi_sma"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tahun Lulus</td>
+                                        <td>
+                                            <span t-field="o.tahun_lulus_sma"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="highlight">Nama SMP/Sederajat</td>
+                                        <td class="highlight">
+                                            <span t-field="o.nama_smp"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kota/Kabupaten</td>
+                                        <td>
+                                            <span t-field="o.lokasi_smp"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tahun Lulus</td>
+                                        <td>
+                                            <span t-field="o.tahun_lulus_smp"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="highlight">Nama SD</td>
+                                        <td class="highlight">
+                                            <span t-field="o.nama_sd"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kota/Kabupaten</td>
+                                        <td>
+                                            <span t-field="o.lokasi_sd"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tahun Lulus</td>
+                                        <td>
+                                            <span t-field="o.tahun_lulus_sd"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Kemampuan Komputer dan Medsos</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+
+                                <tbody>
+                                    <tr>
+                                        <td>MS. Office</td>
+                                        <td>
+                                            <span t-field="o.ms_office"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Internet</td>
+                                        <td>
+                                            <span t-field="o.internet"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Akun Facebook</td>
+                                        <td>
+                                            <span t-field="o.akun_fb"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Akun Instagram</td>
+                                        <td>
+                                            <span t-field="o.akun_ig"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Pelatihan / Seminar</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <tbody>
+                                    <tr t-foreach="o.seminar_line_ids" t-as="line">
+
+                                        <style type="text/css">
+                                    .highlight  {
+                                    background-color: #D3D3D3 !important;
+                                    }
+                                        </style>
+
+                                        <tr style="margin-top; 2px;">
+                                            <td class="highlight">Tema</td>
+                                            <td class="highlight">
+                                                <span t-field="line.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Lembaga Penyenggara</td>
+                                            <td>
+                                                <span t-field="line.lembaga_penyenggara"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tahun</td>
+                                            <td>
+                                                <span t-field="line.tahun_pelatihan"/>
+                                            </td>
+                                        </tr>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Pengalaman Organisasi</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <tbody>
+                                    <tr t-foreach="o.organisasi_line_ids" t-as="line">
+
+                                        <style type="text/css">
+                                    .highlight  {
+                                    background-color: #D3D3D3 !important;
+                                    }
+                                        </style>
+
+                                        <tr>
+                                            <td class="highlight">Nama Organisasi</td>
+                                            <td class="highlight">
+                                                <span t-field="line.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jabatan</td>
+                                            <td>
+                                                <span t-field="line.jabatan"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tahun Aktif</td>
+                                            <td>
+                                                <span t-field="line.tahun_aktif"/>
+                                            </td>
+                                        </tr>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Pengalaman Kerja Sebelum Di PT GUT</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <tbody>
+                                    <tr t-foreach="o.pengalaman_line_ids" t-as="line">
+
+                                        <style type="text/css">
+                                    .highlight  {
+                                    background-color: #D3D3D3 !important;
+                                    }
+                                        </style>
+                                        <tr>
+                                            <td class="highlight">Nama Perusahaan</td>
+                                            <td class="highlight">
+                                                <span t-field="line.nama_perusahaan"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jabatan</td>
+                                            <td>
+                                                <span t-field="line.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nama Atasan Langsung</td>
+                                            <td>
+                                                <span t-field="line.nama_atasan"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nama Proyek</td>
+                                            <td>
+                                                <span t-field="line.nama_proyek"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nama Area/Wilayah</td>
+                                            <td>
+                                                <span t-field="line.area"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tahun Masuk</td>
+                                            <td>
+                                                <span t-field="line.tahun_masuk"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tahun Keluar</td>
+                                            <td>
+                                                <span t-field="line.tahun_keluar"/>
+                                            </td>
+                                        </tr>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Spesialisasi Yang Dikuasai</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <tbody>
+                                    <tr t-foreach="o.spesialisasi_line_ids" t-as="line">
+
+                                        <style type="text/css">
+                                    .highlight  {
+                                    background-color: #D3D3D3 !important;
+                                    }
+                                        </style>
+                                        <tr>
+                                            <td class="highlight">Bidang</td>
+                                            <td class="highlight">
+                                                <span t-field="line.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Deskripsi</td>
+                                            <td>
+                                                <span t-field="line.deskripsi"/>
+                                            </td>
+                                        </tr>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h6 style="font-weight: bold;">Proyek Yang Pernah Ditangani Selama Di PT GUT</h6>
+                    <div class="row mb-3">
+                        <div class="col small">
+                            <table class="table  table-bordered table-sm">
+                                <tbody>
+                                    <tr t-foreach="o.pengalaman_gut_line_ids" t-as="line">
+
+                                        <style type="text/css">
+                                    .highlight  {
+                                    background-color: #D3D3D3 !important;
+                                    }
+                                        </style>
+                                        <tr>
+                                            <td class="highlight">Nama Proyek</td>
+                                            <td class="highlight">
+                                                <span t-field="line.nama_project"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Posisi/Jabatan</td>
+                                            <td>
+                                                <span t-field="line.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nama Atasan</td>
+                                            <td>
+                                                <span t-field="line.nama_atasan_gut"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tahun</td>
+                                            <td>
+                                                <span t-field="line.tahun"/>
+                                            </td>
+                                        </tr>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        <div class="row">
+                            <div class="col-6 small">
+                                <div class="text-left">
+                                CV <span t-field="o.name"/>
+                                </div>
+                            </div>
+                            <div class="col-6 small">
+                                <div class="text-right">
+                                Page <span class="page" />
+                                of <span class="topage" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </t>
+    </xpath>
+</template>
+
+<!-- main template -->
+<template id="report_cv">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="rnet_hr.report_cv_document" />
+        </t>
+    </t>
+</template>
+</odoo>
+

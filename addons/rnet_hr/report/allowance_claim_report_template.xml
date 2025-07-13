@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_allowance_claim_document">
+        <xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+            <t t-call="web.basic_layout">
+                <!-- header -->
+                <div class="page">
+                    <style type="text/css">
+                    table.table-bordered > thead > tr > th {
+                        border:1px solid;
+                    }
+                    table.table-bordered > tbody > tr > td {
+                        border:1px solid;
+                    }
+                    </style>
+                    <t t-foreach="docs" t-as="o">
+                        <div class="row">
+                            <div class="col first-page">
+                                <table class="table table-bordered table-sm small ">
+                                    <tbody>
+                                        <tr>
+                                            <td t-att-rowspan="3" colspan="3">
+                                                <img src="/web/binary/company_logo" alt="Logo" style="max-height: 70px;"/>
+                                            </td>
+                                            <td class="text-left" colspan="2">Doc No : 6.1.7</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" colspan="2">Revision : 01 </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" colspan="2">Release Date : 29.07.2009</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight: bold;" class="text-center" colspan="5">
+                                                <h6>Allowance Claim</h6>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" colspan="3">Personel ID: <span t-field="o.employee_id.gut_nik" />
+                                            </td>
+                                            <td class="text-left" colspan="2">Month-Year:  <span t-field="o.date_start" t-options="{'format': 'MMMM yyyy'}" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left" colspan="3">Name: <span style="font-weight: bold;" t-field="o.employee_id.name" />
+                                            </td>
+                                            <td colspan="2">&amp;ensp;</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <style type="text/css">
+                            table.table-bordered > thead > tr > th {
+                                border:1px solid;
+                            }
+                            table.table-bordered > tbody > tr > td {
+                                border:1px solid;
+                            }
+                            </style>
+                            <div class="col  text-center mr-0">
+                                <table class="table table-bordered table-sm small">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" colspan="8">Daily Allowance</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="font-weight:normal;" width="5%" t-att-rowspan="2">No</th>
+                                            <th style="font-weight:normal;" width="35%" t-att-rowspan="2">Project /  Site</th>
+                                            <th style="font-weight:normal;" width="5%" t-att-rowspan="2">Curr</th>
+                                            <th style="font-weight:normal;">rate</th>
+                                            <th style="font-weight:normal;" width="20%" t-att-rowspan="2">Period (from-till)</th>
+                                            <th style="font-weight:normal;" width="5%">Days</th>
+                                            <th style="font-weight:normal;" width="10%">Allowance</th>
+                                            <th style="font-weight:normal;" width="15%">Sub Total</th>
+                                        </tr>
+                                        <tr>
+                                            <th>a</th>
+                                            <th>b</th>
+                                            <th>c</th>
+                                            <th>d=a*b*c</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <t t-set="i" t-value="1" />
+                                    <t t-foreach="o.get_timesheet_allowance_project_group()" t-as="ts">
+										<tr>
+                                            <td>
+                                                <span t-esc="i"/><t t-set="i" t-value="i+1"/>
+                                            </td>
+                                            <td class="text-left">
+                                                <span t-esc="ts['pro_no']" />&#160;
+												<span t-esc="ts['pro_name']" />
+											</td>
+                                            <td>&amp;ensp;</td>
+                                            <td>&amp;ensp;</td>
+											<td class="text-left">
+												<span t-esc="ts['first_day'].strftime('%d')"/> - 
+                                                <span t-esc="ts['last_day'].strftime('%d %B %Y')" />
+											</td>
+                                            <td class="text-center">
+												<t t-esc="ts['count_day']" />
+											</td>
+											<td class="text-right">
+                                            <t t-if="ts['code'] == 1">
+												 <span t-esc="ts['alw_in']" t-options='{"widget": "float", "precision": 0}'/>
+                                            </t>
+                                            <t t-elif="ts['code'] &gt; 1">
+                                                 <span t-esc="ts['alw_out']" t-options='{"widget": "float", "precision": 0}'/>
+                                            </t>
+											</td>
+                                            <td class="text-right">
+                                            <t t-if="ts['code'] == 1">
+												 <span t-esc="ts['total_alw_in']" t-options='{"widget": "float", "precision": 0}'/>
+                                            </t>
+                                            <t t-elif="ts['code'] &gt; 1">
+                                                 <span t-esc="ts['total_alw_out']" t-options='{"widget": "float", "precision": 0}'/>
+                                            </t>
+											</td>
+										</tr>
+									</t>
+                            
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-bordered table-sm small">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" colspan="8">Laundry Allowance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <th class="border border-dark" width="5%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="35%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="5%">&amp;ensp;</th>
+                                            <th class="border border-dark">&amp;ensp;</th>
+                                            <th class="border border-dark" width="20%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="5%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="10%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="15%">&amp;ensp;</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-dark" width="5%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="35%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="5%">&amp;ensp;</th>
+                                            <th class="border border-dark">&amp;ensp;</th>
+                                            <th class="border border-dark" width="20%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="5%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="10%">&amp;ensp;</th>
+                                            <th class="border border-dark" width="15%">&amp;ensp;</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table table-borderless table-sm small">
+                                    <tbody>
+
+                                        <tr>
+                                            <th style="font-weight:normal;" width="5%">&amp;ensp;</th>
+                                            <th style="font-weight:normal;" width="35%">&amp;ensp;</th>
+                                            <th style="font-weight:normal;" width="5%">&amp;ensp;</th>
+                                            <th style="font-weight:normal;">&amp;ensp;</th>
+                                            <th style="font-weight:normal;" width="20%">&amp;ensp;</th>
+                                            <th style="font-weight:normal;" width="5%">&amp;ensp;</th>
+                                            <th style="font-weight:normal;" width="10%">TOTAL</th>
+                                            <th class="border border-dark text-right" width="15%">
+                                            <t t-esc="o.total_bayar" t-options='{"widget": "float", "precision": 0}'/>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="table table-bordered table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <th class="border border-dark" width="40%" t-att-rowspan="6"></th>
+                                            <th class="border border-dark font-smaller text-center" width="30%" style="font-weight:normal;">Requested by</th>
+                                            <th class="border border-dark font-smaller text-center" width="30%" style="font-weight:normal;">Approved by</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="border border-dark ">
+                                                <p>&#160;</p>
+                                                <p>&#160;</p>
+                                                <p>&#160;</p>
+                                            </td>
+                                            <td class="border border-dark ">
+                                                <p>&#160;</p>
+                                                <p>&#160;</p>
+                                                <p>&#160;</p>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td class="border border-dark text-left">Name : <t t-esc="o.employee_id.name" />
+                                            </td>
+                                            <td class="border border-dark text-left">Name :&#160;</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border border-dark text-left">Date :&#160; </td>
+                                            <td class="border border-dark text-left">Date :&#160; </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </t>
+
+                </div>
+                <div class="footer">
+                    <div class="row">
+                        <div class="col-6 small">
+                            <div class="text-left">
+                              Allowance Claim <span t-field="o.employee_id.name"/>
+                            <span t-field="o.date_start" t-options="{'format': 'MMMM yyyy'}" />
+                        </div>
+                    </div>
+                    <div class="col-6 small">
+                        <div class="text-right">
+                        Page <span class="page" />
+                        of <span class="topage" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</xpath>
+</template>
+
+<!-- main template -->
+<template id="report_allowance_claim">
+<t t-call="web.html_container">
+    <t t-foreach="docs" t-as="o">
+        <t t-call="rnet_hr.report_allowance_claim_document" />
+    </t>
+</t>
+</template>
+</odoo>
+

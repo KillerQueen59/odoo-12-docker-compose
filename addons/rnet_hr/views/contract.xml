@@ -1,0 +1,115 @@
+<odoo>
+    <data>
+        <!-- inherited contract -->
+        <record id="hr_contract_salary_regular" model="ir.ui.view">
+            <field name="name">Contract Salary Regular</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <group name="salary_and_advantages" position="after">
+                    <group name="Allowance" string="Regular Allowance">
+                        <field name="alw_out" context="{'out': True}" options='{"always_reload": True}'/>
+                        <field name="alw_in" context="{'in': True}" options='{"always_reload": True}' />
+                        <field name="bpjs_peru" />
+                        <field name="jkm03" />
+                        <field name="jkk024" />
+                    </group>
+                </group>
+                <group name="Allowance" position="after">
+                    <group name="Deduction" string="Regular Deduction">
+                        <field name="bpjs_kary" />
+                        <field name="jp" />
+                    </group>
+                </group>
+
+                <xpath expr="//div[@name='wage']" position="after">
+                    <label for="wage_hourly"/>
+                    <div class="o_row" name="wage_hourly">
+                        <field name="wage_hourly" nolabel="1"/>
+                        <span>/ Hour</span>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='type_id']" position="attributes">
+                   <attribute name="readonly">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- inherited contract Type Kontrak-->
+        <record id="hr_contract_type_form" model="ir.ui.view">
+            <field name="name">hr contract type form</field>
+            <field name="model">hr.contract.type</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_type_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="attrs">{'invisible':1}</attribute>
+                </xpath>
+                <xpath expr= "//form" position = 'inside'>
+                    <sheet>
+                    <field name="active" invisible="1"/>
+                        <div class="oe_button_box">
+                            <button class="oe_stat_button" type="object" icon="fa-th-list" name="open_employees">
+                                <field string="Employees" name="employee_count" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="status"/>
+                                <field name="name"/>
+                                <field name="description"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_contract_type_tree" model="ir.ui.view">
+            <field name="name">hr_contract_type_tree</field>
+            <field name="model">hr.contract.type</field>
+             <field name="inherit_id" ref="hr_contract.hr_contract_type_view_tree"/>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="status"/>
+                    <field name="description" />
+                </tree>
+            </field>
+        </record>
+
+    <!-- menu hr work schedule -->
+    <record id="hr_work_schedule_form" model="ir.ui.view">
+        <field name="name">hr.work.schedule.form</field>
+        <field name="model">hr.work.schedule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_work_schedule_tree" model="ir.ui.view">
+        <field name="name">hr.work.schedule.tree</field>
+        <field name="model">hr.work.schedule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_work_schedule_action" model="ir.actions.act_window">
+        <field name="name">Work Schedules</field>
+        <field name="res_model">hr.work.schedule</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_hr_work_schedule" name="Work Schedules type" parent="hr.menu_human_resources_configuration" action="hr_work_schedule_action" sequence="8"/>
+
+    </data>
+</odoo>

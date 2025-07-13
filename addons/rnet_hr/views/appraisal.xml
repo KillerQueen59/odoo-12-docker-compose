@@ -1,0 +1,105 @@
+<odoo>
+	<data>
+		<!-- form appraisal -->
+		<record id="employee_appraisal_form" model="ir.ui.view">
+			<field name="name">Employee Appraisal Form</field>
+			<field name="model">hr.employee.appraisal</field>
+			<field name="arch" type="xml">
+				<form>
+					<sheet>
+						<field name="active" invisible="1" />
+						<div class="oe_title">
+							<label for="name" />
+							<h1>
+								<field name="name" placeholder="Nomor Record" required="True" />
+							</h1>
+						</div>
+						<group>
+							<group>
+								<field name="employee_id" string="Nama" />
+								<field name="identification_id" string="No ID" />
+								<field name="birthday" string="Tanggal Lahir" />
+								<field name="posisi" string="Posisi" />
+								<field name="department" string="Department" />
+							</group>
+                            <group>
+								<field name="atasan" string="Atasan Langsung" />
+                                <field name="jenis_penilaian" widget='radio' options="{'horizontal': true}"/>
+                                <field name="periode"/>
+							</group>
+						</group>
+						<notebook>
+							<group string="ASPEK-ASPEK YANG DINILAI">
+								<group string="A1" colspan="4">
+                                    <div />
+									<field name="kehadiran" widget='radio' options="{'horizontal': true}"/>
+									<field name="disiplin" widget='radio' options="{'horizontal': true}"/>
+									<field name="tingkatan_keterampilan" widget='radio' options="{'horizontal': true}"/>
+									<field name="kuantitas_kerja" widget='radio' options="{'horizontal': true}"/>
+									<field name="kualitas_kerja" widget='radio' options="{'horizontal': true}"/>
+									<field name="sikap_kerja" widget='radio' options="{'horizontal': true}"/>
+									<field name="adaptasi" widget='radio' options="{'horizontal': true}"/>
+									<field name="tekanan" widget='radio' options="{'horizontal': true}"/>
+									<field name="kerjasama" widget='radio' options="{'horizontal': true}"/>
+									<field name="pemahaman_tugas" widget='radio' options="{'horizontal': true}"/>
+									<field name="kreativitas" widget='radio' options="{'horizontal': true}"/>
+									<field name="kemandirian" widget='radio' options="{'horizontal': true}"/>
+									<field name="kemampuan_bahasa" widget='radio' options="{'horizontal': true}"/>
+									<field name="kemampuan_analisa" widget='radio' options="{'horizontal': true}"/>
+									<field name="pengambilan_keputusan" widget='radio' options="{'horizontal': true}"/>
+								</group>
+								<group string="A2">
+                                    <div />
+									<field name="penilaian_safety" widget='radio' options="{'horizontal': true}"/>
+									<field name="penilaian_quality" widget='radio' options="{'horizontal': true}"/>
+								</group>
+								<group>
+                                    <div />
+									<field name="komentar"/>
+									<field name="pelatihan"/>
+                                    <field name="kenaikan_gaji"/>
+									<field name="komentar_karyawan"/>
+                                    <field name="komentar_atasan"/>
+									<field name="komentar_moderator"/>
+								</group>
+							</group>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+        <record id="employee_appraisal_tree" model="ir.ui.view">
+			<field name="name">Employee Appraisal Tree</field>
+			<field name="model">hr.employee.appraisal</field>
+			<field name="arch" type="xml">
+				<tree>
+					<field name="name" string="Nomor Record" />
+                    <field name="employee_id" string="Employee" />
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="employee_appraisal_search">
+			<field name="name">Employee Appraisal Search</field>
+			<field name="model">hr.employee.appraisal</field>
+			<field name="arch" type="xml">
+				<search>
+					<field name="employee_id" string="Employee" />
+					<field name="name" string="Nomor record" />
+					<field name="atasan" string="Atasan" />
+					<filter string="Archived" name="inactive" domain="[('active', '=', False)]" />
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="open_hr_employee_appraisal">
+			<field name="name">Employee Appraisal</field>
+			<field name="res_model">hr.employee.appraisal</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="employee_appraisal_tree" />
+		</record>
+		<menuitem id="menu_employee_appraisal" name="Employee Appraisal" parent="hr.menu_open_view_employee_list_my" action="open_hr_employee_appraisal" sequence="2" groups="hr.group_hr_manager" />
+	</data>
+</odoo>

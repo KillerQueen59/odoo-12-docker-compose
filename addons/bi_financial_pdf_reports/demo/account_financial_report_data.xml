@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 
+            Financial Reports
+        -->
+        <record id="bi_account_financial_report_profitandloss0" model="account.financial.report">
+            <field name="name">Profit and Loss</field>
+            <field name="sign" eval="-1" />
+            <field name="type">sum</field>
+        </record>
+
+        <!-- <record id="bi_account_financial_report_income0" model="account.financial.report">
+            <field name="name">Income</field>
+            <field name="sign" eval="-1" />
+            <field name="parent_id" ref="bi_account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids" eval="[(4,ref('account.data_account_type_other_income')), (4,ref('account.data_account_type_revenue'))]"/>
+        </record>
+
+        <record id="bi_account_financial_report_expense0" model="account.financial.report">
+            <field name="name">Expense</field>
+            <field name="sign" eval="-1" />
+            <field name="parent_id" ref="bi_account_financial_report_profitandloss0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids" eval="[(4,ref('account.data_account_type_expenses')), (4,ref('account.data_account_type_direct_costs')), (4,ref('account.data_account_type_depreciation'))]"/>
+        </record> -->
+
+        <record id="bi_account_financial_report_balancesheet0" model="account.financial.report">
+            <field name="name">Balance Sheet</field>
+            <field name="type">sum</field>
+        </record>
+
+        <!-- <record id="bi_account_financial_report_assets0" model="account.financial.report">
+            <field name="name">Assets</field>
+            <field name="parent_id" ref="bi_account_financial_report_balancesheet0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids" eval="[(4,ref('account.data_account_type_receivable')), (4,ref('account.data_account_type_liquidity')), (4,ref('account.data_account_type_current_assets')), (4,ref('account.data_account_type_non_current_assets'), (4,ref('account.data_account_type_prepayments'))), (4,ref('account.data_account_type_fixed_assets'))]"/>
+        </record>
+
+        <record id="bi_account_financial_report_liabilitysum0" model="account.financial.report">
+            <field name="name">Liability</field>
+            <field name="parent_id" ref="bi_account_financial_report_balancesheet0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">sum</field>
+        </record>
+
+        <record id="bi_account_financial_report_liability0" model="account.financial.report">
+            <field name="name">Liability</field>
+            <field name="parent_id" ref="bi_account_financial_report_liabilitysum0"/>
+            <field name="display_detail">detail_with_hierarchy</field>
+            <field name="type">account_type</field>
+            <field name="account_type_ids" eval="[(4,ref('account.data_account_type_payable')), (4,ref('account.data_account_type_equity')), (4,ref('account.data_account_type_current_liabilities')), (4,ref('account.data_account_type_non_current_liabilities'))]"/>
+        </record>
+
+        <record id="bi_account_financial_report_profitloss_toreport0" model="account.financial.report">
+            <field name="name">Profit (Loss) to report</field>
+            <field name="parent_id" ref="bi_account_financial_report_liabilitysum0"/>
+            <field name="display_detail">no_detail</field>
+            <field name="type">account_report</field>
+            <field name="account_report_id" ref="bi_account_financial_report_profitandloss0"/>
+        </record> -->
+
+    <!-- Cash Flow -->
+    <record id="account_financial_report_cash_flow0" model="account.financial.report">
+        <field name="name">Cash Flow Statement</field>
+        <field name="type">sum</field>
+    </record>
+    <record id="account_financial_report_operation0" model="account.financial.report">
+        <field name="name">Aktivitas Operasional</field>
+        <field name="sequence">1</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">header</field>
+    </record>
+    <record id="laba_bersih_from_operation0" model="account.financial.report">
+        <field name="name">Laba Bersih</field>
+        <field name="sign" eval="-1" />
+        <field name="sequence">2</field>
+        <field name="parent_id" ref="account_financial_report_operation0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">account_report</field>
+    </record>
+    <record id="piutang_usaha_from_operation0" model="account.financial.report">
+        <field name="name">Piutang Usaha</field>
+        <field name="sequence">3</field>
+        <field name="parent_id" ref="account_financial_report_operation0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">account_report</field>
+    </record>
+    <record id="utang_usaha_operation1" model="account.financial.report">
+        <field name="name">Utang Usaha</field>
+        <field name="sequence">4</field>
+        <field name="parent_id" ref="account_financial_report_operation0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">account_report</field>
+    </record>
+    <record id="jumlah_from_operation0" model="account.financial.report">
+        <field name="name">Jumlah Kas dari Aktivitas Operasional</field>
+        <field name="sign" eval="-1" />
+        <field name="sequence">5</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">sum_report</field>
+    </record>
+
+    <record id="account_financial_report_investing_activity0" model="account.financial.report">
+        <field name="name">Aktivitas Investasi</field>
+        <field name="sequence">6</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">header</field>
+    </record>
+    <record id="investasi_investing0" model="account.financial.report">
+        <field name="name">Investasi</field>
+        <field name="sequence">7</field>
+        <field name="parent_id" ref="account_financial_report_investing_activity0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">account_report</field>
+    </record>
+    <record id="jumlah_from_investing0" model="account.financial.report">
+        <field name="name">Jumlah Kas dari Aktivitas Investasi</field>
+        <field name="sign" eval="-1" />
+        <field name="sequence">8</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">sum_report</field>
+    </record>
+
+    <record id="account_financial_report_financing_activity1" model="account.financial.report">
+        <field name="name">Aktivitas Pendanaan</field>
+        <field name="sequence">9</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">header</field>
+    </record>
+    <record id="pendanaan_financial0" model="account.financial.report">
+        <field name="name">Pendanaan</field>
+        <field name="sequence">10</field>
+        <field name="parent_id" ref="account_financial_report_financing_activity1"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">account_report</field>
+    </record>
+    <record id="jumlah_from_financial0" model="account.financial.report">
+        <field name="name">Jumlah Kas dari Aktivitas Pendanaan</field>
+        <field name="sign" eval="-1" />
+        <field name="sequence">11</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">sum_report</field>
+    </record>
+
+    <record id="kenaikan_kas" model="account.financial.report">
+        <field name="name">Kenaikan Kas</field>
+        <field name="sequence">12</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">account_report</field>
+    </record>
+
+    <record id="kas_awal_periode" model="account.financial.report">
+        <field name="name">Kas Awal Periode</field>
+        <field name="sequence">13</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">account_report</field>
+    </record>
+
+     <record id="kas_akhir_periode" model="account.financial.report">
+        <field name="name">Kas Akhir Periode</field>
+        <field name="sequence">14</field>
+        <field name="parent_id" ref="account_financial_report_cash_flow0"/>
+        <field name="display_detail">detail_with_hierarchy</field>
+        <field name="type">account_report</field>
+    </record>
+
+    </data>
+</odoo>

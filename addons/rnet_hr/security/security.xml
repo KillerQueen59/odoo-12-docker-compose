@@ -1,0 +1,47 @@
+<odoo>
+
+<!-- access record attendance -->
+    <record id="ir_rule_hr_attendance_user" model="ir.rule">
+        <field name="name">view own attendance</field>
+        <field name="model_id" ref="model_hr_attendance"/>
+        <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>    
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_user'))]"/>
+    </record>
+
+    <record id="ir_rule_hr_attendance_manager" model="ir.rule">
+        <field name="model_id" ref="model_hr_attendance" />
+        <field name="name">view attendance for Manager</field>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_manager'))]"/>
+    </record>
+
+    <record id="ir_rule_hr_attendance_administrator" model="ir.rule">
+        <field name="model_id" ref="model_hr_attendance" />
+        <field name="name">view attendance for administrator</field>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_erp_manager'))]"/>
+    </record>
+
+<!-- access record timesheet -->
+    <record id="ir_rule_hr_timesheet_user" model="ir.rule">
+        <field name="name">view own timesheet</field>
+        <field name="model_id" ref="model_hr_timesheet_sheet"/>
+        <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>    
+        <field name="groups" eval="[(4, ref('hr_timesheet.group_hr_timesheet_user'))]"/>
+    </record>
+
+    <record id="ir_rule_hr_timesheet_manager" model="ir.rule">
+        <field name="model_id" ref="model_hr_timesheet_sheet" />
+        <field name="name">view timesheet for Manager</field>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('hr_timesheet.group_timesheet_manager'))]"/>
+    </record>
+
+    <record id="ir_rule_hr_timesheet_administrator" model="ir.rule">
+        <field name="model_id" ref="model_hr_timesheet_sheet" />
+        <field name="name">view timesheet for administrator</field>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_erp_manager'))]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <record id="action_report_monthly_financial" model="ir.actions.report">
+            <field name="name">Monthly Financial Report</field>
+            <field name="model">accounting.report.bi</field> 
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bi_financial_pdf_reports.report_monthly_financial</field> 
+            <field name="report_file">bi_financial_pdf_reports.report_monthly_financial</field> 
+            <field name="print_report_name">'Monthly Report - %s - %s' % (object.account_report_id.name, object.year_filter)</field>
+            <field name="binding_model_id" eval="False"/>
+        </record>
+</data>
+
+    <template id="report_monthly_financial">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout"> 
+                <!-- 
+                    web.external_layout will try to use a 'company' variable from its context
+                    for things like company logo, address, and currency for formatting.
+                    Odoo's report rendering should provide this 'company' (e.g., user.company_id or docs[0].company_id).
+                    We are NO LONGER passing 'company' inside our 'data' dictionary from Python.
+                -->
+                
+                <!-- == VERY FIRST QWEB DEBUGGING BLOCK == -->
+                <t t-if="data is None">
+                    <div style="background-color:red; color:white; padding:10px; font-size:14px; border:1px solid darkred; text-align:center;">
+                        MONTHLY QWEB DEBUG: 'data' IS None at the start of 'web.external_layout' content!<br/>
+                        Top-level 'company' object: <span t-esc="data.get('company') if data else 'N/A'"/>
+                    </div>
+                </t>
+                <t t-elif="not data"> <!-- Check if data is an empty dict, which is also problematic -->
+                    <div style="background-color:orange; color:black; padding:10px; font-size:14px; border:1px solid darkorange; text-align:center;">
+                        MONTHLY QWEB DEBUG: 'data' IS an empty dictionary or falsy value at the start!
+                    </div>
+                </t>
+                <t t-else="">
+                    <div style="background-color:lightgreen; color:black; padding:5px; font-size:12px; border:1px solid green;">
+                        MONTHLY QWEB DEBUG: 'data' IS present. Keys: <span t-esc="list(data.keys())"/>.<br/>
+                        data.year: <span t-esc="data.get('year', 'N/A in data')"/>.<br/>
+                        data.report_title: <span t-esc="data.get('report_title', 'N/A in data')"/>.<br/>
+                        Number of report_lines in data: <span t-esc="len(data.get('report_lines', []))"/>.<br/>
+                        Top-level 'company' object (from layout context): <span t-esc="company.name if company and hasattr(company, 'name') else 'company var not a record or None'"/>.
+                    </div>
+                </t>
+                <!-- == END OF VERY FIRST QWEB DEBUGGING BLOCK == -->
+
+                <div class="page" style="font-size: 9px !important;">
+                    
+                    <div class="row text-center mt-4 mb-4">
+                        <div class="col-12">
+                            <h2><span t-esc="data.get('report_title', 'Monthly Financial Report') if data else 'Monthly Report (Data Error)'"/></h2>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" style="font-size: 10px;">
+                        <div class="col-3">
+                            <strong>Year:</strong>
+                            <span t-esc="data.get('year') if data else 'N/A'"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Overall Period:</strong>
+                            <span t-if="data and data.get('display_date_from') and data.get('display_date_to')">
+                                <span t-esc="datetime.datetime.strptime(str(data.get('display_date_from')), '%Y-%m-%d').strftime('%d %b %Y') if data.get('display_date_from') else ''"/> - 
+                                <span t-esc="datetime.datetime.strptime(str(data.get('display_date_to')), '%Y-%m-%d').strftime('%d %b %Y') if data.get('display_date_to') else ''"/>
+                            </span>
+                            <span t-elif="data and data.get('date_to')"> <!-- Fallback if display_date_from/to not present -->
+                                As of <span t-esc="datetime.datetime.strptime(str(data.get('date_to')), '%Y-%m-%d').strftime('%d %b %Y') if data.get('date_to') else ''"/>
+                            </span>
+                        </div>
+                        <div class="col-3">
+                            <strong>Project:</strong>
+                            <span t-esc="data.get('project') if data else 'N/A'"/>
+                        </div>
+                        <div class="col-3">
+                            <strong>Target Moves:</strong>
+                            <span t-esc="data.get('target_move') if data else 'N/A'"/>
+                        </div>
+                    </div>
+                    <hr/>
+
+                    <table class="table table-sm table-bordered" width="100%">
+                        <thead>
+                            <tr style="background-color: #f0f0f0; font-weight: bold;">
+                                <th style="width: 25%; white-space: normal; word-wrap: break-word; vertical-align: middle;">Description</th>
+                                <th t-foreach="data.get('months_headers', []) if data else []" t-as="month_header" class="text-right" style="width: 5%; vertical-align: middle;">
+                                    <span t-esc="month_header"/>
+                                </th>
+                                <th class="text-right" style="width: 8%; font-weight: bold; vertical-align: middle;">YTD Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="data and data.get('report_lines')">
+                                <t t-foreach="data.get('report_lines')" t-as="line">
+                                    <!-- Skip level 0 if it's just a container, unless it's the only line or specifically needed -->
+                                    <t t-if="line.get('level', 0) >= 0"> <!-- Show level 0 as well if it has data -->
+                                        <tr t-att-class="'o_account_reports_level_%s' % line.get('level', 0) if line.get('type') != 'account_detail_monthly' else 'o_account_reports_level_%s_detail' % (line.get('level', 0) + 1)">
+                                            <td t-att-style="'padding-left: ' + str(max(0,(line.get('level', 0)) * 10)) + 'px !important; white-space: normal; word-wrap: break-word;'">
+                                                <span t-att-style="'font-weight: bold;' if line.get('type') in ('sum','header','sum_report','account_report', 'sum_report_pl') and line.get('type') != 'account_detail_monthly' else ('font-style: italic;' if line.get('type') == 'account_detail_monthly' else 'font-weight: normal;')" 
+                                                      t-esc="line.get('name')"/>
+                                            </td>
+
+                                            <t t-if="line.get('type') != 'header' and line.get('show_balance', True)">
+                                                <td t-foreach="line.get('monthly_balances', [0.0]*12)" t-as="monthly_bal" class="text-right" style="white-space: nowrap;">
+                                                    <span t-esc="monthly_bal" t-options='{"widget": "monetary", "display_currency": company.currency_id if company else None}'/>
+                                                </td>
+                                                <td class="text-right" style="white-space: nowrap; font-weight: bold;">
+                                                    <span t-esc="line.get('ytd_balance')" t-options='{"widget": "monetary", "display_currency": company.currency_id if company else None}'/>
+                                                </td>
+                                            </t>
+                                            
+                                            <t t-if="line.get('type') == 'header' or not line.get('show_balance', True)">
+                                                <td t-foreach="range(13)" t-as="i" class="text-right"><!-- Empty cells for header or non-balance lines --></td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-else=""> <!-- If data.report_lines is missing or empty -->
+                                <tr>
+                                    <td colspan="14" class="text-center">No data to display for report lines.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div class="row mt-4" style="font-size: 8px;">
+                        <div class="col-6">
+                            Printed by: <span t-esc="user.name if user else 'N/A'"/> on <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %b %Y %H:%M:%S')"/>
+                        </div>
+                         <div class="col-6 text-right">
+                            Page <span class="page"/> of <span class="topage"/>
+                        </div>
+                    </div>
+
+                </div> <!-- End page -->
+            </t> <!-- End web.external_layout -->
+        </t> <!-- End web.html_container -->
+    </template>
+</odoo>
+
+

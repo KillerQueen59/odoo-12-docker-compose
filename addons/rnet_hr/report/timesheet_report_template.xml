@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_timesheet_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+			<t t-call="web.html_container">
+				<!-- header -->
+				<div class="header">
+					<style type="text/css">
+						table.table-bordered > thead > tr > th {
+						border:1px ;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+					<t t-foreach="docs" t-as="o">
+						<div class="row">
+							<div class="col text-center small">
+								<table class="table table-bordered table-sm small ">
+									<tbody>
+										<tr>
+											<td style="width: 30%" t-att-rowspan="3" colspan="3" class="text-left">
+												<h6>
+													<strong>
+														PT GRAHA USAHA TEKNIK
+													</strong>
+												</h6>
+												Jl. Asem Baris Raya No. 100A Kebon Baru, Tebet, Jakarta 12830
+												<br />
+												Telp 021-83787333 Fax 021-8378-7222
+											</td>
+											<td style="width: 20%" colspan="2">
+												HANYA UNTUK INTERNAL
+											</td>
+											<td style="width: 10%">
+												<strong>
+													Hari Kerja normal
+												</strong>
+											</td>
+											<td t-att-rowspan="3" class="text-left">
+												<strong>
+													Doc  &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;: No. 2.1.27
+												</strong>
+												<br />
+												<strong>
+													Revision &#160;: 01
+												</strong>
+												<br />
+												<strong>
+													Date  &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;: 06.09.2018
+												</strong>
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 20%" colspan="2">
+												<strong>
+													PERHITUNGAN JUMLAH JAM KERJA
+												</strong>
+											</td>
+											<td style="width: 10%" t-att-rowspan="2">
+												<strong>
+													5 hari kerja
+												</strong>
+												<br />
+												Allowance Saja
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 20%" colspan="2">
+												TIME SHEET (TS)
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 10%">
+												Personel ID
+											</td>
+											<td style="width: 20%" colspan="2">
+												Nama
+											</td>
+											<td style="width: 10%">
+												Status Pernikahan
+											</td>
+											<td style="width: 10%">
+												Jumlah Anak
+											</td>
+											<td style="width: 10%">
+												NPWP
+											</td>
+											<td style="width: 10%">
+												Bulan
+											</td>
+										</tr>
+										<tr>
+											<td style="width: 10%">
+												<strong>
+													<span t-field="o.employee_id.gut_nik" />
+												</strong>
+											</td>
+											<td style="width: 20%" colspan="2">
+												<strong>
+													<span t-field="o.employee_id.name" />
+												</strong>
+											</td>
+											<td style="width: 10%">
+												<t t-if="o.employee_id.marital == 'married'">
+													<strong>
+														Menikah
+													</strong>
+												</t>
+												<t t-else="">
+													<strong>
+														Belum Menikah
+													</strong>
+												</t>
+											</td>
+											<td style="width: 10%">
+												<strong>
+													<span t-field="o.employee_id.children" />
+												</strong>
+											</td>
+											<td style="width: 10%">
+												<t t-if="o.employee_id.gut_npwp">
+													<strong>
+														Ada NPWP
+													</strong>
+												</t>
+												<t t-else="">
+													<strong>
+														Non NPWP
+													</strong>
+												</t>
+											</td>
+											<td style="width: 10%">
+												<strong>
+													<span t-field="o.date_start" t-options="{'format': 'MMMM yyyy'}" />
+												</strong>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</t>
+					<div class="row mt-1">
+						<div class="col small text-center">
+							<table class="table table-bordered table-sm small">
+								<tbody>
+									<tr>
+										<td style="vertical-align : middle;text-align:center; width: 10%" colspan="3">
+											Waktu / Time
+										</td>
+										<td style="vertical-align : middle;text-align:center; width: 22%" colspan="5">
+											Jam Kerja / Working Hour
+										</td>
+										<td style="vertical-align : middle;text-align:center; width: 3%" t-att-rowspan="2">
+											Travel
+										</td>
+										<td style="vertical-align : middle;text-align:center; width: 5%">
+											Absen
+										</td>
+										<td style="vertical-align : middle;text-align:center; width: 5%" t-att-rowspan="3">
+											All Code
+										</td>
+										<td style="vertical-align : middle;text-align:center; width: 3%" t-att-rowspan="3">
+											TL/PSW
+										</td>
+										<td style="vertical-align : middle;text-align:center; width: 30%" colspan="2" t-att-rowspan="2">
+											<h4>
+												<strong>
+													PROYEK
+												</strong>
+											</h4>
+										</td>
+										<td style="vertical-align : middle;text-align:center; width: 30%" colspan="3">
+											HOME BASE
+										</td>
+									</tr>
+									<tr>
+										<!-- <td>Day</td> -->
+										<td t-att-rowspan="2" style="vertical-align : middle;text-align:center; ">
+											Date
+										</td>
+										<td t-att-rowspan="2" style="vertical-align : middle;text-align:center; ">
+											Start
+										</td>
+										<td t-att-rowspan="2" style="vertical-align : middle;text-align:center; ">
+											Finish
+										</td>
+										<td>
+											Normal
+										</td>
+										<td colspan="4">
+											Lembur / Overtime
+										</td>
+										<!-- <td>&amp;ensp;</td> -->
+										<td>
+											&amp;ensp;
+										</td>
+										<!--
+										<td>&amp;ensp;</td>
+										<td>&amp;ensp;</td>
+										-->
+										<!--
+										<td>&amp;ensp;</td>
+										<td>&amp;ensp;</td>
+										-->
+										<td colspan="3" style="vertical-align : middle;text-align:center; ">
+											<t t-set="pro" t-value="" />
+											<t t-set="loc" t-value="" />
+											<t t-foreach="o.attendances_ids" t-as="line">
+												<t t-set="pro" t-value="line.project" />
+												<t t-set="loc" t-value="line.project.location.name" />
+											</t>
+											<t t-if="pro">
+												<strong>
+													<t t-esc="loc" />
+												</strong>
+											</t>
+											<t t-else="">
+												<strong>
+													JAKARTA
+												</strong>
+											</t>
+										</td>
+									</tr>
+									<tr>
+										<!-- <td>&amp;ensp;</td> -->
+										<!--
+										<td>&amp;ensp;</td>
+										<td>&amp;ensp;</td>
+										<td>&amp;ensp;</td>
+										-->
+										<td style="font-size:8px;">
+											A
+										</td>
+										<td style="font-size:8px;">
+											class i
+											<br />
+											B
+										</td>
+										<td style="font-size:8px;">
+											class ii
+											<br />
+											C
+										</td>
+										<td style="font-size:8px;">
+											class iii
+											<br />
+											D
+										</td>
+										<td style="font-size:8px;">
+											class iv
+											<br />
+											E
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<!--
+										<td>&amp;ensp;</td>
+										<td>&amp;ensp;</td>
+										-->
+										<td style="width: 10%">
+											Job Order No
+										</td>
+										<td style="vertical-align : middle;text-align:center; width: 17%">
+											Site/Project
+										</td>
+										<td style="vertical-align : middle;text-align:center;" colspan="3">
+											Work Description
+										</td>
+									</tr>
+									<t t-foreach="o.get_data()" t-as="date">
+										<style type="text/css">
+											.highlight  {
+											background-color: #D3D3D3 !important;
+											}
+										</style>
+										<t t-set="attn_date" />
+										<t t-set="leave_date" />
+										<t t-set="holiday_date" />
+										<tr style="font-size:85% !important;">
+											<t t-foreach="o.check_attendance()" t-as="attendance">
+												<t t-if="attendance['employee'] == o.employee_id.id">
+													<t t-if="attendance['date'] == date['date_list']">
+														<t t-set="attn_date" t-value="attendance['date']" />
+														<!--
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or attendance['normal'] == 0 else '' ">
+														<span t-esc="date['hari']"/>
+														</td>
+														-->
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-esc="date['date_list']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-esc="attendance['check_in']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-esc="attendance['check_out']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-att-style="'display: none;' if attendance['normal'] == 0 else ''" t-esc="attendance['normal']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-att-style="'display: none;' if attendance['class_1'] == 0 else ''" t-esc="attendance['class_1']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-att-style="'display: none;' if attendance['class_2'] == 0 else ''" t-esc="attendance['class_2']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-att-style="'display: none;' if attendance['class_3'] == 0 else ''" t-esc="attendance['class_3']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-att-style="'display: none;' if attendance['class_4'] == 0 else ''" t-esc="attendance['class_4']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-att-style="'display: none;' if attendance['travel'] == 0 else ''" t-esc="attendance['travel']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															&amp;ensp;
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-att-style="'display: none;' if attendance['code'] == 0 else ''" t-esc="attendance['code']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-att-style="'display: none;' if attendance['telat'] ==  00.00 else ''" t-esc="attendance['telat']" t-options="{'widget': 'float_time', 'precision': 0}" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-esc="attendance['pro_no']" />
+														</td>
+														<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-esc="attendance['pro_name']" />
+														</td>
+														<td colspan="3" t-att-class="'highlight' if date['hari'] in ('Sat','Sun') or (attendance['normal'] == 0 and attendance['travel'] &lt; 1) else '' ">
+															<span t-esc="attendance['desc']" />
+														</td>
+													</t>
+												</t>
+											</t>
+											<t t-foreach="o.get_leave()" t-as="leave">
+												<t t-if="leave['leave_list'] == date['date_list']">
+													<t t-if="leave['employee'] == o.employee_id.id">
+														<t t-set="leave_date" t-value="leave['leave_list']" />
+														<!-- <td><span t-esc="date['hari']"/></td> -->
+														<td>
+															<span t-esc="date['date_list']" />
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td>
+															&amp;ensp;
+														</td>
+														<td colspan="5" class="highlight">
+															<span t-esc="leave['cuti']" />
+														</td>
+													</t>
+												</t>
+											</t>
+											<t t-foreach="o.check_public_holiday()" t-as="holiday">
+												<t t-if="holiday['date'] == date['date_list'] and date['date_list'] != attn_date and date['date_list'] != leave_date ">
+													<t t-set="holiday_date" t-value="holiday['date']" />
+													<!-- <td class="highlight"><span t-esc="date['hari']"/></td> -->
+													<td class="highlight">
+														<span t-esc="date['date_list']" />
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight">
+														&amp;ensp;
+													</td>
+													<td class="highlight" colspan="3">
+														&amp;ensp;
+													</td>
+												</t>
+											</t>
+											<t t-if="date['date_list'] != attn_date and date['date_list'] != leave_date and date['date_list'] != holiday_date">
+												<!-- <td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''"><span t-esc="date['hari']"/></td> -->
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													<span t-esc="date['date_list']" />
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													<span t-att-style="'display: none;' if date['hari'] in ('Sat','Sun') else ''" t-esc="o.gut_absen" />
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''">
+													&amp;ensp;
+												</td>
+												<td t-att-class="'highlight' if date['hari'] in ('Sat','Sun') else ''" colspan="3">
+													&amp;ensp;
+												</td>
+											</t>
+										</tr>
+									</t>
+									<tr>
+										<td colspan="3">
+											&amp;ensp;
+										</td>
+										<td style="font-weight: bold">
+											<t t-esc="sum(line.gut_normal_hours for line in o.attendances_ids)" />
+										</td>
+										<td style="font-weight: bold">
+											<t t-set="sum_class1" t-value="sum(line.gut_class1 for line in o.attendances_ids)" />
+											<span t-att-style="'display: none;' if sum_class1  &lt; 0 else ''" t-esc="sum_class1" />
+										</td>
+										<td style="font-weight: bold">
+											<t t-set="sum_class2" t-value="sum(line.gut_class2 for line in o.attendances_ids)" />
+											<span t-att-style="'display: none;' if sum_class2  &lt; 0 else ''" t-esc="sum_class2" />
+										</td>
+										<td style="font-weight: bold">
+											<t t-set="sum_class3" t-value="sum(line.gut_class3 for line in o.attendances_ids)" />
+											<span t-att-style="'display: none;' if sum_class3  &lt; 0 else ''" t-esc="sum_class3" />
+										</td>
+										<td style="font-weight: bold">
+											<t t-set="sum_class4" t-value="sum(line.gut_class4 for line in o.attendances_ids)" />
+											<span t-att-style="'display: none;' if sum_class4  &lt; 0 else ''" t-esc="sum_class4" />
+										</td>
+										<td>
+											<t t-set="sum_travel" t-value="sum(line.gut_travel for line in o.attendances_ids)" />
+											<span t-att-style="'display: none;' if sum_travel  &lt; 0 else ''" t-esc="sum_travel" />
+										</td>
+										<td style="font-weight: bold">
+											<span t-att-style="'display: none;' if o.total_gut_absen == 0 else ''" t-esc="o.total_gut_absen" />
+										</td>
+										<td style="font-weight: bold">
+											<span t-att-style="'display: none;' if o.total_all_alw == 0 else ''" t-esc="o.total_all_alw" />
+										</td>
+										<td style="font-weight: bold">
+											<t t-set="sum_telat" t-value="sum(line.total_waktu_telat for line in o.attendances_ids)" />
+											<span t-att-style="'display: none;' if sum_telat == 00.00 else ''" t-esc="sum_telat" t-options="{'widget': 'float_time', 'precision': 0}" />
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td colspan="3">
+											&amp;ensp;
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row mt-1">
+						<div class="col small ">
+							<table class="table table-bordered table-sm small">
+								<tbody>
+									<tr>
+										<td style="width: 40%" class="text-left" colspan="2">
+											Allowance Dalam Kota &#160;
+											<t t-if="o.alw_in > 0">
+												<span t-esc="o.attend_alw_in" />
+											</t>
+										</td>
+										<td style="width: 15%">
+											Rp
+											<t t-esc="o.total_alw_in" t-options="{'widget': 'float','precision': 0}" />
+										</td>
+										<td class="text-center" colspan="2">
+											FORM-F
+										</td>
+									</tr>
+									<tr>
+										<td style="width: 40%" class="text-left" colspan="2">
+											Allowance Luar Kota &#160;
+											<t t-if="o.alw_out > 0">
+												<span t-esc="o.attend_alw_out" />
+											</t>
+										</td>
+										<td style="width: 15%">
+											Rp
+											<t t-esc="o.total_alw_out" t-options="{'widget': 'float','precision': 0}" />
+										</td>
+										<td colspan="2">
+											&amp;ensp;
+										</td>
+									</tr>
+									<tr>
+										<td class="text-center" colspan="2" style="font-weight: bold;width: 40%">
+											Total Upah
+										</td>
+										<td style="font-weight: bold; width: 15%">
+											Rp
+											<t t-esc="o.total_upah" t-options="{'widget': 'float','precision': 0}" />
+										</td>
+										<td style="font-weight: bold;">
+											J1 &#160; &amp;ensp;
+										</td>
+										<td style="font-weight: bold; ">
+											J2  &#160; Rp
+											<t t-esc="o.total_upah" t-options="{'widget': 'float','precision': 0}" />
+										</td>
+									</tr>
+									<tr>
+										<td class="text-center">
+											Total Upah
+										</td>
+										<td class="text-center">
+											Potongan PPh 21
+										</td>
+										<td class="text-center">
+											Potongan TL/PSW
+										</td>
+										<td class="text-center">
+											Potongan Kasbon
+										</td>
+										<td class="text-center">
+											Total Dibayar
+										</td>
+									</tr>
+									<tr>
+										<td class="text-center">
+											Rp
+											<t t-esc="o.total_upah" t-options="{'widget': 'float','precision': 0}" />
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td>
+											&amp;ensp;
+										</td>
+										<td>
+											Rp
+											<t t-esc="o.potongan_kasbon" t-options="{'widget': 'float','precision': 0}" />
+										</td>
+										<td class="text-center">
+											Rp
+											<t t-esc="o.total_bayar" t-options="{'widget': 'float','precision': 0}" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<table class="table table-bordered table-sm small">
+								<tbody>
+									<tr>
+										<td style=" bold; width: 20%" class="text-center" colspan="2">
+											Telah diperiksa oleh
+										</td>
+										<td style=" bold; width: 10%" class="text-center">
+											Group
+										</td>
+										<td style=" bold; width: 25%" class="text-center">
+											Nama dan tanda tangan pelaksana
+										</td>
+										<td t-att-rowspan="2">
+											<t t-if="o.potongan_kasbon > 0">
+												Potongan :
+												<br />
+												Kasbon Rp
+												<span t-field="o.potongan_kasbon" t-options="{'widget': 'float','precision': 0}" />
+											</t>
+											<t t-else="">
+												&amp;ensp;
+											</t>
+											<br />
+										</td>
+									</tr>
+									<tr>
+										<td class="text-center" style="font-weight: bold;">
+											<p>
+												&amp;ensp;
+											</p>
+											<br />
+											<t t-set="sm" t-value="" />
+											<t t-foreach="o.attendances_ids" t-as="line">
+												<t t-set="sm" t-value="line.project.site_manager.name" />
+											</t>
+											<t t-esc="sm" />
+										</td>
+										<td class="text-center" style="font-weight: bold; width: 10%">
+											<p>
+												&amp;ensp; 
+											</p>
+											<br />
+											<t t-set="pm" t-value="" />
+											<t t-foreach="o.attendances_ids" t-as="line">
+												<t t-set="pm" t-value="line.project.project_admin.name" />
+											</t>
+											<t t-esc="pm" />
+										</td>
+										<td class="text-center" style=" font-weight: bold; width: 10%">
+											<p>
+												&amp;ensp;
+											</p>
+											<br />
+										</td>
+										<td class="text-center" style="font-weight: bold;">
+											<p>
+												&amp;ensp;
+											</p>
+											<br />
+											<span t-field="o.employee_id.name" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- footer -->
+				<div class="footer">
+					<div class="row last-page">
+						<div class="col-6 small">
+							<div class="text-left">
+								Timesheet
+								<span t-field="o.employee_id.name" />
+								<span t-field="o.date_start" t-options="{'format': 'MMMM yyyy'}" />
+							</div>
+						</div>
+						<div class="col-6 small">
+							<div class="text-right">
+								Page
+								<span class="page" />
+								of
+								<span class="topage" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="report_timesheet">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_hr.report_timesheet_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

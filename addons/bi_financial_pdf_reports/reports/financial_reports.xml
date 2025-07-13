@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+            id="action_report_balancesheet"
+            string="Financial Report"
+            model="accounting.report.bi"
+            report_type="qweb-html"
+            file="bi_financial_pdf_reports.report_balancesheet"
+            name="bi_financial_pdf_reports.report_balancesheet"
+        />
+            <report
+            id="action_report_trial_balance"
+            model="accounting.report.bi"
+            string="Trial Balance"
+            report_type="qweb-html"
+            name="bi_financial_pdf_reports.report_trialbalance"
+            file="bi_financial_pdf_reports.report_trialbalance"
+            />
+
+            <report
+            id="action_report_general_ledger"
+            model="accounting.report.bi"
+            string="General Ledger"
+            report_type="qweb-html"
+            name="bi_financial_pdf_reports.report_generalledger"
+            file="bi_financial_pdf_reports.report_generalledger"
+            />
+
+    </data>
+
+</odoo>

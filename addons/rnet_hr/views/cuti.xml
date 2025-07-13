@@ -1,0 +1,212 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="rnet_hr_leave_view_form_manager">
+            <field name="name">hr.leave.view.form.manager</field>
+            <field name="model">hr.leave</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_view_form_manager"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payslip_status']" position="after">   
+                    <field name="leave_allocation"/>
+                    <field name="leave_balance" attrs="{'invisible': [('state', 'not in', ('validate','validate1'))]}"/>
+                    <field name="leave_remaining" attrs="{'invisible': [('state', 'not in', ('validate','validate1'))]}"/>
+                </xpath>
+                <xpath expr="//field[@name='holiday_status_id']" position="before">
+                    <xpath expr="//field[@name='employee_id']" position="move"/>
+                    <xpath expr="//field[@name='department_id']" position="move"/>
+                    <field name="jabatan"/>
+                    <field name="atasan"/>
+                </xpath>
+                <xpath expr="//button[@name='action_refuse']" position="replace">
+                    <button name="action_refuse" type="object" string="Refuse" groups="hr.group_hr_manager" attrs="{'invisible': ['|',('can_approve','=',False),('state', '!=', 'confirm')]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_approve']" position="replace">
+                    <button string="Approve" name="action_approve" states="confirm" type="object" groups="hr.group_hr_manager" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//button[@name='action_draft']" position="replace">
+                    <button name="action_draft" type="object" string="Reset to Draft" groups="hr.group_hr_manager"/>
+                </xpath>
+                <xpath expr="//field[@name='department_id']" position="replace">
+                     <field name="department_id" readonly="True"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rnet_hr_leave_view_form">
+            <field name="name">hr.leave.view.form</field>
+            <field name="model">hr.leave</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_draft']" position="replace">
+                    <button string="Reset to Draft" name="action_draft" type="object" attrs="{'invisible': [('state', 'not in', ['cancel', 'refuse'])]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm']" position="replace">
+                    <button string="Submit" name="action_confirm" states="draft" type="object" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//button[@name='action_draft']" position="replace">
+                    <button name="action_draft" type="object" string="Reset to Draft" groups="hr.group_hr_manager"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="hr_leave_view_tree">
+            <field name="name">hr.holidays.view.tree</field>
+            <field name="model">hr.leave</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='duration_display']" position="before">
+                    <field name="leave_allocation"/>
+                    <field name="leave_balance"/>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="before">
+                    <field name="leave_remaining"/>
+                </xpath>
+                <xpath expr="//field[@name='holiday_type']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='duration_display']" position="attributes">
+                   <attribute name="string">Cuti Diambil</attribute>
+                </xpath>
+            </field>
+        </record>
+
+<!-- mass reset to draft leave-->
+    <record id="Rnet_leave_action_reset_mass" model="ir.actions.server">
+        <field name="name">Reset to Draft(s)</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="binding_model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                records.filtered(lambda x: x.state not in ('cancel')).action_draft()
+        </field>
+    </record>
+
+<!-- inherit leave remaining on allocation tree view -->
+        <record id="show_remaning_leaves" model="ir.ui.view">
+            <field name="name">hr_holidays.hr_leave_allocation_view_tree.show_remaning_leaves</field>
+            <field name="model">hr.leave.allocation</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_tree" />
+            <field name="arch" type="xml">
+            <xpath expr="//field[@name='duration_display']" position="after">
+                <field name="remaining_leaves_display"/>
+            </xpath>
+            </field>
+        </record>
+
+<!-- inherit form allocation leaves -->
+        <record model="ir.ui.view" id="hr_leave_allocation_view_form_manager">
+            <field name="name">hr.leave.allocation.view.form.manager</field>
+            <field name="model">hr.leave.allocation</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_refuse']" position="replace">
+                    <button name="action_refuse" type="object" string="Refuse" attrs="{'invisible': ['|',('can_approve','=',False),('state', '!=', 'confirm')]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_draft']" position="replace">
+                    <button name="action_draft" type="object" string="Reset to Draft" groups="hr.group_hr_manager"/>
+                </xpath>
+            </field>
+        </record>
+
+<!-- inherit search allocation leaves -->
+        <record model="ir.ui.view" id="hr_leave_allocation_view_search">
+            <field name="name">hr.holidays.filter_allocations</field>
+            <field name="model">hr.leave.allocation</field>
+            <field name="inherit_id" ref="hr_holidays.view_hr_leave_allocation_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="before">
+                    <field name="employee_id" position="move"/>
+                </xpath>
+            </field>
+        </record>
+
+    <!-- inherit form holiday timesheet -->
+        <record model="ir.ui.view" id="hr_leave_allocation_view_form_manager">
+            <field name="name">hr.leave.allocation.view.form.manager</field>
+            <field name="model">hr.leave.allocation</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_allocation_view_form_manager"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_refuse']" position="replace">
+                    <button name="action_refuse" type="object" string="Refuse" attrs="{'invisible': ['|',('can_approve','=',False),('state', '!=', 'confirm')]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_draft']" position="replace">
+                    <button name="action_draft" type="object" string="Reset to Draft" groups="hr.group_hr_manager"/>
+                </xpath>
+                <xpath expr="//field[@name='department_id']" position="after">
+                    <field name="gender_mode"  attrs="{'invisible':[('holiday_type','!=','gender')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='accrual']" position="attributes">
+                   <attribute name="invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+    <!-- mass reset to draft Allocation-->
+    <record id="Rnet_allocation_action_reset_mass" model="ir.actions.server">
+        <field name="name">Reset to Draft(s)</field>
+        <field name="model_id" ref="hr_holidays.model_hr_leave_allocation"/>
+        <field name="binding_model_id" ref="hr_holidays.model_hr_leave_allocation"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                records.filtered(lambda x: x.state not in ('cancel')).action_draft()
+        </field>
+    </record>
+
+
+        <!-- report Cuti -->
+        <!-- <report 
+            string="Cuti Report" 
+            id="action_report_cuti" 
+            model="hr.leave" 
+            report_type="qweb-html"
+            name="rnet_hr.report_cuti" 
+            file="rnet_hr.report_cuti"
+            print_report_name=" 'Cuti - %s ,  %s' % (object.request_date_to.strftime('%B %Y'), object.employee_id.name )" /> -->
+
+
+    <!-- access right menu leave configuration -->
+        <menuitem id="hr_holidays.menu_hr_holidays_configuration" name="Configuration"
+          parent="hr_holidays.menu_hr_holidays_root" groups="hr_holidays.group_hr_holidays_manager" sequence="6"/>
+
+        <menuitem id="hr_holidays.hr_holidays_status_menu_configuration" name="Leave Types" action="hr_holidays.open_view_holiday_status"
+          parent="hr_holidays.menu_hr_holidays_configuration" groups="hr_holidays.group_hr_holidays_manager" sequence="2"/>
+
+    <!-- access right menu leave reporting -->
+        <menuitem id="hr_holidays.menu_hr_holidays_report" name="Reporting"
+          parent="hr_holidays.menu_hr_holidays_root" groups="hr_holidays.group_hr_holidays_manager" sequence="4"/>
+          
+        <menuitem id="hr_holidays.menu_hr_available_holidays_report_tree" name="Leaves Analysis" action="hr_holidays.action_hr_available_holidays_report"
+          parent="hr_holidays.menu_hr_holidays_report" groups="hr_holidays.group_hr_holidays_manager" sequence="2"/>
+
+    <!-- access right menu leave manager -->
+        <menuitem id="hr_holidays.menu_hr_holidays_approvals" name="Manager"
+          parent="hr_holidays.menu_hr_holidays_root" groups="hr_holidays.group_hr_holidays_manager" sequence="3"/>
+
+    <!-- access right menu leave Summary -->
+        <menuitem id="hr_holidays.menu_open_company_allocation" name="Summary" action="hr_holidays.open_company_allocation"
+          parent="hr_holidays.menu_hr_holidays_my_leaves" groups="hr_holidays.group_hr_holidays_manager" sequence="5"/>
+
+   <!-- rename menu my leaves new request -->
+        <menuitem name="Overview" id="hr_holidays.hr_leave_menu_new_request" sequence="1" action="hr_holidays.hr_leave_action_new_request"
+            parent="hr_holidays.menu_hr_holidays_my_leaves" groups="base.group_user"/>
+
+    <!-- rename menu my leaves leave request -->
+        <menuitem name="My Leaves" id="hr_holidays.hr_leave_menu_my" sequence="2" action="hr_holidays.hr_leave_action_my"
+            parent="hr_holidays.menu_hr_holidays_my_leaves" groups="base.group_user"/>
+
+    <!-- rename menu my leaves allocation request -->
+        <menuitem id="hr_holidays.menu_open_allocation" name="My Allocations" action="hr_holidays.hr_leave_allocation_action_my"
+          parent="hr_holidays.menu_hr_holidays_my_leaves" groups="hr_holidays.group_hr_holidays_manager" sequence="4"/>
+
+<!-- hide menu leave to approve -->
+      <menuitem
+            id="hr_holidays.hr_holidays_menu_manager_approve"
+            name="To Approve"
+            parent="hr_holidays.menu_hr_holidays_approvals"
+            sequence="1"
+            active="False"/>
+    </data>
+</odoo>

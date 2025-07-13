@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- report Timesheet -->
+    <data>
+        <report 
+            string="Timesheet Report" 
+            id="action_report_timesheet" 
+            model="hr_timesheet.sheet" 
+            report_type="qweb-html"
+            name="rnet_hr.report_timesheet" 
+            file="rnet_hr.report_timesheet"
+            print_report_name=" 'Timesheet - %s ,  %s' % (object.date_start.strftime('%B %Y'), object.employee_id.name )" />
+    </data>
+
+<!-- report Timesheet FORM-C -->
+    <data>
+        <report 
+            string="Timesheet Report FORM-C" 
+            id="action_report_timesheet_form_c" 
+            model="hr_timesheet.sheet" 
+            report_type="qweb-html"
+            name="rnet_hr.report_timesheet_form_c" 
+            file="rnet_hr.report_timesheet_form_c"
+            print_report_name=" 'Timesheet - %s ,  %s' % (object.date_start.strftime('%B %Y'), object.employee_id.name )" />
+    </data>
+    
+    <!-- Report CV -->
+    <data>
+        <report string="CV Report"
+        id="action_report_cv"
+        model="hr.employee.cv"
+        report_type="qweb-html"
+        name="rnet_hr.report_cv" 
+        file="rnet_hr.report_cv" 
+        print_report_name=" 'CV - %s' % (object.name.name)" />
+    </data>
+
+<!-- report Overtime Order -->
+    <data>
+        <report string="Overtime Order Report"
+        id="action_report_overtime_order"
+        model="hr_timesheet.sheet" 
+        report_type="qweb-html" 
+        name="rnet_hr.report_overtime_order" 
+        file="rnet_hr.report_overtime_order" 
+        print_report_name=" 'Overtime Order TS - %s ,  %s' % (object.date_start.strftime('%B %Y'), object.employee_id.name )" />
+    </data>
+
+<!-- report Allowance Claim -->
+    <data>
+        <report 
+        string="Allowance Claim Report"
+        id="action_report_allowance_claim"
+        model="hr_timesheet.sheet" 
+        report_type="qweb-html" 
+        name="rnet_hr.report_allowance_claim" 
+        file="rnet_hr.report_allowance_claim" 
+        print_report_name=" 'Allowance Claim TS - %s ,  %s' % (object.date_start.strftime('%B %Y'), object.employee_id.name )" />
+    </data>
+
+<!-- report Cuti Leave -->
+    <data>
+        <report 
+            string="Cuti Report" 
+            id="action_report_cuti" 
+            model="hr.leave" 
+            report_type="qweb-html"
+            name="rnet_hr.report_cuti" 
+            file="rnet_hr.report_cuti"
+            print_report_name=" 'Cuti - %s ,  %s' % (object.request_date_to.strftime('%B %Y'), object.employee_id.name )" />
+    </data>
+
+    <!-- report Appraisal -->
+    <data>
+        <report 
+            string="Appraisal Report" 
+            id="action_report_appraisal" 
+            model="hr.employee.appraisal" 
+            report_type="qweb-html"
+            name="rnet_hr.report_appraisal" 
+            file="rnet_hr.report_appraisal"
+            print_report_name=" 'Appraisal - %s ,  %s' % (object.periode.strftime('%B %Y'), object.employee_id.name )" />
+    </data>
+</odoo>

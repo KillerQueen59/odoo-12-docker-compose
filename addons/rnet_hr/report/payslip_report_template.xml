@@ -1,0 +1,320 @@
+<odoo>
+    <template id="report_payslip" inherit_id="hr_payroll.report_payslip">
+        <xpath expr="//t[1]/t[1]" position="replace">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+
+                    <!-- header -->
+                    <div class="header">
+                        <div class="row">
+                            <div class="col-7 ">
+                                <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 70px;"/>
+                            </div>
+                            <div class="col-5  text-right small">
+                                <img t-att-src="'/ogut_asset/static/src/img/dqs-logo.png'" style="max-height: 50px;"/>
+                                <img t-att-src="'/ogut_asset/static/src/img/iqnet-logo.png'" style="max-height: 50px;"/>
+                                <br/>
+                                <p class="text-center" style="margin-left:210px">Cert. No. 422970</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <h5 class="text-center" style="font-weight: bold;">SLIP GAJI</h5>
+                                <p class="text-center">Periode <span t-field="o.date_from" t-options="{'format': 'MMMM yyyy'}" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- page -->
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-6 small">
+                                <table class="table table-borderless table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>Nama Karyawan</td>
+                                            <td>:&amp;nbsp;</td>
+                                            <td>
+                                                <span t-field="o.employee_id"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Nomor Induk Karyawan</td>
+                                            <td>:&amp;nbsp;</td>
+                                            <td>
+                                                <span t-field="o.employee_id.gut_nik"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jabatan</td>
+                                            <td>:&amp;nbsp;</td>
+                                            <td>
+                                                <span t-field="o.employee_id.job_id.name"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-6 small">
+                                <table class="table table-borderless table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>Group / Grade</td>
+                                            <td>:&amp;nbsp;</td>
+                                            <td>
+                                                <span t-field="o.employee_id.employee_grade.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status Karyawan</td>
+                                            <td>:&amp;nbsp;</td>
+                                            <td>
+                                                <span t-field="o.employee_id.status_karyawan"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status Keluarga</td>
+                                            <td>:&amp;nbsp;</td>
+                                            <td>
+                                                <span t-field="o.employee_id.status"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="text-center" style="border-top: 2px solid black; "></div>
+                        <div class="row">
+                            <div class="col-12 small">
+                                <table class="table table-borderless table-sm">
+                                    <thead>
+                                        <tr>
+                                            <td style="font-weight: bold;">PENERIMAAN</td>
+                                            <td style="font-weight: bold;"> POTONGAN</td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center" style="border-top: 2px solid black;"></div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-6 small">
+                                <table class="table  table-borderless table-sm">
+                                    <thead>
+
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="i" t-value="1" />
+                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                            <t t-if=" line.category_id.code == 'ALW' or line.category_id.code == 'BASIC' ">
+                                                <td >
+                                                    <span t-esc="i"/>
+                                                    <t t-set="i" t-value="i+1"/>
+                                                </td>
+                                                <td >
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                                <td>
+                                                <t t-if= "line.amount == 0">
+                                               -
+                                            </t>
+                                            <t t-else="">
+                                             Rp  <t t-esc="line.amount" t-options='{"widget": "float", "precision": 0}'/>
+                                            </t>
+
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-6 small">
+                                <table class="table table-borderless table-sm">
+                                    <tbody>
+                                        <t t-set="i" t-value="9" />
+                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                            <t t-if=" line.category_id.code == 'DED' ">
+                                                <td >
+                                                    <span t-esc="i"/>
+                                                    <t t-set="i" t-value="i+1"/>
+                                                </td>
+                                                <td >
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                                <td>
+                                                <t t-if= "line.amount == 0">
+                                                -
+                                            </t>
+                                            <t t-else="">
+                                             Rp  <t t-esc="round(line.amount)" t-options='{"widget": "float", "precision": 0}'/>
+                                            </t>
+
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+<br/>
+                        <div class="text-center" style="border-top: 2px solid black;"></div>
+                        <div class="row">
+                            <div class="col-6 small">
+                                <table class="table table-borderless table-sm">
+                                    <thead>
+                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                            <t t-if=" line.code == 'PENGHA' ">
+                                                <td style="font-weight: bold; ">
+                                                    8
+                                                </td>
+                                                <td style="font-weight: bold;">Total Penerimaaan</td>
+                                                <td>Rp  <t t-esc="line.amount" t-options='{"widget": "float", "precision": 0}'/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="col-6 small">
+                                <table class="table table-borderless table-sm">
+                                    <thead>
+                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                            <t t-if=" line.code == 'POTOPENG' ">
+                                                <td style="font-weight: bold; ">17</td>
+                                                <td style="font-weight: bold;">Total Potongan</td>
+                                                <td>Rp  <t t-esc="line.amount" t-options='{"widget": "float", "precision": 0}'/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center" style="border-top: 2px solid black; "></div>
+                        <br/>
+                        <div class="row">
+                            <div class="col small">
+                                <p class="text-left" style="font-weight: bold;">PENGHASILAN YANG DITERIMA</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-8 small">
+                                <table class="table table-borderless table-sm">
+                                    <thead>
+                                     <t t-set="i" t-value="18" />
+                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                            <t t-if=" line.category_id.code == 'NET' ">
+                                                <td style="font-weight: bold; ">
+                                                    <span t-esc="i"/>
+                                                    <t t-set="i" t-value="i+1"/>
+                                                </td>
+                                                <td style="font-weight: bold; ">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                                <td class="border border-dark ">Rp  <t t-esc="line.amount" t-options='{"widget": "float", "precision": 0}'/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col small">
+                                <table class="table table-borderless table-sm">
+                                    <thead>
+                                        <tr>
+                                            <td>Ditransfer ke Bank BNI 46</td>
+                                        </tr>
+                                        <tr>
+                                            <td>No. a/c <span t-field="o.employee_id.bank_account_id.acc_number"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>a.n <span t-field="o.employee_id.name"/>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                            </div>
+                            <div class="col-5 small">
+                                <table class="table table-borderless table-sm">
+                                    <thead>
+                                        <tr>
+                                            <td class="text-right">Jakarta, 28 <span t-field="o.date_from" t-options="{'format': 'MMMM yyyy'}" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Dibuat Oleh,</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">
+                                                <p>&#160;</p>
+                                                <p>&#160;</p>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-right" style=" font-weight: bold; text-decoration: underline; ">
+                                    Bawono Oka Sarsanto
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right" >Payroll Section
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <div class="row">
+                                <div class="col-12 last-page small">
+                                    <table class="table table-bordered table-sm small">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width: 50%; color:white; background-color: #FFA500;">
+                                                    <div class="row">
+                                                        <div class="col-6">http://www.ptgut.co.id</div>
+                                                    </div>
+                                                </td>
+                                                <td style="width: 50%; color:white; background-color: #4682B4;">
+                                                    <div class="row">
+
+                                                        <div class="col-6">
+                                                            <div class="text-right">
+                                                        Tel: +62 21 8378 7333&amp;nbsp;
+                                                                <br/>
+                                                        Fax: +62 21 8378 7222&amp;nbsp;
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <span t-field="o.company_id.partner_id.street"/>
+&amp;nbsp;
+                                                            <span t-field="o.company_id.partner_id.street2"/>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page -->
+                </t>
+            </t>
+        </xpath>
+    </template>
+    
+</odoo>

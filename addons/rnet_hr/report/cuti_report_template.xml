@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_cuti_document">
+		<xpath expr="//t[1]/t[1]/t[1]/t[1]" position="replace">
+			<t t-call="web.basic_layout">
+				<div class="page">
+					<style type="text/css">
+						table.table-bordered > thead > tr > th {
+						border:1px ;
+						}
+						table.table-bordered > tbody > tr > td {
+						border:1px solid;
+						}
+					</style>
+					<t t-foreach="docs" t-as="o">
+						<div class="row">
+							<div class="col-8 ">
+								<img src="/web/binary/company_logo" alt="Logo" style="max-height: 90px;" />
+							</div>
+							<div class="col-4 ">
+								<table class="table table-borderless table-sm small ">
+									<tbody class="border border-dark ">
+										<tr style="font-size: 16px" class="border border-dark ">
+											<td>
+												Doc No.
+											</td>
+											<td>
+												:&#8194;
+											</td>
+											<td>
+												2.1.16
+											</td>
+										</tr>
+										<tr style="font-size: 16px" class="border border-dark ">
+											<td>
+												Revision
+											</td>
+											<td>
+												:&#8194;
+											</td>
+											<td>
+												00
+											</td>
+										</tr>
+										<tr style="font-size: 16px" class="border border-dark ">
+											<td>
+												Date
+											</td>
+											<td>
+												:&#8194;
+											</td>
+											<td>
+												03.03.2009
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</t>
+					<div class="row mt-2 ">
+						<div class="col small">
+							<div class="text-center mb-1" style="border-top: 2px solid black;">
+							</div>
+							<h5 class="text-center m-0">
+								<strong>
+									SURAT IZIN CUTI
+								</strong>
+							</h5>
+							<div class="text-center mt-1" style="border-top: 2px solid black;">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col small">
+							<table class="table table-borderless table-sm small ">
+								<thead>
+									<tr style="font-size: 16px">
+										<td width="40%">
+											Dengan ini diberitahukan bahwa
+										</td>
+										<td>
+											:&#8194;
+										</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr style="font-size: 16px">
+										<td width="40%">
+											Nama
+										</td>
+										<td>
+											:&#8194;
+										</td>
+										<td>
+											<span t-field="o.employee_id.name" />
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td width="40%">
+											Jabatan
+										</td>
+										<td>
+											:&#8194;
+										</td>
+										<td>
+											<span t-field="o.employee_id.job_title" />
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td width="40%">
+											Department
+										</td>
+										<td>
+											:&#8194;
+										</td>
+										<td>
+                                        <t t-if="o.employee_id.department_id">
+											<span t-field="o.employee_id.department_id.name" />
+                                        </t>
+                                        <t t-else="">
+                                            &#8194;
+                                        </t>
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td width="40%">
+											Alamat
+										</td>
+										<td>
+											:&#8194;
+										</td>
+										<td>                                         
+                                        <t t-if="o.gut_alamat">
+											<span t-field="o.gut_alamat" />
+                                        </t>
+                                        <t t-else="">
+                                            &#8194;
+                                        </t>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col small">
+							<table class="table table-borderless table-sm small ">
+								<tbody>
+									<tr style="font-size: 16px">
+										<td width="100%">
+											&#160; &#160;  &#160; &#160; &#160; &#160; &#160; &#160;
+											Mengajukan permohonan 
+											<span style="font-weight: bold" t-field="o.holiday_status_id" /> selama
+											<span t-field="o.number_of_days_display" t-options="{'widget': 'float', 'precision': 0}" />
+											hari kerja,
+											terhitung mulai tanggal
+											<span t-field="o.request_date_from" t-options="{'format': 'd MMMM yyyy'}" />
+											s/d
+											<span t-field="o.request_date_to" t-options="{'format': 'd MMMM yyyy'}" />
+										</td>
+									</tr>
+									<br />
+									<tr>
+										<td>
+											&#8194;
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td width="100%">
+											Selama cuti, alamat dan nomor telephone yang dapat dihubungi :
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<table class="table table-borderless table-sm small ">
+								<tbody>
+									<tr style="font-size: 16px">
+										<td width="40%">
+											Alamat
+										</td>
+										<td>
+											:&#8194;
+										</td>
+										<td>
+                                        <t t-if="o.gut_alamat">
+											<span t-field="o.gut_alamat" />
+                                        </t>
+                                        <t t-else="">
+                                            &#8194;
+                                        </t>
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td width="40%">
+											Telepon
+										</td>
+										<td>
+											:&#8194;
+										</td>
+										<td>
+                                        <t t-if="o.gut_phone">
+											<span t-field="o.gut_phone" />
+                                        </t>
+                                        <t t-else="">
+                                            &#8194;
+                                        </t>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<table class="table table-borderless table-sm small ">
+								<tbody>
+									<tr style="font-size: 16px">
+										<td>
+											Atas permohonan izin cuti yang diberikan, saya ucapkan terima kasih.
+										</td>
+									</tr>
+									<tr class="text-right" style="font-size: 16px">
+										<td>
+											Hormat Saya
+											<span />
+											&#160; &#160;  &#160; &#160;  &#160;  &#160;  &#160;   &#160;  &#160;  &#160;  &#160; &#160;  &#160; &#160;  &#160;
+										</td>
+									</tr>
+									<tr class="text-right" style="font-size: 16px">
+										<td>
+											Jakarta,
+											<span />
+											______________ &#160; &#160;  &#160;  &#160;
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="text-center" style="border-top: 2px solid black;">
+							</div>
+							<table class="table table-borderless table-sm small ">
+								<tbody>
+									<tr style="font-size: 15px">
+										<td>
+											Di isi oleh HRD Section
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td>
+											Hak Cuti &#160;  :
+											<span t-field="o.leave_allocation" />
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td>
+											Saldo Cuti &#160;  :
+											<span />
+											<span t-field="o.leave_balance" />
+										</td>
+										<td>
+											Diambil &#160;  :
+											<span t-field="o.number_of_days" t-options="{'widget': 'float', 'precision': 0}" />
+										</td>
+										<td>
+											Sisa &#160;  :
+											<span t-field="o.leave_remaining" t-options="{'widget': 'float', 'precision': 0}" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<table class="table table-bordered table-sm small">
+								<thead>
+									<tr style="font-size: 16px">
+										<th style="font-weight: normal;" width="30%" class="border border-dark ">
+											<div class="text-center">
+												Pemohon
+											</div>
+										</th>
+										<th style="font-weight: normal;" width="30%" class="border border-dark ">
+											<div class="text-center">
+												Atasan yang bersangkutan
+											</div>
+										</th>
+										<th style="font-weight: normal;" width="30%" class="border border-dark ">
+											<div class="text-center">
+												Disetujui
+											</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr style="font-size: 16px">
+										<td class="border border-dark ">
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+										</td>
+										<td class="border border-dark ">
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+										</td>
+										<td class="border border-dark ">
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+											<p>
+												&#160;
+											</p>
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td class="border border-dark ">
+											Nama :
+											<t t-esc="o.employee_id.name" />
+										</td>
+										<td class="border border-dark ">
+											Nama :
+                                            <t t-if="o.employee_id.parent_id">
+											    <t t-esc="o.employee_id.parent_id.name" />
+                                            </t>
+										</td>
+										<td class="border border-dark ">
+											Nama :&#160;
+										</td>
+									</tr>
+									<tr style="font-size: 16px">
+										<td class="border border-dark ">
+											Tanggal :&#160;
+											<span class="text-center" />
+										</td>
+										<td class="border border-dark ">
+											Tanggal :&#160;
+											<span class="text-center" />
+										</td>
+										<td class="border border-dark ">
+											Tanggal :&#160;
+											<span class="text-center" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<table class="table table-borderless table-sm small ">
+								<tbody>
+									<tr>
+										<td style="font-size: 16px; font-weight: bold;">
+											CATATAN
+										</td>
+										<td style="font-size: 16px; font-weight: bold;">
+											:&#8194;
+										</td>
+										<td style="font-size: 16px">
+											Dalam keadaan mendadak, permohonan izin cuti dapat dilakukan melalui
+											telepon/sms/e-mail ke atasan yang bersangkutan untuk di informasikan
+											ke HRD Section.
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- footer -->
+				<div class="footer">
+					<div class="row last-page">
+						<div class="col-6 small">
+							<div class="text-left">
+								Author:
+								<span style="font-size: 20px; font-weight: bold;" />
+								PT.GUT / HRD SECTION
+							</div>
+						</div>
+						<div class="col-6 small">
+							<div class="text-right">
+								Page
+								<span class="page" />
+								of
+								<span class="topage" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</t>
+		</xpath>
+	</template>
+	<!-- main template -->
+	<template id="report_cuti">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="rnet_hr.report_cuti_document" />
+			</t>
+		</t>
+	</template>
+</odoo>

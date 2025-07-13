@@ -1,0 +1,384 @@
+<odoo>
+    <data>
+
+    <!-- inherited my timesheet -->
+         <record model="ir.ui.view" id="account_analytic_line_tree_with_user">
+            <field name="name">account.analytic.line.tree.with.user</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="hr_timesheet.timesheet_view_form_user"/>
+            <field name="arch" type="xml">
+               <field name="unit_amount" position="attributes">
+                    <attribute name="string">Duration (Day)</attribute>
+                    <attribute name="widget">integer</attribute>
+                </field>
+            </field>
+        </record>
+
+<!-- inherited All timesheet -->
+        <record model="ir.ui.view" id="account_analytic_line_tree">
+            <field name="name">account.analytic.line.tree</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+            <field name="arch" type="xml">
+               <field name="unit_amount" position="attributes">
+                    <attribute name="string">Duration (Day)</attribute>
+                    <attribute name="widget">integer</attribute>
+                </field>
+                <!-- <field name="unit_amount" position="after">
+                        <field name="gut_alw_in_code" sum="alw_in" />
+                        <field name="gut_alw_out_code" sum="alw_out"/>
+                </field> -->
+            </field>
+        </record>
+
+    <!-- inherited search timesheet -->
+        <record model="ir.ui.view" id="account_analytic_line_search">
+            <field name="name">account.analytic.line.search</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="replace">
+                    <group expand="0" string="Group By">
+                        <filter string="Employee" name="groupby_employee"  context="{'group_by':'employee_id'}"/>
+                    </group>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                </xpath>
+            </field>
+        </record>
+
+<!-- inherited all timesheet sheet page Details -->
+        <record model="ir.ui.view" id="rnet_hr_timesheet_sheet_form">
+            <field name="name">hr_timesheet.sheet.form</field>
+            <field name="model">hr_timesheet.sheet</field>
+            <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/div[hasclass('oe_title')]" position="after">
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" icon="fa-clipboard" name="open_leave_timesheet" groups="hr_timesheet.group_timesheet_manager">
+                        <field name="leave_count" string="(day) Cuti" widget="statinfo" groups="hr_timesheet.group_timesheet_manager"/>
+                    </button>
+                    </div>
+                </xpath>
+
+                <xpath expr="//field[@name='employee_id']" position="attributes">
+					<attribute name="options">
+						{'no_create': True, 'no_create_edit':True, 'no_open': True,}
+					</attribute>
+				</xpath>
+
+                <xpath expr="//group[group[@name='dates'] and group[@name='details']]" position="replace">
+                    <group>
+                        <group name="dates">
+                            <label for="date_start" string="Timesheet Period"/>
+                            <div style="display: inline;">
+                                <field name="date_start" class="oe_inline" attrs="{'readonly': [ ('state', 'in', ['confirm','done'])]}"/> to <field name="date_end" class="oe_inline" attrs="{'readonly': [ ('state', 'in', ['confirm','done'])]}"/>
+                            </div>
+                            <field name="reviewer_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+                            <field name="company_id" groups="base.group_multi_company" force_save="1"/>
+                            <field name="department_id" invisible="1"/>
+                            <field name="is_kontrak_project" invisible="1"/>
+                            <field name="gut_nik" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+                            <field name="job_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"  />
+                            <field name="contract_type_id" invisible="1" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+                            <field name="work_schedule_id" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+                            <field name="grade" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+                        </group>
+                        <group name="details">
+                            <label for="allow_in_code" string="Dalam Kota" attrs="{'invisible': [('allow_in_code', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('allow_in_code', '=', 0)]}">                         
+                                <field name="allow_in_code"/>                
+                                <label for="allow_in_code" string="Day"/>      
+                            </div>  
+                            
+                            <label for="allow_out_code" string="Luar Kota" attrs="{'invisible': [('allow_out_code', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('allow_out_code', '=', 0)]}">                         
+                                <field name="allow_out_code"/>                
+                                <label for="allow_out_code" string="Day"/>      
+                            </div> 
+                            
+                            <label for="total_normal" string="Normal" attrs="{'invisible': [('total_normal', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('total_normal', '=', 0)]}">                         
+                                <field name="total_normal"/>                
+                                <label for="total_normal" string="Hour"/>      
+                            </div>
+
+                            <label for="total_class1" string="Class 1" attrs="{'invisible': [('total_class1', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('total_class1', '=', 0)]}">                         
+                                <field name="total_class1"/>                
+                                <label for="total_class1" string="Hour"/>      
+                            </div>
+
+                            <label for="total_class2" string="Class 2" attrs="{'invisible': [('total_class2', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('total_class2', '=', 0)]}">                         
+                                <field name="total_class2"/>                
+                                <label for="total_class2" string="Hour"/>      
+                            </div>
+
+                            <label for="total_class3" string="Class 3" attrs="{'invisible': [('total_class3', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('total_class3', '=', 0)]}">                         
+                                <field name="total_class3"/>                
+                                <label for="total_class3" string="Hour"/>      
+                            </div>
+
+                            <label for="total_class4" string="Class 4" attrs="{'invisible': [('total_class4', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('total_class4', '=', 0)]}">                         
+                                <field name="total_class4"/>                
+                                <label for="total_class4" string="Hour"/>      
+                            </div>
+
+                            <label for="total_travel" string="Total Travel" attrs="{'invisible': [('total_travel', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('total_travel', '=', 0)]}">                         
+                                <field name="total_travel"/>                
+                                <label for="total_travel" string="Hour"/>      
+                            </div>
+
+                            <label for="total_hours" string="Total Hour" attrs="{'invisible': [('total_hours', '=', 0)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('total_hours', '=', 0)]}">                         
+                                <field name="total_hours"/>                
+                                <label for="total_hours" string="Hour"/>      
+                            </div>
+                        </group>
+                        <group name="penerimaaan">
+                                <field name="allowance_ho" string="Allowance HO JO Overhead"/>
+                                <field name="alw_in" attrs="{'invisible': [('is_kontrak_project', '==', True)]}"/>
+                                <field name="alw_out" attrs="{'invisible': [('is_kontrak_project', '==', True)]}"/>
+                                <field name="total_alw_in" attrs="{'invisible': ['|',('is_kontrak_project', '==', True),('total_alw_in', '==', 0)]}"/>
+                                <field name="total_alw_out" attrs="{'invisible': ['|',('is_kontrak_project', '==', True),('total_alw_out', '==', 0)]}"/>
+                                <field name="upah_pokok" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}"/>
+                                
+                                <!-- Upah Lembur Section -->
+                                <label for="total_upah_lembur" string="Upah Lembur" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}"/>
+                                <div class="o_row" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}">
+                                    <field name="total_all_alw"/>
+                                    <span> x </span>
+                                    <field name="upah_lembur"/>
+                                    <span> = </span>
+                                    <b><field name="total_upah_lembur"/></b>
+                                </div>
+
+                                <!-- Tunjangan Kehadiran Section -->
+                                <label for="total_tunjangan_kehadiran" string="Tunjangan Kehadiran" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}"/>
+                                <div class="o_row" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}">
+                                    <field name="total_all_alw"/>
+                                    <span> x </span>
+                                    <field name="tunjangan_kehadiran"/>
+                                    <span> = </span>
+                                    <b><field name="total_tunjangan_kehadiran"/></b>
+                                </div>
+
+                                <!-- Tunjangan Proyek Section -->
+                                <label for="total_tunjangan_proyek" string="Tunjangan Proyek" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}"/>
+                                <div class="o_row" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}">
+                                    <field name="total_all_alw"/>
+                                    <span> x </span>
+                                    <field name="tunjangan_proyek"/>
+                                    <span> = </span>
+                                    <b><field name="total_tunjangan_proyek"/></b>
+                                </div>
+
+                                <label for="total_uang_makan" string="Uang Makan" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}"/>
+                                <div class="o_row" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}">
+                                    <field name="total_all_alw"/>
+                                    <span> x </span>
+                                    <field name="uang_makan"/>
+                                    <span> = </span>
+                                    <b><field name="total_uang_makan"/></b>
+                                </div>
+
+                                <label for="total_upah_kotor" string="Total Upah Kotor"/>
+                                <div class="o_row">
+                                    <b><field name="total_upah_kotor"/></b>
+                                </div>
+                               
+                        </group>
+                        <group name="total">
+                            <label for="total_upah" string="Total Upah"/>
+                                <div class="o_row">
+                                    <b><field name="total_upah"/></b>
+                                </div>
+                            <field name="potongan_pph_21" widget="integer" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}"/>
+                            <field name="potongan_lain" widget="integer"/>
+                            <field name="potongan_kasbon" widget="integer" />
+
+                            <label for="total_bayar" string="Total Bayar"/>
+                                <div class="o_row">
+                                    <b><field name="total_bayar"/></b>
+                                </div>
+                        </group>
+                        <group name="potongan">
+                                <label for="total_potongan_absen" string="Potongan Absen" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}"/>
+                                <div class="o_row" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}">
+                                    <field name="total_gut_absen"/>
+                                    <span> x </span>
+                                    <field name="potongan_absen"/>
+                                    <span> = </span>
+                                    <b><field name="total_potongan_absen"/></b>
+                                </div>
+                                <label for="total_potongan_telat" string="Potongan TL/PSW" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}"/>
+                                <div class="o_row" attrs="{'invisible': [('is_kontrak_project', '!=', True)]}">
+                                    <field name="total_gut_telat"/>
+                                    <span> Hour </span>
+                                    <span> = </span>
+                                    <b><field name="total_potongan_telat"/></b>
+                                </div>
+                                
+                                <label for="total_potongan" string="Total Potongan"/>
+                                <div class="o_row">
+                                    <b><field name="total_potongan"/></b>
+                                </div>
+                        </group>
+                    </group>
+                </xpath>
+
+                <xpath expr="//sheet/notebook" position="inside" >
+                    <page string="Attendances"
+                        groups="hr_attendance.group_hr_attendance">
+                        <group colspan="4">
+                            <group>
+                                <label for="attendance_state"/>
+                                <div>
+                                    <field name="attendance_state"/>
+                                    <button name="attendance_action_change" attrs="{'invisible': [('attendance_state', '=', 'checked_in')]}" type="object" string="Check In" style="margin-left: 20px"/>
+                                    <button name="attendance_action_change" attrs="{'invisible': ['|', ('attendance_state','=',False), ('attendance_state', '=', 'checked_out')]}" type="object" string="Check Out"  style="margin-left: 20px"/>
+                                </div>
+                            </group>
+                            <field name="attendances_ids" nolabel="1" options="{'no_create': True, 'no_open': True}" context="{'default_employee_id': employee_id}" readonly="1" attr="{'decoration-danger': ['|','|',('gut_day', '=', 'Saturday'),('gut_day', '=', 'Sunday')]}">
+                            <tree default_order='check_in asc'>
+                                <field name="check_in"/>
+                                <field name="check_out"/>
+                                <field name="project"/>
+                                <field name="actual_hours" string="Normal Hours" sum="Hours" invisible="1"/>
+                                <field name="gut_day"/>
+                                <field name="gut_normal_hours" sum = "Normal" attrs="{'invisible':[('gut_normal_hours', '==', 0)]}" />
+                                <field name="gut_class1" sum = "Class 1"  attrs="{'invisible':[('gut_class1', '==', 0)]}" />
+                                <field name="gut_class2" sum = "Class 2"  attrs="{'invisible':[('gut_class2', '==', 0)]}" />
+                                <field name="gut_class3" sum = "Class 3"  attrs="{'invisible':[('gut_class3', '==', 0)]}" />
+                                <field name="gut_class4" sum = "Class 4"  attrs="{'invisible':[('gut_class4', '==', 0)]}" />
+                                <field name="gut_code"   attrs="{'invisible':[('gut_code', '==', 0)]}" />
+                                <field invisible="1" name="employee_id"/>
+                            </tree>
+                            </field>
+                        </group>
+                    </page>
+
+                    <page string="Leaves">
+                    <field name="leave_line_ids" nolabel="1" readonly='True' >
+                        <tree editable='bottom'>
+                            <field name='employee_id'/>
+                            <field name='holiday_status_id'/>
+                            <field name='name'/>
+                            <field name='date_from'/>
+                            <field name='date_to'/>
+                            <field name='leave_allocation'/>
+                            <field name='leave_balance' />
+                            <field name='duration_display' string="Cuti Diambil"/>
+                            <field name='leave_remaining' />
+                            <field name='state'/>
+                        </tree>
+                    </field>
+                    </page>
+
+                    <page string="Holiday">
+                    <field name="holiday_line_ids" nolabel="1">
+                        <tree editable='bottom'>
+                            <field name='date'/>
+                            <field name='day_holiday'/>
+                            <field name='name'/>
+                        </tree>
+                    </field>
+                    </page>
+
+                                        
+                    <page string="Manhour Timesheet Project">
+                    <field name="manhour_timesheet_line_ids" nolabel="1" readonly="1">
+                        <tree editable='top'>
+                            <field name='project_id'/>
+                            <field name='month'/>
+                            <field name='total_hour' sum='total_hour'/>
+                            <field name='total_day' sum='total_day'/>
+                        </tree>
+                    </field>
+                    </page>
+                </xpath>
+
+                <!-- <xpath expr="//sheet/notebook" position="inside" >
+                    <page string="Public Holidays">
+                    <field name="holiday_line_ids" nolabel="1">
+                        <tree editable='bottom'>
+                            <field name='name'/>
+                            <field name='date'/>
+                            <field name='type'/>
+                        </tree>
+                    </field>
+                    </page>
+                </xpath> -->
+
+                <xpath expr="//button[@name='action_timesheet_confirm']" position="after">
+                    <button name="%(rnet_hr.action_report_timesheet)d" string="Print Timehseet Form-F" attrs="{'invisible': [('is_kontrak_project','==', True)]}" type="action" class="oe_highlight" />
+                    <button name="%(rnet_hr.action_report_timesheet_form_c)d" string="Print Timehseet Form-C" attrs="{'invisible': [('is_kontrak_project','==', False)]}" type="action" class="oe_highlight" />
+                </xpath>
+
+            </field>
+        </record>
+
+
+            <!-- inherited timesheet sheet search-->
+         <record model="ir.ui.view" id="rnet_hr_timesheet_sheet_filter_view">
+            <field name="name">hr_timesheet.sheet.search.filter</field>
+            <field name="model">hr_timesheet.sheet</field>
+            <field name="inherit_id" ref="hr_timesheet_sheet.view_hr_timesheet_sheet_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="replace">
+                   <search string="Search Timesheet">
+                        <field name="employee_id"/>
+                        <field name="date_start"/>
+                        <filter string="Kontrak HO" name="status_karyawan_ho" domain="[('contract_type_id.status', '!=', 'Kontrak Project')]"/>
+                        <filter string="Kontrak Site" name="status_karyawan_site" domain="[('contract_type_id.status', '=', 'Kontrak Project')]"/>
+                        <filter name="draft" string="In Draft" domain="[('state','=','draft')]" help="Draft Timesheet Sheets"/>
+                        <filter name="confirm" string="Submitted" domain="[('state','=','confirm')]" help="Submitted Timesheet Sheets"/>
+                        <filter name="to_review" string="To Review" domain="[('state','=','confirm')]" help="Timesheet Sheets to Review"/>
+                        <filter name="message_needaction" string="Unread Messages" domain="[('message_needaction','=',True)]"/>
+                        <field name="department_id"/>
+                        <field name="reviewer_id"/>
+                        <group expand="0" string="Group By">
+                            <filter name="groupby_employees" string="Employees" domain="[]" context="{'group_by':'employee_id'}"/>
+						    <filter string="Kontrak" name="group_kontrak" context="{'group_by':'contract_type_id'}" />
+                            <filter name="groupby_department" string="Department" domain="[]" context="{'group_by':'department_id'}"/>
+                            <filter name="groupby_date_from" string="Date From" domain="[]" context="{'group_by':'date_start'}"/>
+                            <!-- <filter name="groupby_reviewer" string="Reviewer" domain="[]" context="{'group_by':'reviewer_id'}"/> -->
+                        </group>
+                    </search>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="act_hr_timesheet_sheet_to_review_override" model="ir.actions.act_window">
+            <field name="name">Timesheet Sheets to Review Override</field>
+            <field name="res_model">hr_timesheet.sheet</field>
+            <field name="inherit_id" ref="hr_timesheet_sheet.act_hr_timesheet_sheet_to_review"/>
+            <field name="context">{}</field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="timesheet_open_employee_grade">
+            <field name="name">Employee Grade</field>
+            <field name="res_model">employee.grade</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="employee_grade_tree"/>
+        </record>
+
+<!-- add menu employee grade di configuration timesheet -->
+        <menuitem id="menu_ts_employee_grade" name="Employee Grade" parent="hr_timesheet.hr_timesheet_menu_configuration" action="timesheet_open_employee_grade" sequence="3"/>
+
+
+    <!-- hide menu my timesheet -->
+        <menuitem id="hr_timesheet_sheet.menu_act_hr_timesheet_sheet_my_timesheets" sequence="1"
+            parent="hr_timesheet.menu_hr_time_tracking" groups="hr_timesheet.group_hr_timesheet_user" active="False"/>
+        <menuitem id="hr_timesheet.timesheet_menu_activity_mine" sequence="1"
+           parent="hr_timesheet.menu_hr_time_tracking" groups="hr_timesheet.group_hr_timesheet_user" active="False"/>
+        <!-- <menuitem id="hr_timesheet_sheet.menu_hr_to_review" sequence="1"
+           parent="hr_timesheet.timesheet_menu_root" groups="hr_timesheet.group_hr_timesheet_user" active="False"/> -->
+    <!--  -->
+
+    </data>
+</odoo>

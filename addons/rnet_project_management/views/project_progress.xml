@@ -537,20 +537,20 @@
 		</record>
 
 		<!-- View Site Employee untuk PM -->
-		<record id="action_site_emplpoyee" model="ir.actions.act_window">
-			<field name="name">Site Employee</field>
-			<field name="res_model">hr.employee</field>
-			<field name="view_mode">tree,form</field>
-			<field name="domain">[('status_karyawan.name','=','PKWT Project'), ]</field>
-		</record>
+<!--		<record id="action_site_emplpoyee" model="ir.actions.act_window">-->
+<!--			<field name="name">Site Employee</field>-->
+<!--			<field name="res_model">hr.employee</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">[('status_karyawan.name','=','PKWT Project'), ]</field>-->
+<!--		</record>-->
 
 		<!-- View penilaian Site Employee untuk PM -->
-		<record id="action_site_emplpoyee_review" model="ir.actions.act_window">
-			<field name="name">Site Employee Review</field>
-			<field name="res_model">hr.employee.penilaian</field>
-			<field name="view_mode">tree,form</field>
-			<field name="domain">[]</field>
-		</record>
+<!--		<record id="action_site_emplpoyee_review" model="ir.actions.act_window">-->
+<!--			<field name="name">Site Employee Review</field>-->
+<!--			<field name="res_model">hr.employee.penilaian</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">[]</field>-->
+<!--		</record>-->
 
 		    <!-- mass update on change Project Management-->
 		<record id="Rnet_update_employee_mass" model="ir.actions.server">
@@ -572,54 +572,54 @@
                   parent="menu_project_progress_root"
                   groups="project.group_project_manager"/>
 
-        <menuitem id="menu_project_progress_site_employee"
-                  sequence="5"
-                  name="Employees"
-                  parent="menu_project_progress_site_employee_menu"
-                  action="action_site_emplpoyee"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_site_employee"-->
+<!--                  sequence="5"-->
+<!--                  name="Employees"-->
+<!--                  parent="menu_project_progress_site_employee_menu"-->
+<!--                  action="action_site_emplpoyee"-->
+<!--                  groups="project.group_project_manager"/>-->
 
-        <menuitem id="menu_project_progress_site_employee_review"
-                  sequence="6"
-                  name="Employee Review"
-                  parent="menu_project_progress_site_employee_menu"
-                  action="action_site_emplpoyee_review"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_site_employee_review"-->
+<!--                  sequence="6"-->
+<!--                  name="Employee Review"-->
+<!--                  parent="menu_project_progress_site_employee_menu"-->
+<!--                  action="action_site_emplpoyee_review"-->
+<!--                  groups="project.group_project_manager"/>-->
 
-        <menuitem id="menu_project_progress_takeout_inventory"
-                  sequence="6"
-                  name="Inventory Takeout"
-                  action="open_takeout_inventory_approval_pm"
-                  parent="menu_project_progress_approval_inventory"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_takeout_inventory"-->
+<!--                  sequence="6"-->
+<!--                  name="Inventory Takeout"-->
+<!--                  action="open_takeout_inventory_approval_pm"-->
+<!--                  parent="menu_project_progress_approval_inventory"-->
+<!--                  groups="project.group_project_manager"/>-->
 
-        <menuitem id="menu_project_progress_takeout_asset"
-                  sequence="6"
-                  name="Asset Takeout"
-                  action="open_takeout_asset_approval_pm"
-                  parent="menu_project_progress_approval_asset"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_takeout_asset"-->
+<!--                  sequence="6"-->
+<!--                  name="Asset Takeout"-->
+<!--                  action="open_takeout_asset_approval_pm"-->
+<!--                  parent="menu_project_progress_approval_asset"-->
+<!--                  groups="project.group_project_manager"/>-->
 
-        <menuitem id="menu_project_progress_good_receipt_inventory"
-                  sequence="3"
-                  name="Inventory Goods Receipt"
-                  action="open_receipt_inventory_pm"
-                  parent="menu_project_progress_approval_inventory"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_good_receipt_inventory"-->
+<!--                  sequence="3"-->
+<!--                  name="Inventory Goods Receipt"-->
+<!--                  action="open_receipt_inventory_pm"-->
+<!--                  parent="menu_project_progress_approval_inventory"-->
+<!--                  groups="project.group_project_manager"/>-->
 
-        <menuitem id="menu_project_progress_good_receipt_asset"
-                  sequence="5"
-                  name="Asset Goods Receipt"
-                  action="open_receipt_asset_pm"
-                  parent="menu_project_progress_approval_asset"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_good_receipt_asset"-->
+<!--                  sequence="5"-->
+<!--                  name="Asset Goods Receipt"-->
+<!--                  action="open_receipt_asset_pm"-->
+<!--                  parent="menu_project_progress_approval_asset"-->
+<!--                  groups="project.group_project_manager"/>-->
 
-        <menuitem id="menu_project_progress_purchase_requisition"
-                  sequence="7"
-                  name="Purchase Requisition"
-                  action="action_material_purchase_requisition"
-                  parent="menu_project_progress_approval_pr"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_purchase_requisition"-->
+<!--                  sequence="7"-->
+<!--                  name="Purchase Requisition"-->
+<!--                  action="action_material_purchase_requisition"-->
+<!--                  parent="menu_project_progress_approval_pr"-->
+<!--                  groups="project.group_project_manager"/>-->
 
         <menuitem id="menu_project_progress_purchase_cvr"
                   sequence="5"

@@ -29,15 +29,15 @@
 							<button type="object" class="oe_stat_button"  string="Actual &amp; Plan Cash In" icon="fa-pie-chart"  name="open_actual_plan_cashin_chart"></button>
 							<button type="object" class="oe_stat_button"  string="Actual &amp; Plan Invoice" icon="fa-line-chart"  name="open_actual_plan_invoice_chart"></button>
 							<button type="object" class="oe_stat_button"  string="Actual &amp; Plan Manhour" icon="fa-clock-o"  name="open_actual_plan_manhour_chart"></button>
-                    	    <button class="oe_stat_button" type="object" icon="fa-file-text" name="open_expense_sheet_project" groups="hr_expense.group_hr_expense_user">
-								<field name="expense_sheet_amount" string="CVR" widget="statinfo" groups="hr_expense.group_hr_expense_user" />
-							</button>
-							<button class="oe_stat_button" type="object" icon="fa-clipboard" name="open_expense_advance_project" groups="hr_expense.group_hr_expense_user">
-								<field name="expense_advance_amount" string="BAR" widget="statinfo" groups="hr_expense.group_hr_expense_user" />
-							</button>
-							<button class="oe_stat_button" type="object" icon="fa-file" name="open_purchase_order_project" groups="project.group_project_manager">
-								<field name="purchase_order_amount" string="PO" widget="statinfo" groups="	project.group_project_manager" />
-							</button>
+<!--                    	    <button class="oe_stat_button" type="object" icon="fa-file-text" name="open_expense_sheet_project" groups="hr_expense.group_hr_expense_user">-->
+<!--								<field name="expense_sheet_amount" string="CVR" widget="statinfo" groups="hr_expense.group_hr_expense_user" />-->
+<!--							</button>-->
+<!--							<button class="oe_stat_button" type="object" icon="fa-clipboard" name="open_expense_advance_project" groups="hr_expense.group_hr_expense_user">-->
+<!--								<field name="expense_advance_amount" string="BAR" widget="statinfo" groups="hr_expense.group_hr_expense_user" />-->
+<!--							</button>-->
+<!--							<button class="oe_stat_button" type="object" icon="fa-file" name="open_purchase_order_project" groups="project.group_project_manager">-->
+<!--								<field name="purchase_order_amount" string="PO" widget="statinfo" groups="	project.group_project_manager" />-->
+<!--							</button>-->
 						</div>
 						<group>
 							<group>
@@ -499,42 +499,42 @@
         </record>
 
 		<!-- Approval Takeout Asset untuk PM -->
-		<record model="ir.actions.act_window" id="open_takeout_asset_approval_pm">
-            <field name="name">Asset / Takeout</field>
-            <field name="res_model">stock.picking</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-			<field name="domain">['&amp;', '&amp;',('picking_type_id.name', '=like', 'Take Out%'),('state', 'in', ['waiting','done']), ('show_asset_menu', '=', True),'|',('gut_approved_by.user_id','=',uid),('project.project_manager.user_id','in', [uid])]</field>
-            <field name="context">{'type': 'takeout', 'is_asset_menu': False, 'is_inventory_menu': True, 'default_show_asset_menu': True, 'search_default_waiting': 1}</field>
-        </record>
+<!--		<record model="ir.actions.act_window" id="open_takeout_asset_approval_pm">-->
+<!--            <field name="name">Asset / Takeout</field>-->
+<!--            <field name="res_model">stock.picking</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', '&amp;',('picking_type_id.name', '=like', 'Take Out%'),('state', 'in', ['waiting','done']), ('show_asset_menu', '=', True),'|',('gut_approved_by.user_id','=',uid),('project.project_manager.user_id','in', [uid])]</field>-->
+<!--            <field name="context">{'type': 'takeout', 'is_asset_menu': False, 'is_inventory_menu': True, 'default_show_asset_menu': True, 'search_default_waiting': 1}</field>-->
+<!--        </record>-->
 
 		<!-- Approval Purchase Requisition untuk PM -->
-		<record model="ir.actions.act_window" id="action_material_purchase_requisition">
-            <field name="name">Purchase Requisitions</field>
-            <field name="res_model">material.purchase.requisition</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-			<field name="domain">['&amp;', ('requisiton_responsible_id.user_id','=',uid), ('state', 'in', ['dept_confirm','stock','partial_process']), ]</field>
-       		<field name="context">{'search_default_waiing_approve': 1}</field>
-	    </record>
+<!--		<record model="ir.actions.act_window" id="action_material_purchase_requisition">-->
+<!--            <field name="name">Purchase Requisitions</field>-->
+<!--            <field name="res_model">material.purchase.requisition</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', ('requisiton_responsible_id.user_id','=',uid), ('state', 'in', ['dept_confirm','stock','partial_process']), ]</field>-->
+<!--       		<field name="context">{'search_default_waiing_approve': 1}</field>-->
+<!--	    </record>-->
 
 		<!-- Approval CVR untuk PM -->
-		<record id="action_hr_expense_report" model="ir.actions.act_window">
-			<field name="name">CVR</field>
-			<field name="res_model">hr.expense.sheet</field>
-			<field name="view_mode">tree,form</field>
-			<field name="domain">['&amp;', ('state', 'in', ['submit', 'approve_cost_control','reject_control','post']),'|',('project_manager_id.user_id','=',uid),('site_manager_id.user_id','=',uid)]</field>
-			<field name="context">{'search_default_submitted': 1}</field>
-		</record>
+<!--		<record id="action_hr_expense_report" model="ir.actions.act_window">-->
+<!--			<field name="name">CVR</field>-->
+<!--			<field name="res_model">hr.expense.sheet</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', ('state', 'in', ['submit', 'approve_cost_control','reject_control','post']),'|',('project_manager_id.user_id','=',uid),('site_manager_id.user_id','=',uid)]</field>-->
+<!--			<field name="context">{'search_default_submitted': 1}</field>-->
+<!--		</record>-->
 
 		<!-- Approval BAR untuk PM -->
-		<record id="action_hr_expense_BAR" model="ir.actions.act_window">
-			<field name="name">BAR</field>
-			<field name="res_model">hr.expense.advance</field>
-			<field name="view_mode">tree,form</field>
-			<field name="domain">['&amp;', ('state', 'in', ['submitted','paid','partial']),'|',('project_manager.user_id','=',uid),('site_manager.user_id','=',uid)]</field>
-			<field name="context">{'search_default_submitted': 1}</field>
-		</record>
+<!--		<record id="action_hr_expense_BAR" model="ir.actions.act_window">-->
+<!--			<field name="name">BAR</field>-->
+<!--			<field name="res_model">hr.expense.advance</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', ('state', 'in', ['submitted','paid','partial']),'|',('project_manager.user_id','=',uid),('site_manager.user_id','=',uid)]</field>-->
+<!--			<field name="context">{'search_default_submitted': 1}</field>-->
+<!--		</record>-->
 
 		<!-- View Site Employee untuk PM -->
 <!--		<record id="action_site_emplpoyee" model="ir.actions.act_window">-->
@@ -621,19 +621,19 @@
 <!--                  parent="menu_project_progress_approval_pr"-->
 <!--                  groups="project.group_project_manager"/>-->
 
-        <menuitem id="menu_project_progress_purchase_cvr"
-                  sequence="5"
-                  name="CVR"
-                  action="action_hr_expense_report"
-                  parent="menu_project_progress_approval_expense"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_purchase_cvr"-->
+<!--                  sequence="5"-->
+<!--                  name="CVR"-->
+<!--                  action="action_hr_expense_report"-->
+<!--                  parent="menu_project_progress_approval_expense"-->
+<!--                  groups="project.group_project_manager"/>-->
 
-        <menuitem id="menu_project_progress_purchase_bar"
-                  sequence="4"
-                  name="BAR"
-                  action="action_hr_expense_BAR"
-                  parent="menu_project_progress_approval_expense"
-                  groups="project.group_project_manager"/>
+<!--        <menuitem id="menu_project_progress_purchase_bar"-->
+<!--                  sequence="4"-->
+<!--                  name="BAR"-->
+<!--                  action="action_hr_expense_BAR"-->
+<!--                  parent="menu_project_progress_approval_expense"-->
+<!--                  groups="project.group_project_manager"/>-->
 
 		<!-- <menuitem id="menu_project_progress_good_receipt" sequence="5" name="Good Receipt Service" action="open_receipt_service_receipt" parent="menu_project_progress_approval_menu"  groups="project.group_project_manager"/> -->
 	</data>

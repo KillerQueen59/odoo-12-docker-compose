@@ -77,11 +77,10 @@ class ProjectProgress(models.Model):
         'project.actual.plan.manhour', 'actual_manhour_plan_line_id', string='Project Actual Manhour', track_visibility='onchange'
     )
 
-    expense_sheet_count = fields.Integer(compute='_get_expense_sheet_count', track_visibility='onchange')
-    expense_sheet_amount = fields.Integer(compute='_get_expense_sheet_amount', track_visibility='onchange')
-    expense_advance_count = fields.Integer(compute='_get_expense_advance_count', track_visibility='onchange')
-    expense_advance_amount = fields.Integer(compute='_get_expense_advance_amount', track_visibility='onchange')
-    purchase_order_amount = fields.Integer(compute='_get_purchase_order_amount', track_visibility='onchange')
+    # expense_sheet_amount = fields.Integer(compute='_get_expense_sheet_amount', track_visibility='onchange')
+    # expense_advance_count = fields.Integer(compute='_get_expense_advance_count', track_visibility='onchange')
+    # expense_advance_amount = fields.Integer(compute='_get_expense_advance_amount', track_visibility='onchange')
+    # purchase_order_amount = fields.Integer(compute='_get_purchase_order_amount', track_visibility='onchange')
 
     project_execution_experience_line = fields.One2many(
         'project.execution.experience', 'project_execution_experience_id', string='Project Execution Experience', track_visibility='onchange'
@@ -239,45 +238,45 @@ class ProjectProgress(models.Model):
     @api.model
     def get_actual_estimated_lines(self):
         res = [] 
-        for rec in self:
-            # compute list BAR
-            for expense in self.env['hr.expense.advance'].search(['&',('project_id', '=', rec.name.id),('state', 'in', ['partial','paid']),]):
-                expenses = {
-                        'code': 'BAR',
-                        'name': expense.name,
-                        'created_date': expense.requested_date,
-                        'amount': expense.amount_total,
-                        'project': expense.project_id,
-                    }
-                res.append(expenses)
-
-        #------DISABLE------
-            # compute list PR 
-            # for pr in self.env['material.purchase.requisition'].search([
-            #     ('project', '=', rec.name.id),
-            #     ('state', 'in', ['approve','partial_process']),
-            #     ('purchase_count', '=', 0)
-            # ]):
-            #     requisitions = {
-            #             'code': 'PR',
-            #             'created_date': pr.request_date,
-            #             'name': pr.name,
-            #             'amount': pr.total_est_price,
-            #             'project': pr.project,
-            #             }
-            #     res.append(requisitions)
-
-            # compute list Purchase
-            for purchase in self.env['purchase.order'].search(['&',('project', '=', rec.name.id),('state', 'in', ['purchase']),]):
-                date_new = purchase.date_planned.date()
-                purchases = {
-                        'code': 'PO',
-                        'created_date': date_new,
-                        'name': purchase.name,
-                        'amount': purchase.amount_untaxed,
-                        'project': purchase.project,
-                        }
-                res.append(purchases)
+        # for rec in self:
+        #     # compute list BAR
+        #     for expense in self.env['hr.expense.advance'].search(['&',('project_id', '=', rec.name.id),('state', 'in', ['partial','paid']),]):
+        #         expenses = {
+        #                 'code': 'BAR',
+        #                 'name': expense.name,
+        #                 'created_date': expense.requested_date,
+        #                 'amount': expense.amount_total,
+        #                 'project': expense.project_id,
+        #             }
+        #         res.append(expenses)
+        #
+        # #------DISABLE------
+        #     # compute list PR
+        #     # for pr in self.env['material.purchase.requisition'].search([
+        #     #     ('project', '=', rec.name.id),
+        #     #     ('state', 'in', ['approve','partial_process']),
+        #     #     ('purchase_count', '=', 0)
+        #     # ]):
+        #     #     requisitions = {
+        #     #             'code': 'PR',
+        #     #             'created_date': pr.request_date,
+        #     #             'name': pr.name,
+        #     #             'amount': pr.total_est_price,
+        #     #             'project': pr.project,
+        #     #             }
+        #     #     res.append(requisitions)
+        #
+        #     # compute list Purchase
+        #     for purchase in self.env['purchase.order'].search(['&',('project', '=', rec.name.id),('state', 'in', ['purchase']),]):
+        #         date_new = purchase.date_planned.date()
+        #         purchases = {
+        #                 'code': 'PO',
+        #                 'created_date': date_new,
+        #                 'name': purchase.name,
+        #                 'amount': purchase.amount_untaxed,
+        #                 'project': purchase.project,
+        #                 }
+        #         res.append(purchases)
 
         return res   
 
@@ -298,207 +297,207 @@ class ProjectProgress(models.Model):
     @api.model
     def get_actual_cost_lines(self):
         res = [] 
-        for rec in self:
-
-            # --- compute list CVR Costs (Searching hr.expense.sheet, summing lines) ---
-            current_project = rec.name
-            if not current_project:
-                _logger.warning("No project linked to current record 'rec' (ID: %s). Skipping CVR cost calculation.", rec.id)
-                # continue # Or handle differently
-            else:
-                # 1. Search Expense Sheets that contain lines for the specific project
-                #    and are in an approved/posted/done state.
-                expense_sheets_domain = [
-                    ('expense_line_ids.project', '=', current_project.id), # Project on Expense Line
-                    ('state', 'in', ['approve', 'post', 'done']) # Adjust states based on your workflow when cost is considered "actual"
-                ]
-
-                try:
-                    # Search the sheets matching the criteria
-                    expense_sheets = self.env['hr.expense.sheet'].search(expense_sheets_domain)
-                except Exception as e:
-                    _logger.error("Error searching hr.expense.sheet for project %s: %s", current_project.id, e)
-                    expense_sheets = self.env['hr.expense.sheet'] # Ensure empty recordset
-
-
-                # 2. Iterate through found sheets and sum costs from relevant lines FOR THIS PROJECT
-                for sheet in expense_sheets:
-                    project_cost_from_sheet = 0.0
-
-                    # Filter expense lines WITHIN this sheet for the CURRENT project
-                    relevant_lines = sheet.expense_line_ids.filtered(
-                        lambda line: line.project == current_project and line.total_amount
-                    )
-
-                    # Sum the total_amount from the filtered lines
-                    project_cost_from_sheet = sum(line.total_amount or 0.0 for line in relevant_lines)
-
-                    # 3. Append data to results list only if cost > 0 for this project in this sheet
-                    if project_cost_from_sheet > 0:
-                        description = "\n".join({line.name for line in sheet.expense_line_ids if line.name})
-                        # Retrieve attachments linked to the expense sheet
-                        attachments = self.env['ir.attachment'].search([
-                            ('res_model', '=', 'hr.expense.sheet'),
-                            ('res_id', '=', sheet.id)
-                        ])
-
-                        # Store only attachment IDs or names (adjust based on need)
-                        attachment_list = [att.id for att in attachments]  
-                        cvr_data = {
-                                'code': 'CVR', # Cash Voucher Report
-                                'name': sheet.name, # Use Sheet Name/Number
-                                'created_date': sheet.created_date,
-                                'amount': project_cost_from_sheet, # <<< Use calculated sum from lines
-                                'amount_company_signed': project_cost_from_sheet, # Cost is positive debit nature
-                                'currency_id': sheet.currency_id, # <<< Use currency from the sheet header
-                                'project': current_project.id, # Pass project ID
-                                'expense_sheet_id': sheet.id, # Add sheet ID for reference
-                                'move_id': sheet.account_move_id.id if sheet.account_move_id else None, # Add move ID if available
-                                'description': description,
-                                'attachments': attachment_list, 
-
-                            }
-                        # Ensure 'res' list exists and append
-                        if 'res' in locals() and isinstance(res, list): res.append(cvr_data)
-                        elif 'res' in globals() and isinstance(res, list): res.append(cvr_data)
-                        else: _logger.error("'res' list not found. Cannot append CVR data %s.", sheet.id)
-                        _logger.debug("--> Appended CVR Data: %s", cvr_data)
-
-            # --- Compute list Project Costs from Goods Receipt Journal Entries (Per Move) ---
-            current_project = rec.name
-            if not current_project:
-                _logger.warning("No project linked to current record 'rec' (ID: %s). Skipping Picking cost calculation.", rec.id)
-                # continue # Or handle differently
-            else:
-                # 1. Find Account Moves linked to a Picking AND the Project
-                picking_moves_domain = [
-                    ('project', '=', current_project.id), # Filter by Project on Move Header
-                    ('picking_id', '!=', False),         # Must be linked to a Picking
-                    ('state', '=', 'posted')             # Must be posted
-                    # Optional: ('is_cost_project', '=', True) # If you want to combine flags
-                ]
-                try:
-                    picking_moves = self.env['account.move'].search(picking_moves_domain)
-                    _logger.info("Found %s Account Moves linked to Pickings for project %s: %s",
-                                 len(picking_moves), current_project.id, picking_moves.ids)
-                except Exception as e:
-                    _logger.error("Error searching account.move for picking JEs (Project %s): %s", current_project.id, e)
-                    picking_moves = self.env['account.move'] # Ensure empty recordset
-
-                # 2. Get Expense/Cost Account Type IDs
-                expense_type_ids = []
-                try:
-                    expense_type_ids_model = self.env['account.move.line'] # Or account.move
-                    if hasattr(expense_type_ids_model, '_get_expense_account_type_ids'):
-                        expense_type_ids = expense_type_ids_model._get_expense_account_type_ids()
-                    if not expense_type_ids: _logger.warning("Expense types list empty.")
-                except Exception as e: _logger.error("Error getting expense types: %s", e); expense_type_ids = []
-
-                # 3. Iterate through EACH found Picking Move and sum ITS relevant debit lines
-                for move in picking_moves:
-                    move_project_cost_amount = 0.0 # Cost for *this* move for *this* project
-                    if expense_type_ids:
-                        # Filter lines within THIS move by expense type AND matching THIS project
-                        cost_lines = move.line_ids.filtered(
-                            lambda line: line.project == current_project and \
-                                         line.debit > 0 and \
-                                         line.account_id.user_type_id.id in expense_type_ids
-                        )
-                        move_project_cost_amount = sum(line.debit or 0.0 for line in cost_lines)
-                    else:
-                         _logger.warning("Cannot calculate cost for Picking Move ID: %s because expense types are unknown.", move.id)
-
-                    # 4. Append data to results list FOR EACH MOVE if calculated cost > 0
-                    if move_project_cost_amount > 0:
-                        cost_data = {
-                            'code': 'Journal GR', # Code for Goods Receipt Note JE
-                            'name': move.name,
-                            'created_date': move.date,
-                            'amount': move_project_cost_amount, # Cost specific to THIS move & THIS project
-                            'amount_company_signed': move_project_cost_amount,
-                            'currency_id': move.company_id.currency_id,
-                            'project': current_project.id, # Pass Project ID
-                            'move_id': move.id,
-                            'picking_id': move.picking_id.id if move.picking_id else None, # Pass Picking ID
-                        }
-                        # Append to res list safely
-                        if 'res' in locals() and isinstance(res, list): res.append(cost_data)
-                        elif 'res' in globals() and isinstance(res, list): res.append(cost_data)
-                        else: _logger.error("'res' list not found...")
-
-
-            # --- compute list Project Cost Journal Entries (Exclude Docs, Based on Move Flag, Sum SPECIFIC Project Lines) ---
-            current_project = rec.name
-            if not current_project:
-                _logger.warning("No project linked to current record 'rec' (ID: %s). Skipping cost calculation.", rec.id)
-                # continue # Or handle differently
-            else:
-                # 1. Find IDs of relevant MOVES first (based on flag, state, exclusions, but NOT header project)
-                relevant_move_ids = []
-                try:
-                    move_domain = [
-                        # ('project', '=', current_project.id), # <<< REMOVED HEADER PROJECT FILTER
-                        ('is_cost_project', '=', True),         # Flag on move header IS required
-                        ('state', '=', 'posted'),
-                        ('invoice_id', '=', False),
-                        ('picking_id', '=', False),
-                        ('purchase_id', '=', False),
-                    ]
-                    relevant_moves = self.env['account.move'].search(move_domain)
-                    relevant_move_ids = relevant_moves.ids
-                except Exception as e:
-                    _logger.error("Error searching account.move: %s", e)
-
-                # Proceed only if potentially relevant moves were found
-                if relevant_move_ids:
-                    # 2. Get Expense Account Type IDs
-                    # ... (Get expense_type_ids as before) ...
-                    expense_type_ids = []
-                    try:
-                        expense_type_ids_model = self.env['account.move.line']
-                        if hasattr(expense_type_ids_model, '_get_expense_account_type_ids'):
-                            expense_type_ids = expense_type_ids_model._get_expense_account_type_ids()
-                        if not expense_type_ids: _logger.warning("Expense types list empty.")
-                    except Exception as e: _logger.error("Error getting expense types: %s", e); expense_type_ids = []
-
-
-                    # 3. Search account.move.line, filtering by the found move IDs AND line criteria (including project)
-                    cost_lines = self.env['account.move.line'] # Initialize empty
-                    if expense_type_ids:
-                        line_domain = [
-                            ('move_id', 'in', relevant_move_ids), # <<< Lines must belong to the flagged moves
-                            ('project', '=', current_project.id), # <<< Filter lines for THIS project
-                            ('debit', '>', 0),
-                            ('account_id.user_type_id', 'in', expense_type_ids)
-                        ]
-                        _logger.info("Searching account.move.line for project %s within relevant moves - domain: %s", current_project.id, line_domain)
-                        try:
-                            cost_lines = self.env['account.move.line'].search(line_domain)
-                        except Exception as e:
-                            _logger.error("Error searching account.move.line: %s", e)
-                            cost_lines = self.env['account.move.line']
-                    else:
-                         _logger.warning("Skipping line search for project %s as expense types are unknown.", current_project.id)
-
-                    # 4. Iterate through EACH found cost line and append its details
-                    for line in cost_lines:
-                        line_cost_amount = line.debit or 0.0
-                        cost_data = {
-                            'code': 'Project Cost Journal Entries',
-                            'name': line.name or line.move_id.name or line.move_id.ref,
-                            'created_date': line.date,
-                            'amount': line_cost_amount,
-                            'amount_company_signed': line_cost_amount,
-                            'currency_id': line.company_currency_id,
-                            'project': current_project.id, # Project ID
-                        }
-                        # ... (Append to res list safely) ...
-                        if 'res' in locals() and isinstance(res, list): res.append(cost_data)
-                        elif 'res' in globals() and isinstance(res, list): res.append(cost_data)
-                        else: _logger.error("'res' list not found...")
-
-                else: # No moves matched the header criteria (is_cost_project=True, posted, no doc links)
-                     _logger.info("No account moves found matching header criteria (is_cost_project=True, etc.).")
+        # for rec in self:
+        #
+        #     # --- compute list CVR Costs (Searching hr.expense.sheet, summing lines) ---
+        #     current_project = rec.name
+        #     if not current_project:
+        #         _logger.warning("No project linked to current record 'rec' (ID: %s). Skipping CVR cost calculation.", rec.id)
+        #         # continue # Or handle differently
+        #     else:
+        #         # 1. Search Expense Sheets that contain lines for the specific project
+        #         #    and are in an approved/posted/done state.
+        #         expense_sheets_domain = [
+        #             ('expense_line_ids.project', '=', current_project.id), # Project on Expense Line
+        #             ('state', 'in', ['approve', 'post', 'done']) # Adjust states based on your workflow when cost is considered "actual"
+        #         ]
+        #
+        #         try:
+        #             # Search the sheets matching the criteria
+        #             expense_sheets = self.env['hr.expense.sheet'].search(expense_sheets_domain)
+        #         except Exception as e:
+        #             _logger.error("Error searching hr.expense.sheet for project %s: %s", current_project.id, e)
+        #             expense_sheets = self.env['hr.expense.sheet'] # Ensure empty recordset
+        #
+        #
+        #         # 2. Iterate through found sheets and sum costs from relevant lines FOR THIS PROJECT
+        #         for sheet in expense_sheets:
+        #             project_cost_from_sheet = 0.0
+        #
+        #             # Filter expense lines WITHIN this sheet for the CURRENT project
+        #             relevant_lines = sheet.expense_line_ids.filtered(
+        #                 lambda line: line.project == current_project and line.total_amount
+        #             )
+        #
+        #             # Sum the total_amount from the filtered lines
+        #             project_cost_from_sheet = sum(line.total_amount or 0.0 for line in relevant_lines)
+        #
+        #             # 3. Append data to results list only if cost > 0 for this project in this sheet
+        #             if project_cost_from_sheet > 0:
+        #                 description = "\n".join({line.name for line in sheet.expense_line_ids if line.name})
+        #                 # Retrieve attachments linked to the expense sheet
+        #                 attachments = self.env['ir.attachment'].search([
+        #                     ('res_model', '=', 'hr.expense.sheet'),
+        #                     ('res_id', '=', sheet.id)
+        #                 ])
+        #
+        #                 # Store only attachment IDs or names (adjust based on need)
+        #                 attachment_list = [att.id for att in attachments]
+        #                 cvr_data = {
+        #                         'code': 'CVR', # Cash Voucher Report
+        #                         'name': sheet.name, # Use Sheet Name/Number
+        #                         'created_date': sheet.created_date,
+        #                         'amount': project_cost_from_sheet, # <<< Use calculated sum from lines
+        #                         'amount_company_signed': project_cost_from_sheet, # Cost is positive debit nature
+        #                         'currency_id': sheet.currency_id, # <<< Use currency from the sheet header
+        #                         'project': current_project.id, # Pass project ID
+        #                         'expense_sheet_id': sheet.id, # Add sheet ID for reference
+        #                         'move_id': sheet.account_move_id.id if sheet.account_move_id else None, # Add move ID if available
+        #                         'description': description,
+        #                         'attachments': attachment_list,
+        #
+        #                     }
+        #                 # Ensure 'res' list exists and append
+        #                 if 'res' in locals() and isinstance(res, list): res.append(cvr_data)
+        #                 elif 'res' in globals() and isinstance(res, list): res.append(cvr_data)
+        #                 else: _logger.error("'res' list not found. Cannot append CVR data %s.", sheet.id)
+        #                 _logger.debug("--> Appended CVR Data: %s", cvr_data)
+        #
+        #     # --- Compute list Project Costs from Goods Receipt Journal Entries (Per Move) ---
+        #     current_project = rec.name
+        #     if not current_project:
+        #         _logger.warning("No project linked to current record 'rec' (ID: %s). Skipping Picking cost calculation.", rec.id)
+        #         # continue # Or handle differently
+        #     else:
+        #         # 1. Find Account Moves linked to a Picking AND the Project
+        #         picking_moves_domain = [
+        #             ('project', '=', current_project.id), # Filter by Project on Move Header
+        #             ('picking_id', '!=', False),         # Must be linked to a Picking
+        #             ('state', '=', 'posted')             # Must be posted
+        #             # Optional: ('is_cost_project', '=', True) # If you want to combine flags
+        #         ]
+        #         try:
+        #             picking_moves = self.env['account.move'].search(picking_moves_domain)
+        #             _logger.info("Found %s Account Moves linked to Pickings for project %s: %s",
+        #                          len(picking_moves), current_project.id, picking_moves.ids)
+        #         except Exception as e:
+        #             _logger.error("Error searching account.move for picking JEs (Project %s): %s", current_project.id, e)
+        #             picking_moves = self.env['account.move'] # Ensure empty recordset
+        #
+        #         # 2. Get Expense/Cost Account Type IDs
+        #         expense_type_ids = []
+        #         try:
+        #             expense_type_ids_model = self.env['account.move.line'] # Or account.move
+        #             if hasattr(expense_type_ids_model, '_get_expense_account_type_ids'):
+        #                 expense_type_ids = expense_type_ids_model._get_expense_account_type_ids()
+        #             if not expense_type_ids: _logger.warning("Expense types list empty.")
+        #         except Exception as e: _logger.error("Error getting expense types: %s", e); expense_type_ids = []
+        #
+        #         # 3. Iterate through EACH found Picking Move and sum ITS relevant debit lines
+        #         for move in picking_moves:
+        #             move_project_cost_amount = 0.0 # Cost for *this* move for *this* project
+        #             if expense_type_ids:
+        #                 # Filter lines within THIS move by expense type AND matching THIS project
+        #                 cost_lines = move.line_ids.filtered(
+        #                     lambda line: line.project == current_project and \
+        #                                  line.debit > 0 and \
+        #                                  line.account_id.user_type_id.id in expense_type_ids
+        #                 )
+        #                 move_project_cost_amount = sum(line.debit or 0.0 for line in cost_lines)
+        #             else:
+        #                  _logger.warning("Cannot calculate cost for Picking Move ID: %s because expense types are unknown.", move.id)
+        #
+        #             # 4. Append data to results list FOR EACH MOVE if calculated cost > 0
+        #             if move_project_cost_amount > 0:
+        #                 cost_data = {
+        #                     'code': 'Journal GR', # Code for Goods Receipt Note JE
+        #                     'name': move.name,
+        #                     'created_date': move.date,
+        #                     'amount': move_project_cost_amount, # Cost specific to THIS move & THIS project
+        #                     'amount_company_signed': move_project_cost_amount,
+        #                     'currency_id': move.company_id.currency_id,
+        #                     'project': current_project.id, # Pass Project ID
+        #                     'move_id': move.id,
+        #                     'picking_id': move.picking_id.id if move.picking_id else None, # Pass Picking ID
+        #                 }
+        #                 # Append to res list safely
+        #                 if 'res' in locals() and isinstance(res, list): res.append(cost_data)
+        #                 elif 'res' in globals() and isinstance(res, list): res.append(cost_data)
+        #                 else: _logger.error("'res' list not found...")
+        #
+        #
+        #     # --- compute list Project Cost Journal Entries (Exclude Docs, Based on Move Flag, Sum SPECIFIC Project Lines) ---
+        #     current_project = rec.name
+        #     if not current_project:
+        #         _logger.warning("No project linked to current record 'rec' (ID: %s). Skipping cost calculation.", rec.id)
+        #         # continue # Or handle differently
+        #     else:
+        #         # 1. Find IDs of relevant MOVES first (based on flag, state, exclusions, but NOT header project)
+        #         relevant_move_ids = []
+        #         try:
+        #             move_domain = [
+        #                 # ('project', '=', current_project.id), # <<< REMOVED HEADER PROJECT FILTER
+        #                 ('is_cost_project', '=', True),         # Flag on move header IS required
+        #                 ('state', '=', 'posted'),
+        #                 ('invoice_id', '=', False),
+        #                 ('picking_id', '=', False),
+        #                 ('purchase_id', '=', False),
+        #             ]
+        #             relevant_moves = self.env['account.move'].search(move_domain)
+        #             relevant_move_ids = relevant_moves.ids
+        #         except Exception as e:
+        #             _logger.error("Error searching account.move: %s", e)
+        #
+        #         # Proceed only if potentially relevant moves were found
+        #         if relevant_move_ids:
+        #             # 2. Get Expense Account Type IDs
+        #             # ... (Get expense_type_ids as before) ...
+        #             expense_type_ids = []
+        #             try:
+        #                 expense_type_ids_model = self.env['account.move.line']
+        #                 if hasattr(expense_type_ids_model, '_get_expense_account_type_ids'):
+        #                     expense_type_ids = expense_type_ids_model._get_expense_account_type_ids()
+        #                 if not expense_type_ids: _logger.warning("Expense types list empty.")
+        #             except Exception as e: _logger.error("Error getting expense types: %s", e); expense_type_ids = []
+        #
+        #
+        #             # 3. Search account.move.line, filtering by the found move IDs AND line criteria (including project)
+        #             cost_lines = self.env['account.move.line'] # Initialize empty
+        #             if expense_type_ids:
+        #                 line_domain = [
+        #                     ('move_id', 'in', relevant_move_ids), # <<< Lines must belong to the flagged moves
+        #                     ('project', '=', current_project.id), # <<< Filter lines for THIS project
+        #                     ('debit', '>', 0),
+        #                     ('account_id.user_type_id', 'in', expense_type_ids)
+        #                 ]
+        #                 _logger.info("Searching account.move.line for project %s within relevant moves - domain: %s", current_project.id, line_domain)
+        #                 try:
+        #                     cost_lines = self.env['account.move.line'].search(line_domain)
+        #                 except Exception as e:
+        #                     _logger.error("Error searching account.move.line: %s", e)
+        #                     cost_lines = self.env['account.move.line']
+        #             else:
+        #                  _logger.warning("Skipping line search for project %s as expense types are unknown.", current_project.id)
+        #
+        #             # 4. Iterate through EACH found cost line and append its details
+        #             for line in cost_lines:
+        #                 line_cost_amount = line.debit or 0.0
+        #                 cost_data = {
+        #                     'code': 'Project Cost Journal Entries',
+        #                     'name': line.name or line.move_id.name or line.move_id.ref,
+        #                     'created_date': line.date,
+        #                     'amount': line_cost_amount,
+        #                     'amount_company_signed': line_cost_amount,
+        #                     'currency_id': line.company_currency_id,
+        #                     'project': current_project.id, # Project ID
+        #                 }
+        #                 # ... (Append to res list safely) ...
+        #                 if 'res' in locals() and isinstance(res, list): res.append(cost_data)
+        #                 elif 'res' in globals() and isinstance(res, list): res.append(cost_data)
+        #                 else: _logger.error("'res' list not found...")
+        #
+        #         else: # No moves matched the header criteria (is_cost_project=True, posted, no doc links)
+        #              _logger.info("No account moves found matching header criteria (is_cost_project=True, etc.).")
 
         return res   
     
@@ -1218,31 +1217,31 @@ class ProjectProgress(models.Model):
                 }
 
     # statinfo  BAR & CVR di Project management
-    @api.multi
-    def _get_expense_sheet_count(self):
-            res = self.env['hr.expense.sheet'].search_count(['&', ('project', '=', self.name.id), ('state', 'not in', ['draft', 'cancel', 'reject_control', 'reject_technical', 'reject_finance'])])
-            self.expense_sheet_count = res or 0
+    # @api.multi
+    # def _get_expense_sheet_count(self):
+    #         res = self.env['hr.expense.sheet'].search_count(['&', ('project', '=', self.name.id), ('state', 'not in', ['draft', 'cancel', 'reject_control', 'reject_technical', 'reject_finance'])])
+    #         self.expense_sheet_count = res or 0
 
-    @api.multi
-    @api.depends('expense_sheet_count')
-    def _get_expense_sheet_amount(self):
-        data_obj = self.env['hr.expense.sheet'].search(['&', ('project', '=', self.name.id), ('state', 'not in', ['draft', 'cancel', 'reject_control', 'reject_technical', 'reject_finance'])])
-        total_amount = sum(data_obj.mapped('total_amount'))
-        for record in self:
-            record.expense_sheet_amount = total_amount or False
+    # @api.multi
+    # @api.depends('expense_sheet_count')
+    # def _get_expense_sheet_amount(self):
+    #     data_obj = self.env['hr.expense.sheet'].search(['&', ('project', '=', self.name.id), ('state', 'not in', ['draft', 'cancel', 'reject_control', 'reject_technical', 'reject_finance'])])
+    #     total_amount = sum(data_obj.mapped('total_amount'))
+    #     for record in self:
+    #         record.expense_sheet_amount = total_amount or False
 
-    @api.multi
-    def _get_expense_advance_count(self):
-            res = self.env['hr.expense.advance'].search_count(['&', ('project_id', '=', self.name.id), ('state', 'not in', ['draft', 'rejected'])])
-            self.expense_advance_count = res or 0
+    # @api.multi
+    # def _get_expense_advance_count(self):
+    #         res = self.env['hr.expense.advance'].search_count(['&', ('project_id', '=', self.name.id), ('state', 'not in', ['draft', 'rejected'])])
+    #         self.expense_advance_count = res or 0
             
-    @api.multi
-    @api.depends('expense_advance_count')
-    def _get_expense_advance_amount(self):
-        data_obj = self.env['hr.expense.advance'].search(['&', ('project_id', '=', self.name.id), ('state', 'not in', ['draft', 'rejected'])])
-        total_amount = sum(data_obj.mapped('amount_total'))
-        for record in self:
-            record.expense_advance_amount = total_amount or False
+    # @api.multi
+    # @api.depends('expense_advance_count')
+    # def _get_expense_advance_amount(self):
+    #     data_obj = self.env['hr.expense.advance'].search(['&', ('project_id', '=', self.name.id), ('state', 'not in', ['draft', 'rejected'])])
+    #     total_amount = sum(data_obj.mapped('amount_total'))
+    #     for record in self:
+    #         record.expense_advance_amount = total_amount or False
 
 # statinfo PO di Project management
     @api.multi
@@ -1270,15 +1269,15 @@ class ProjectProgress(models.Model):
 # open BAR
     @api.multi
     def open_expense_advance_project(self):
-        for group in self:
-            return {
-                    'name': 'BAR',
-                    'view_type': 'form',
-                    'view_mode': 'tree,form',
-                    'res_model': 'hr.expense.advance',
-                    'type': 'ir.actions.act_window',
-                    'domain': ['&', ('project_id', '=', group.name.id), ('state', 'not in', ['draft', 'rejected']),],
-                }
+        # for group in self:
+        #     return {
+        #             'name': 'BAR',
+        #             'view_type': 'form',
+        #             'view_mode': 'tree,form',
+        #             'res_model': 'hr.expense.advance',
+        #             'type': 'ir.actions.act_window',
+        #             'domain': ['&', ('project_id', '=', group.name.id), ('state', 'not in', ['draft', 'rejected']),],
+        #         }
         pass
 
 # open PUrchase order

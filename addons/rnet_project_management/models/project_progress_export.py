@@ -38,6 +38,7 @@ class ProjectProgressExport(models.Model):
     remaining_sales = fields.Float(string="Remaining Sales")
     timezone = pytz.timezone('Asia/Jakarta')
     current_date = datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S %Z')
+    last_accumulative_actual_progress = fields.Float(string="Last accumulative actual progress")
 
     def _get_weeks_between_dates(self, start_date, end_date):
         """
@@ -126,8 +127,6 @@ class ProjectProgressExport(models.Model):
             }
 
             return "https://quickchart.io/chart?c=" + json.dumps(chart_data)
-
-
 
     def cashflowChart(self):
         for rec in self:
@@ -494,6 +493,55 @@ class ProjectProgressExport(models.Model):
 
             return "https://quickchart.io/chart?c=" + json.dumps(chart_data)
 
+    def remainingFromBothV2(self):
+        for rec in self:
+            total_actual_cash_out = 0
+            remaining_budget = 0
+            if self.remaining_budget:
+                remaining_budget = self.remaining_budget           
+            if self.total_actual_cash_out:
+                total_actual_cash_out = self.total_actual_cash_out
+
+
+            chart_data = {
+                'type': 'bar',
+                'data': {
+                    'labels': [ 'From Budget'],
+                    'datasets': [
+                        {
+                            'label': 'Used',
+                            'data': [ total_actual_cash_out],
+                            'backgroundColor': 'rgb(233, 124, 48)',  # Green for used percentages
+                        },
+                        {
+                            'label': 'Remaining',
+                            'data': [remaining_budget],
+                            'backgroundColor': 'rgb(66, 112, 193)',  # Yellow for remaining percentages
+                        },
+                    ]
+                },
+                'options': {  # Corrected placement of the options key
+                    'plugins': {
+                        'tickFormat': {
+                        }
+                    },
+                    'scales': {
+                        'xAxes': [
+                            {
+                                'stacked': True,
+                            },
+                        ],
+                        'yAxes': [
+                            {
+                                'stacked': True,
+                            },
+                        ],
+                    },
+                },
+            }
+
+            return "https://quickchart.io/chart?c=" + json.dumps(chart_data)
+
     def paymentChart(self):
         for rec in self:
             records = self.env['project.cash.in.report'].search([
@@ -665,6 +713,67 @@ class ProjectProgressExport(models.Model):
                 'options': {
                     'plugins': {
                         'tickFormat': {
+                        }
+                    }
+                }
+            }
+
+            return "https://quickchart.io/chart?c=" + json.dumps(chart_data)
+
+    def financialHighlight(self):
+        for rec in self:
+            # Make sure data is generated
+            rec.generate_report_data()
+            invoice = 0
+            cost = 0
+            gross_margin = 0
+            cash_in = 0
+            cash_out = 0
+            cash_flow = 0
+
+            invoice_reports = rec.project_invoice_report.sorted(key=lambda r: (r.year, r.weeks))
+            if invoice_reports:
+                invoice = invoice_reports[-1].accumulative_actual_invoice if hasattr(invoice_reports[-1], 'accumulative_actual_invoice') else invoice_reports[-1].actual_invoice
+            cost_reports = rec.project_cash_out_report.sorted(key=lambda r: (r.year, r.weeks))
+            if cost_reports:
+                cost = cost_reports[-1].accumulative_actual_cash_out if hasattr(cost_reports[-1], 'accumulative_actual_cash_out') else cost_reports[-1].actual_cash_out
+            gross_margin = invoice - cost
+
+            # Add cash_in, cash_out, cash_flow
+            cash_in_reports = rec.project_cash_in_report.sorted(key=lambda r: (r.year, r.weeks))
+            if cash_in_reports:
+                cash_in = cash_in_reports[-1].accumulative_actual_cash_in if hasattr(cash_in_reports[-1], 'accumulative_actual_cash_in') else cash_in_reports[-1].actual_cash_in
+            cash_out_reports = rec.project_cash_out_report.sorted(key=lambda r: (r.year, r.weeks))
+            if cash_out_reports:
+                cash_out = cash_out_reports[-1].actual_cash_out
+            cash_flow = cash_in - cash_out
+
+            labels = ['Invoice', 'Cost', 'Gross Margin', 'Cash In', 'Cash Out', 'Cash Flow']
+            data = [invoice, cost, gross_margin, cash_in, cash_out, cash_flow]
+
+            chart_data = {
+                'type': 'bar',
+                'data': {
+                    'labels': labels,
+                    'datasets': [
+                        {
+                            'label': 'Financial Highlight',
+                            'data': data,
+                            'backgroundColor': [
+                                'rgb(66, 112, 193)',
+                                'rgb(233, 124, 48)',
+                                'rgb(124, 17, 88)',
+                                'rgb(26, 83, 255)',
+                                'rgb(255, 163, 0)',
+                                'rgb(253, 204, 229)'
+                            ],
+                        }
+                    ]
+                },
+                'options': {
+                    'plugins': {
+                        'tickFormat': {
+                            'minimumFractionDigits': 2
                         }
                     }
                 }
@@ -1117,7 +1226,6 @@ class ProjectProgressExport(models.Model):
         self.generate_report_data()
         return self.env.ref('rnet_project_management.report_project_management').report_action(self)
 
-
     def generate_report_data(self):
         self.generate_start_finish_dates()  # Populate data dynamically
         self.generate_actual_plan_curve_lines_report()  # Populate data dynamically
@@ -1128,6 +1236,13 @@ class ProjectProgressExport(models.Model):
         self.generate_invoice_report()  # Populate data dynamically
         self.generate_manhour_report()  # Populate data dynamically
         self.current_date = datetime.now(self.timezone).strftime('%Y-%m-%d %H:%M:%S %Z')
+
+        for rec in self:
+            reports = rec.project_actual_plan_curve_report.sorted(key=lambda r: (r.year, r.weeks))
+            if reports:
+                rec.last_accumulative_actual_progress = reports[-1].accumulative_actual
+            else:
+                rec.last_accumulative_actual_progress = 0.0
 
     def generate_start_finish_dates(self):
         for record in self:
@@ -1731,6 +1846,10 @@ class ProjectProgressExport(models.Model):
 
         # Return the start date as a date object (not datetime)
         return start_of_week.date()
+
+    def action_export_dashboard(self):
+        self.generate_report_data()
+        return self.env.ref('rnet_project_management.report_project_management_test_pdf').report_action(self)
 
 class ProjectActualPlanCurveReport(models.Model):
     _name = 'project.actual.plan.curve.report'

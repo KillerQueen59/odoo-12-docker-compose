@@ -17,6 +17,22 @@ class ProjectTaskManagement(models.Model):
         tree_view = self.env.ref('rnet_project_management.view_task_tree')
         form_view = self.env.ref('rnet_project_management.view_task_form')
 
+        # Find the earliest start_date among plan tasks for this project
+        plan_tasks = self.project_plan_task_line
+        initial_date = None
+        if plan_tasks:
+            # Filter out tasks without a start_date
+            dates = [t.start_date for t in plan_tasks if t.start_date]
+            if dates:
+                initial_date = min(dates)
+
+        context = {
+            'default_project_id': self.id,
+            'search_default_project_id': self.id,
+        }
+        if initial_date:
+            context['initialDate'] = initial_date.strftime('%Y-%m-%d') if hasattr(initial_date, 'strftime') else str(initial_date)
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Project Tasks Gantt'),
@@ -29,10 +45,7 @@ class ProjectTaskManagement(models.Model):
                 (form_view.id, 'form'),
             ],
             'domain': [('project_id', '=', self.id)],
-            'context': {
-                'default_project_id': self.id,
-                'search_default_project_id': self.id,
-            },
+            'context': context,
             'target': 'current',
         }
 
@@ -45,7 +58,7 @@ class ProjectPlanTask(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
     name = fields.Char(string='Task Name', required=True)
     project_id = fields.Many2one('project.progress.plan', string='Project', required=True, ondelete='cascade')
-    duration = fields.Integer(string='Duration (Days)', required=True)
+    duration = fields.Integer(string='Duration (Days)', compute='_compute_duration', store=True)
     start_date = fields.Date(string='Start Date', required=True)
     end_date = fields.Date(string='End Date', required=True)
     supervisor_id = fields.Many2one('hr.employee', string='Supervisor')
@@ -86,11 +99,14 @@ class ProjectPlanTask(models.Model):
             if task.start_date and task.end_date and task.start_date > task.end_date:
                 raise ValidationError(_('Start date must be before end date'))
 
-    @api.onchange('duration', 'start_date')
-    def _onchange_duration(self):
-        if self.duration and self.start_date:
-            end_date = fields.Date.from_string(self.start_date) + timedelta(days=self.duration)
-            self.end_date = end_date
+    @api.depends('start_date', 'end_date')
+    def _compute_duration(self):
+        for task in self:
+            if task.start_date and task.end_date:
+                delta = fields.Date.from_string(task.end_date) - fields.Date.from_string(task.start_date)
+                task.duration = delta.days
+            else:
+                task.duration = 0
 
     def write(self, vals):
         if 'start_date' in vals and isinstance(vals['start_date'], datetime):

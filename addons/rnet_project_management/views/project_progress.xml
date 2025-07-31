@@ -36,7 +36,7 @@
 								<field string="Revision" name="revision_count" widget="statinfo" />
 							</button>
 							<button type="object" class="oe_stat_button" icon="fa-tasks"
-								string="Tasks Gantt" name="action_view_gantt" />
+								string="Schedule Tasks Gantt" name="action_view_gantt" />
 							<button type="object" class="oe_stat_button"
 								string="Actual &amp; Plan Curve" icon="fa-bar-chart"
 								name="open_actual_plan_curve_chart"></button>

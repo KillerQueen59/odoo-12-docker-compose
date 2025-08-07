@@ -1009,24 +1009,38 @@
 
         <report
             id="report_project_management_test_pdf"
-            string="Dashboard Project"
+            string="ProjectDasboard_' + (object.name.no or '') + '_' + object.current_date"
             model="project.progress.plan"
             report_type="qweb-pdf"
             name="rnet_project_management.project_progress_test_pdf"
             file="rnet_project_management.project_progress_test_pdf"
-            print_report_name="'Dashboard Project'"
+            print_report_name="'ProjectDasboard_' + (object.name.no or '') + '_' + object.current_date"
             paperformat="rnet_project_management.paperformat_custom_a4_landscape" />
 
         <template id="project_progress_test_pdf">
             <t t-call="web.html_container">
+                <style>
+                    .project-page {
+                    background: #fff;
+                    border: 4px solid #222;
+                    padding: 0;
+                    font-family: Arial, sans-serif;
+                    width: 100%;
+                    height: 800px;
+                    box-sizing: border-box;
+                    page-break-after: always;
+                    }
+                    .project-page:last-child {
+                    page-break-after: auto;
+                    }
+                </style>
                 <t t-foreach="docs" t-as="o">
-                    <div class="page"
-                        style="background: #fff; border: 4px solid #222; padding: 0; font-family: Arial, sans-serif; width: 100%; height: 800px; box-sizing: border-box; page-break-after: always;">
+                    <div class="project-page">
                         <table
                             style="width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed;">
                             <tr style="height: 400px;">
                                 <td colspan="2"
-                                    style="width: 16.67%; border: 2px solid #222; background: #e3eafc; vertical-align: top; padding: 10px;">
+                                    style="width: 16.67%; border: 2px solid #222; background: #ffffff; vertical-align: top; padding: 10px;">
                                     <div
                                         style="font-weight: bold; font-size: 18px; margin-bottom: 10px;">PROJECT
                                         MANAGEMENT REPORT</div>
@@ -1071,7 +1085,7 @@
                                     </div>
                                 </td>
                                 <td colspan="2"
-                                    style="width: 16.67%; border: 2px solid #222; background: #fce3e3; vertical-align: top; padding: 10px; text-align: center;">
+                                    style="width: 16.67%; border: 2px solid #222; background: #ffffff; vertical-align: top; padding: 10px; text-align: center;">
                                     <div
                                         style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
                                         <div
@@ -1082,7 +1096,7 @@
                                     </div>
                                 </td>
                                 <td colspan="2"
-                                    style="width: 16.67%; border: 2px solid #222; background: #e3fce3; vertical-align: top; padding: 10px; text-align: center;">
+                                    style="width: 16.67%; border: 2px solid #222; background: #ffffff; vertical-align: top; padding: 10px; text-align: center;">
                                     <div
                                         style="width: 100%; height: auto; text-align: center; margin-top: 50px;">
                                         <img t-att-src="o.financialHighlight()"
@@ -1093,7 +1107,7 @@
                             </tr>
                             <tr style="height: 400px;">
                                 <td colspan="3"
-                                    style="width: 33.33%; border: 2px solid #222; background: #e3eafc; vertical-align: top; padding: 10px; text-align: center;">
+                                    style="width: 33.33%; border: 2px solid #222; background: #ffffff; vertical-align: top; padding: 10px; text-align: center;">
                                     <div
                                         style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
                                         <div style="width: 100%; height: auto; text-align: center;">
@@ -1103,7 +1117,7 @@
                                     </div>
                                 </td>
                                 <td colspan="3"
-                                    style="width: 33.33%;  border: 2px solid #222; background: #fce3e3; vertical-align: top; padding: 10px; text-align: center;">
+                                    style="width: 33.33%;  border: 2px solid #222; background: #ffffff; vertical-align: top; padding: 10px; text-align: center;">
                                     <div
                                         style="display: flex; justify-content: center; align-items: center; width: 100%; height: auto;">
                                         <div style="width: 100%; height: auto; text-align: center;">
@@ -1115,6 +1129,9 @@
 
                             </tr>
                         </table>
+                        <t t-if="o != docs[-1]">
+                            <div style="page-break-after: always;"></div>
+                        </t>
                     </div>
                 </t>
             </t>

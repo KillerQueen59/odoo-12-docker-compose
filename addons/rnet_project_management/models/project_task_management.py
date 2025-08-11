@@ -29,9 +29,26 @@ class ProjectTaskManagement(models.Model):
         context = {
             'default_project_id': self.id,
             'search_default_project_id': self.id,
+            'search_default_dummy': 1,  # forces Gantt to load properly
+            'default_scale': 'month',  # Set default Gantt scale to 'month'. Options: 'month', 'week', 'year', 'day'
         }
+        print("initial_date", initial_date)
+        print("context", context)
         if initial_date:
             context['initialDate'] = initial_date.strftime('%Y-%m-%d') if hasattr(initial_date, 'strftime') else str(initial_date)
+
+        # Build domain for project and revision
+        domain = [('project_id', '=', self.id)]
+        print("domain", domain)
+
+        if hasattr(self, 'revision_id') and self.revision_id:
+            domain.append(('revision_id', '=', self.revision_id.id))
+
+        # Check if there are any tasks for this project and revision
+        task_count = self.env['project.plan.task'].search_count(domain)
+        if not task_count:
+            # Optionally, show a warning to the user
+            raise UserError(_('No tasks found for the selected project and revision. Please add tasks to see them in the Gantt view.'))
 
         return {
             'type': 'ir.actions.act_window',
@@ -44,7 +61,7 @@ class ProjectTaskManagement(models.Model):
                 (tree_view.id, 'tree'),
                 (form_view.id, 'form'),
             ],
-            'domain': [('project_id', '=', self.id)],
+            'domain': domain,
             'context': context,
             'target': 'current',
         }
@@ -58,6 +75,7 @@ class ProjectPlanTask(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
     name = fields.Char(string='Task Name', required=True)
     project_id = fields.Many2one('project.progress.plan', string='Project', required=True, ondelete='cascade')
+    revision_id = fields.Many2one('project.revision', string='Revision', ondelete='set null')
     duration = fields.Integer(string='Duration (Days)', compute='_compute_duration', store=True)
     start_date = fields.Date(string='Start Date', required=True)
     end_date = fields.Date(string='End Date', required=True)

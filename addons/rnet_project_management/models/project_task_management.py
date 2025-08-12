@@ -143,7 +143,7 @@ class GanttTask(models.Model):
         result = []
         for link in links:
             result.append({
-                'id': 'gantt_task_' + str(link.id),
+                'id': link.id,  # Use raw link ID, renderer will add prefix
                 'source': link.task_id.id,
                 'target': link.target_task_id.id,
                 'type': link.link_type

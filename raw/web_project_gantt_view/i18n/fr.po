@@ -1,0 +1,382 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* web_project_gantt_view
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-18 15:49+0000\n"
+"PO-Revision-Date: 2024-06-18 21:32+0530\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.4.4\n"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.js:0
+#, python-format
+msgid ""
+"<div class=\"o_list_view\">\n"
+"                    <div class=\"o_view_nocontent\">\n"
+"                        <div class=\"o_nocontent_help\">\n"
+"                            <p class=\"o_view_nocontent_smiling_face\">No record found. Let's create a new Task!</p>\n"
+"                            <p>Click to add a new record.</p>\n"
+"                        </div>\n"
+"                    </div>\n"
+"                </div>"
+msgstr ""
+"<div class=\"o_list_view\">\n"
+"                    <div class=\"o_view_nocontent\">\n"
+"                        <div class=\"o_nocontent_help\">\n"
+"                            <p class=\"o_view_nocontent_smiling_face\">Aucun enregistrement n'a été trouvé. Créons une nouvelle tâche !</p>\n"
+"                            <p>Cliquez pour ajouter un nouvel enregistrement.</p>\n"
+"                        </div>\n"
+"                    </div>\n"
+"                </div>"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.xml:0
+#, python-format
+msgid "Cancel"
+msgstr "Annuler"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Create"
+msgstr "Créer"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__create_uid
+msgid "Created by"
+msgstr "Créé par"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__create_date
+msgid "Created on"
+msgstr "Créé sur"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Day"
+msgstr "Jour"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__display_name
+msgid "Display Name"
+msgstr "Afficher un nom"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.js:0
+#, python-format
+msgid "Duration(d)"
+msgstr "Durée(d)"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.xml:0
+#, python-format
+msgid "End Date"
+msgstr "Date de fin"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.js:0
+#, python-format
+msgid "Error"
+msgstr "Erreur"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.xml:0
+#, python-format
+msgid "Export"
+msgstr "Exporter"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.js:0
+#, python-format
+msgid "Export PNG/PDF"
+msgstr "Exporter PNG/PDF"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__task_link__link_type__2
+msgid "Finish to Finish"
+msgstr "Fin pour finir"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__task_link__link_type__0
+msgid "Finish to Start"
+msgstr "Finir pour commencer"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.js:0
+#: code:addons/web_project_gantt_view/static/src/js/gantt_view.js:0
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__ir_ui_view__type__ganttview
+#, python-format
+msgid "Gantt View"
+msgstr "Vue Gantt"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_priority__high
+msgid "High"
+msgstr "Haut"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__id
+msgid "ID"
+msgstr "IDENTIFIANT"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__write_uid
+msgid "Last Updated by"
+msgstr "Dernière mise à jour par"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__write_date
+msgid "Last Updated on"
+msgstr "Dernière mise à jour le"
+
+#. module: web_project_gantt_view
+#: model_terms:ir.ui.view,arch_db:web_project_gantt_view.view_task_form2_inherit
+msgid "Link Task"
+msgstr "Tâche de liaison"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__link_type
+#: model_terms:ir.ui.view,arch_db:web_project_gantt_view.view_task_form2_inherit
+msgid "Link Type"
+msgstr "Type de lien"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_priority__low
+msgid "Low"
+msgstr "Faible"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_type__milestone
+msgid "Milestone"
+msgstr "Jalon"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Month"
+msgstr "Mois"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.js:0
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "New"
+msgstr "Nouveau"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Next"
+msgstr "Suivant"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_priority__normal
+msgid "Normal"
+msgstr "Normale"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "PDF"
+msgstr "PDF"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "PNG"
+msgstr "PNG"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__date_from
+msgid "Planned start"
+msgstr "Début prévu"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__date_to
+msgid "Planned stop"
+msgstr "Arrêt prévu"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Previous"
+msgstr "Précédent"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__task_priority
+msgid "Priority"
+msgstr "Priorité"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__progress
+msgid "Progress"
+msgstr "Progrès"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__color
+msgid "Project color"
+msgstr "Couleur du projet"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.xml:0
+#, python-format
+msgid "Scale"
+msgstr "Échelle"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.xml:0
+#, python-format
+msgid "Set Date"
+msgstr "Régler la date"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Sort"
+msgstr "Trier"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.xml:0
+#, python-format
+msgid "Start Date"
+msgstr "Date de début"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.js:0
+#, python-format
+msgid "Start date must be anterior to end date!"
+msgstr "La date de début doit être antérieure à la date de fin !"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__task_link__link_type__3
+msgid "Start to Finish"
+msgstr "Indemnite"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__task_link__link_type__1
+msgid "Start to Start"
+msgstr "Du début au début"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__target_task_id
+msgid "Target Task"
+msgstr "Tâche cible"
+
+#. module: web_project_gantt_view
+#: model:ir.model,name:web_project_gantt_view.model_project_task
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_task_link__task_id
+#: model:ir.model.fields.selection,name:web_project_gantt_view.selection__project_task__task_type__task
+msgid "Task"
+msgstr "Tâche"
+
+#. module: web_project_gantt_view
+#: model:ir.model,name:web_project_gantt_view.model_task_link
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__task_link_ids
+msgid "Task Links"
+msgstr "Liens vers les tâches"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_project_task__task_type
+msgid "Task Type"
+msgstr "Type de tâche"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.js:0
+#, python-format
+msgid "The export format has not been specified!"
+msgstr "Le format d’export n’a pas été précisé !"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Today"
+msgstr "Aujourd’hui"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_model.js:0
+#, python-format
+msgid "Undefined %s"
+msgstr "%s non défini"
+
+#. module: web_project_gantt_view
+#: model:ir.model,name:web_project_gantt_view.model_ir_ui_view
+msgid "View"
+msgstr "Voir"
+
+#. module: web_project_gantt_view
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_ir_ui_view__type
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_website_controller_page__type
+#: model:ir.model.fields,field_description:web_project_gantt_view.field_website_page__type
+msgid "View Type"
+msgstr "Type de vue"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Week"
+msgstr "Semaine"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_export_dialog.xml:0
+#, python-format
+msgid "YYYY-MM-DD"
+msgstr "AAAA-MM-JJ"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_controller.xml:0
+#, python-format
+msgid "Year"
+msgstr "Année"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.js:0
+#, python-format
+msgid "You are trying to write on a read-only field!"
+msgstr "Vous essayez d’écrire dans un champ en lecture seule !"
+
+#. module: web_project_gantt_view
+#. odoo-javascript
+#: code:addons/web_project_gantt_view/static/src/js/gantt_renderer.js:0
+#, python-format
+msgid "You have no date_stop field defined!"
+msgstr "Vous n’avez pas de champ date_stop défini !"

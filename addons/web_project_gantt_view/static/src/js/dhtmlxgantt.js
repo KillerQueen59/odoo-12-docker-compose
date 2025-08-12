@@ -31,14 +31,14 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 /******/ 		if (installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
         /******/
-}
+      }
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
 /******/ 			l: false,
 /******/ 			exports: {}
         /******/
-};
+      };
 /******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
@@ -49,7 +49,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
       /******/
-}
+    }
 /******/
 /******/
 /******/ 	// expose the modules object (__webpack_modules__)
@@ -63,19 +63,19 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 /******/ 		if (!__webpack_require__.o(exports, name)) {
 /******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
         /******/
-}
+      }
       /******/
-};
+    };
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function (exports) {
 /******/ 		if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
         /******/
-}
+      }
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
       /******/
-};
+    };
 /******/
 /******/ 	// create a fake namespace object
 /******/ 	// mode & 1: value is a module id, require it
@@ -92,7 +92,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 /******/ 		if (mode & 2 && typeof value != 'string') for (var key in value) __webpack_require__.d(ns, key, function (key) { return value[key]; }.bind(null, key));
 /******/ 		return ns;
       /******/
-};
+    };
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function (module) {
@@ -102,7 +102,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 /******/ 		__webpack_require__.d(getter, 'a', getter);
 /******/ 		return getter;
       /******/
-};
+    };
 /******/
 /******/ 	// Object.prototype.hasOwnProperty.call
 /******/ 	__webpack_require__.o = function (object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
@@ -114,7 +114,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = "./sources/dhtmlxgantt.gpl.ts");
     /******/
-})
+  })
 /************************************************************************/
 /******/({
 
@@ -6183,10 +6183,10 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
             self.P = self.Promise;
           }
           /* WEBPACK VAR INJECTION */
-}.call(this, __webpack_require__(/*! ./../../../process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../../timers-browserify/main.js */ "./node_modules/timers-browserify/main.js").setImmediate))
+        }.call(this, __webpack_require__(/*! ./../../../process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../../timers-browserify/main.js */ "./node_modules/timers-browserify/main.js").setImmediate))
 
         /***/
-}),
+      }),
 
 /***/ "./node_modules/process/browser.js":
 /*!*****************************************!*\
@@ -6405,7 +6405,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./node_modules/setimmediate/setImmediate.js":
 /*!***************************************************!*\
@@ -6617,10 +6617,10 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
             attachTo.clearImmediate = clearImmediate;
           })(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self);
           /* WEBPACK VAR INJECTION */
-}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
+        }.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
 
         /***/
-}),
+      }),
 
 /***/ "./node_modules/timers-browserify/main.js":
 /*!************************************************!*\
@@ -6689,10 +6689,10 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
           exports.setImmediate = typeof self !== "undefined" && self.setImmediate || typeof global !== "undefined" && global.setImmediate || this && this.setImmediate;
           exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || typeof global !== "undefined" && global.clearImmediate || this && this.clearImmediate;
           /* WEBPACK VAR INJECTION */
-}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+        }.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
         /***/
-}),
+      }),
 
 /***/ "./node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
@@ -6723,7 +6723,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = g;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/constants/index.js":
 /*!************************************!*\
@@ -6747,7 +6747,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/cached_functions.js":
 /*!******************************************!*\
@@ -6930,7 +6930,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/ajax.js":
 /*!*************************************!*\
@@ -7173,7 +7173,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/assert.js":
 /*!***************************************!*\
@@ -7209,7 +7209,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/config.ts":
 /*!***************************************!*\
@@ -7410,7 +7410,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/date.js":
 /*!*************************************!*\
@@ -7691,7 +7691,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/date_parsers/csp_compliant_version.ts":
 /*!*******************************************************************!*\
@@ -7792,7 +7792,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/date_parsers/fast_version.ts":
 /*!**********************************************************!*\
@@ -7920,7 +7920,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/dnd.js":
 /*!************************************!*\
@@ -8257,7 +8257,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/duration_formatter_numeric.ts":
 /*!***********************************************************!*\
@@ -8292,7 +8292,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/link_formatter_simple.ts":
 /*!******************************************************!*\
@@ -8356,7 +8356,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/serialize.ts":
 /*!******************************************!*\
@@ -8398,7 +8398,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/services.js":
 /*!*****************************************!*\
@@ -8451,7 +8451,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/state.js":
 /*!**************************************!*\
@@ -8502,7 +8502,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = StateService;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/common/templates.js":
 /*!******************************************!*\
@@ -8657,7 +8657,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/data.js":
 /*!******************************!*\
@@ -9174,7 +9174,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/data_task_layers.gpl.js":
 /*!**********************************************!*\
@@ -9189,7 +9189,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/data_task_types.js":
 /*!*****************************************!*\
@@ -9219,7 +9219,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/dataprocessor/data_processor.ts":
 /*!******************************************************!*\
@@ -10247,7 +10247,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/dataprocessor/data_processor_events.ts":
 /*!*************************************************************!*\
@@ -10509,7 +10509,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/dataprocessor/extend_gantt.ts":
 /*!****************************************************!*\
@@ -10578,7 +10578,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/dataprocessor/index.js":
 /*!*********************************************!*\
@@ -10598,7 +10598,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/dataprocessor/simple_storage.ts":
 /*!******************************************************!*\
@@ -10634,7 +10634,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/datastore/datastore.js":
 /*!*********************************************!*\
@@ -11074,7 +11074,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = DataStore;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/datastore/datastore_hooks.js":
 /*!***************************************************!*\
@@ -11474,7 +11474,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = initDataStores;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/datastore/datastore_render.js":
 /*!****************************************************!*\
@@ -11654,7 +11654,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/datastore/power_array.js":
 /*!***********************************************!*\
@@ -11722,7 +11722,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = $powerArray;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/datastore/select.js":
 /*!******************************************!*\
@@ -11809,7 +11809,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createDataStoreSelectMixin;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/datastore/treedatastore.js":
 /*!*************************************************!*\
@@ -12458,7 +12458,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = TreeDataStore;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/destructor.js":
 /*!************************************!*\
@@ -12509,7 +12509,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = extend;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/dynamic_loading.js":
 /*!*****************************************!*\
@@ -12584,7 +12584,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/facades/datastore.js":
 /*!*******************************************!*\
@@ -12812,7 +12812,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/facades/datastore_links.js":
 /*!*************************************************!*\
@@ -12856,7 +12856,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createLinksStoreFacade;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/facades/datastore_tasks.js":
 /*!*************************************************!*\
@@ -13053,7 +13053,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createTasksDatastoreFacade;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/facades/layout.js":
 /*!****************************************!*\
@@ -13391,7 +13391,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createLayoutFacade;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/facades/worktime_calendars.js":
 /*!****************************************************!*\
@@ -13445,7 +13445,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/gantt_core.js":
 /*!************************************!*\
@@ -13813,7 +13813,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/gantt_data_range.js":
 /*!******************************************!*\
@@ -13928,7 +13928,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/grid_column_api.gpl.js":
 /*!*********************************************!*\
@@ -13954,7 +13954,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/grid_column_api.js":
 /*!*****************************************!*\
@@ -13982,7 +13982,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/load.js":
 /*!******************************!*\
@@ -14384,7 +14384,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/plugins/auto_task_types.js":
 /*!*************************************************!*\
@@ -14523,7 +14523,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/plugins/batch_update.js":
 /*!**********************************************!*\
@@ -14643,7 +14643,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/plugins/formatters.js":
 /*!********************************************!*\
@@ -14680,7 +14680,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/plugins/index.js":
 /*!***************************************!*\
@@ -14702,7 +14702,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/plugins/new_task_placeholder.js":
 /*!******************************************************!*\
@@ -14853,7 +14853,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/plugins/resource_assignments.js":
 /*!******************************************************!*\
@@ -15465,7 +15465,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/plugins/resources.js":
 /*!*******************************************!*\
@@ -15668,7 +15668,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/plugins/wbs.js":
 /*!*************************************!*\
@@ -15792,7 +15792,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/resource_timetable_builder.js":
 /*!****************************************************!*\
@@ -15945,7 +15945,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/tasks.js":
 /*!*******************************!*\
@@ -15969,7 +15969,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/configurable.js":
 /*!*****************************************!*\
@@ -16033,7 +16033,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/gantt_layers.js":
 /*!*****************************************!*\
@@ -16175,7 +16175,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createLayerEngine;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/controller.js":
 /*!****************************************************!*\
@@ -16661,7 +16661,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = create;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/editors/base.js":
 /*!******************************************************!*\
@@ -16718,7 +16718,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/editors/date.js":
 /*!******************************************************!*\
@@ -16804,7 +16804,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/editors/duration.js":
 /*!**********************************************************!*\
@@ -16846,7 +16846,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/editors/number.js":
 /*!********************************************************!*\
@@ -16886,7 +16886,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/editors/predecessor.js":
 /*!*************************************************************!*\
@@ -17033,7 +17033,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/editors/select.js":
 /*!********************************************************!*\
@@ -17076,7 +17076,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/editors/text.js":
 /*!******************************************************!*\
@@ -17108,7 +17108,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/keyboard_mappings.js":
 /*!***********************************************************!*\
@@ -17140,7 +17140,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/keyboard_mappings/default.js":
 /*!*******************************************************************!*\
@@ -17270,7 +17270,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/keyboard_mappings/keyboard_navigation.js":
 /*!*******************************************************************************!*\
@@ -17484,7 +17484,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/editors/linked_properties.js":
 /*!***********************************************************!*\
@@ -17541,7 +17541,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/grid.js":
 /*!**************************************!*\
@@ -18243,7 +18243,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = Grid;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/grid_resize.gpl.js":
 /*!*************************************************!*\
@@ -18262,7 +18262,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createResizer;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/main_grid_initializer.js":
 /*!*******************************************************!*\
@@ -18423,7 +18423,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = initializer;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/task_grid_row_resize.js":
 /*!******************************************************!*\
@@ -18523,7 +18523,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createRowResizer;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/tasks_grid_dnd.js":
 /*!************************************************!*\
@@ -18771,7 +18771,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/tasks_grid_dnd_marker.js":
 /*!*******************************************************!*\
@@ -18943,7 +18943,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/tasks_grid_dnd_marker_helpers/drop_target.js":
 /*!***************************************************************************!*\
@@ -19020,7 +19020,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/tasks_grid_dnd_marker_helpers/highlight.js":
 /*!*************************************************************************!*\
@@ -19175,7 +19175,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/tasks_grid_dnd_marker_helpers/locked_level.js":
 /*!****************************************************************************!*\
@@ -19284,7 +19284,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/grid/tasks_grid_dnd_marker_helpers/multi_level.js":
 /*!***************************************************************************!*\
@@ -19323,7 +19323,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/index.js":
 /*!**********************************!*\
@@ -19461,7 +19461,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/layout/cell.js":
 /*!****************************************!*\
@@ -19832,7 +19832,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = Cell;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/layout/layout.js":
 /*!******************************************!*\
@@ -20647,7 +20647,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = Layout;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/layout/resizer_cell.gpl.js":
 /*!****************************************************!*\
@@ -20659,7 +20659,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = null;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/layout/scrollbar_cell.js":
 /*!**************************************************!*\
@@ -21212,7 +21212,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = ScrollbarCell;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/layout/view_cell.js":
 /*!*********************************************!*\
@@ -21341,7 +21341,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = ViewCell;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/layout/view_layout.js":
 /*!***********************************************!*\
@@ -21434,7 +21434,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = ViewLayout;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/base_control.js":
 /*!***********************************************************!*\
@@ -21465,7 +21465,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/checkbox_control.js":
 /*!***************************************************************!*\
@@ -21542,7 +21542,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/constraint_control.js":
 /*!*****************************************************************!*\
@@ -21651,7 +21651,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/duration_control.js":
 /*!***************************************************************!*\
@@ -21848,7 +21848,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/parent_control.js":
 /*!*************************************************************!*\
@@ -21949,7 +21949,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/radio_control.js":
 /*!************************************************************!*\
@@ -22011,7 +22011,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/select_control.js":
 /*!*************************************************************!*\
@@ -22071,7 +22071,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/template_control.js":
 /*!***************************************************************!*\
@@ -22111,7 +22111,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/textarea_control.js":
 /*!***************************************************************!*\
@@ -22159,7 +22159,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/time_control.js":
 /*!***********************************************************!*\
@@ -22275,7 +22275,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/controls/typeselect_control.js":
 /*!*****************************************************************!*\
@@ -22340,7 +22340,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/index.js":
 /*!*******************************************!*\
@@ -23300,7 +23300,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/lightbox/lightbox_optional_time.js":
 /*!************************************************************!*\
@@ -23385,7 +23385,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/main_layout_initializer.js":
 /*!****************************************************!*\
@@ -23623,7 +23623,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = initializer;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/message.js":
 /*!************************************!*\
@@ -23992,7 +23992,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/mouse.js":
 /*!**********************************!*\
@@ -24208,7 +24208,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/mouse_event_container.js":
 /*!**************************************************!*\
@@ -24241,7 +24241,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = create;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/plugins/autoscroll.js":
 /*!***********************************************!*\
@@ -24450,7 +24450,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/plugins/column_grid_dnd/column_grid_dnd.ts":
 /*!********************************************************************!*\
@@ -24677,7 +24677,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/plugins/column_grid_dnd/index.ts":
 /*!**********************************************************!*\
@@ -24694,7 +24694,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/plugins/column_grid_dnd/scrollable_grid.ts":
 /*!********************************************************************!*\
@@ -24780,7 +24780,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/plugins/dhtmlx_hooks.js":
 /*!*************************************************!*\
@@ -24837,7 +24837,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = null;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/plugins/index.js":
 /*!******************************************!*\
@@ -24863,7 +24863,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/plugins/jquery_hooks.js":
 /*!*************************************************!*\
@@ -24914,7 +24914,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = null;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/plugins/timeline_zoom.ts":
 /*!**************************************************!*\
@@ -25204,7 +25204,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/is_legacy_smart_render.js":
 /*!**********************************************************!*\
@@ -25218,7 +25218,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/layer_engine.js":
 /*!************************************************!*\
@@ -25382,7 +25382,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = layerFactory;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/link_render.js":
 /*!***********************************************!*\
@@ -25866,7 +25866,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createLinkRender;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/render_factory.js":
 /*!**************************************************!*\
@@ -26211,7 +26211,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = rendererFactory;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/resource_histogram_render.js":
 /*!*************************************************************!*\
@@ -26485,7 +26485,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = generateRenderResourceHistogram;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/resource_matrix_render.js":
 /*!**********************************************************!*\
@@ -26630,7 +26630,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = generateRenderResourceLine;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/task_bar_render.js":
 /*!***************************************************!*\
@@ -26706,6 +26706,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
             }
 
             div.appendChild(content);
+            console.log('templates', templates);
 
             var css = _combine_item_class("gantt_task_line", templates.task_class(task.start_date, task.end_date, task), task.id, view);
 
@@ -27000,7 +27001,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createTaskRenderer;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/task_bar_smart_render.js":
 /*!*********************************************************!*\
@@ -27027,7 +27028,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/task_bg_render.js":
 /*!**************************************************!*\
@@ -27232,7 +27233,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createTaskBgRender;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/task_grid_line_render.js":
 /*!*********************************************************!*\
@@ -27402,7 +27403,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createGridLineRender;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/task_grid_row_resize_render.js":
 /*!***************************************************************!*\
@@ -27440,7 +27441,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createGridTaskRowResizerRender;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/task_rollup_render.js":
 /*!******************************************************!*\
@@ -27490,7 +27491,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createTaskRenderer;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/task_split_render.js":
 /*!*****************************************************!*\
@@ -27558,7 +27559,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createTaskRenderer;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/get_bg_row_rectangle.js":
 /*!*****************************************************************!*\
@@ -27577,7 +27578,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/get_grid_row_rectangle.js":
 /*!*******************************************************************!*\
@@ -27596,7 +27597,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/get_visible_bars_range.js":
 /*!*******************************************************************!*\
@@ -27618,7 +27619,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/get_visible_cells_range.js":
 /*!********************************************************************!*\
@@ -27653,7 +27654,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/is_bar_in_viewport.js":
 /*!***************************************************************!*\
@@ -27690,7 +27691,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/is_column_visible.js":
 /*!**************************************************************!*\
@@ -27718,7 +27719,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/is_in_viewport.js":
 /*!***********************************************************!*\
@@ -27744,7 +27745,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/is_link_in_viewport.js":
 /*!****************************************************************!*\
@@ -27811,7 +27812,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/render/viewport/is_split_task_in_viewport.js":
 /*!**********************************************************************!*\
@@ -27837,7 +27838,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/resize_listener.js":
 /*!********************************************!*\
@@ -27924,7 +27925,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = addResizeListener;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/row_position_fixed_height.js":
 /*!******************************************************!*\
@@ -28031,7 +28032,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createHelper;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/row_position_mixin.js":
 /*!***********************************************!*\
@@ -28288,7 +28289,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createMixin;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/skin.js":
 /*!*********************************!*\
@@ -28388,7 +28389,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/timeline/links_dnd.js":
 /*!***********************************************!*\
@@ -28806,7 +28807,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/timeline/main_timeline_initializer.js":
 /*!***************************************************************!*\
@@ -28945,7 +28946,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = initializer;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/timeline/scales.js":
 /*!********************************************!*\
@@ -29332,7 +29333,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = ScaleHelper;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/timeline/tasks_canvas_render.gpl.js":
 /*!*************************************************************!*\
@@ -29355,7 +29356,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/timeline/tasks_dnd.js":
 /*!***********************************************!*\
@@ -30006,7 +30007,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/timeline/timeline.js":
 /*!**********************************************!*\
@@ -30767,7 +30768,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = Timeline;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/touch.js":
 /*!**********************************!*\
@@ -31107,7 +31108,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/ui_factory.js":
 /*!***************************************!*\
@@ -31232,7 +31233,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/utils/dom_event_scope.js":
 /*!**************************************************!*\
@@ -31292,7 +31293,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = createScope;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/utils/dom_helpers.js":
 /*!**********************************************!*\
@@ -31620,7 +31621,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/utils/html_helpers.js":
 /*!***********************************************!*\
@@ -31698,7 +31699,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = htmlHelpers;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui/wai_aria.js":
 /*!*************************************!*\
@@ -31957,7 +31958,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/ui_core.js":
 /*!*********************************!*\
@@ -32107,7 +32108,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/calendar_arguments_helper.js":
 /*!************************************************************!*\
@@ -32310,7 +32311,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = calendarArgumentsHelper;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/calendar_manager.js":
 /*!***************************************************!*\
@@ -32662,7 +32663,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = CalendarManager;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/dynamic_resource_calendars.js":
 /*!*************************************************************!*\
@@ -32713,7 +32714,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/legacy_resource_config.js":
 /*!*********************************************************!*\
@@ -32785,7 +32786,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/strategy/calendar_strategy.js":
 /*!*************************************************************!*\
@@ -34207,7 +34208,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = CalendarWorkTimeStrategy;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/strategy/no_work_time.js":
 /*!********************************************************!*\
@@ -34310,7 +34311,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = CalendarDisabledTimeStrategy;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/strategy/work_calendar_merger.js":
 /*!****************************************************************!*\
@@ -34496,7 +34497,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = WorkTimeCalendarMerger;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/strategy/work_unit_cache/date_duration_cache.ts":
 /*!*******************************************************************************!*\
@@ -34582,7 +34583,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/strategy/work_unit_cache/index.ts":
 /*!*****************************************************************!*\
@@ -34612,7 +34613,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/strategy/work_unit_cache/larger_units_helper.ts":
 /*!*******************************************************************************!*\
@@ -34673,7 +34674,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/strategy/work_unit_cache/workunit_map_cache.ts":
 /*!******************************************************************************!*\
@@ -34728,7 +34729,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/strategy/work_unit_cache/workunit_object_cache.ts":
 /*!*********************************************************************************!*\
@@ -34786,7 +34787,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/time_calculator.js":
 /*!**************************************************!*\
@@ -34887,7 +34888,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = TimeCalculator;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/core/worktime/work_time.js":
 /*!********************************************!*\
@@ -34909,7 +34910,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/css/skins/broadway.js":
 /*!***************************************!*\
@@ -34940,7 +34941,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/css/skins/contrast_black.js":
 /*!*********************************************!*\
@@ -34965,7 +34966,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/css/skins/contrast_white.js":
 /*!*********************************************!*\
@@ -34990,7 +34991,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/css/skins/material.js":
 /*!***************************************!*\
@@ -35034,7 +35035,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/css/skins/meadow.js":
 /*!*************************************!*\
@@ -35059,7 +35060,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/css/skins/skyblue.js":
 /*!**************************************!*\
@@ -35084,7 +35085,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/css/skins/terrace.js":
 /*!**************************************!*\
@@ -35109,7 +35110,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/css/skins/terrace.less":
 /*!****************************************!*\
@@ -35121,7 +35122,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         // extracted by mini-css-extract-plugin
 
         /***/
-}),
+      }),
 
 /***/ "./sources/dhtmlxgantt.gpl.ts":
 /*!************************************!*\
@@ -35142,7 +35143,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/click_drag/eventsManager.ts":
 /*!*************************************************!*\
@@ -35266,7 +35267,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/click_drag/index.ts":
 /*!*****************************************!*\
@@ -35327,7 +35328,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/click_drag/selectedRegion.ts":
 /*!**************************************************!*\
@@ -35537,7 +35538,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/drag_timeline/eventsManager.ts":
 /*!****************************************************!*\
@@ -35743,7 +35744,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/drag_timeline/index.ts":
 /*!********************************************!*\
@@ -35771,7 +35772,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/extension_manager.ts":
 /*!******************************************!*\
@@ -35803,7 +35804,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/extensions_gpl.ts":
 /*!***************************************!*\
@@ -35838,7 +35839,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/fullscreen/index.ts":
 /*!*****************************************!*\
@@ -36103,7 +36104,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation.js":
 /*!********************************************!*\
@@ -36512,7 +36513,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/common/eventhandler.js":
 /*!****************************************************************!*\
@@ -36579,7 +36580,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/common/keyboard_shortcuts.js":
 /*!**********************************************************************!*\
@@ -36711,7 +36712,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/common/trap_modal_focus.js":
 /*!********************************************************************!*\
@@ -36771,7 +36772,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/core.js":
 /*!*************************************************!*\
@@ -36907,7 +36908,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/elements/gantt_node.js":
 /*!****************************************************************!*\
@@ -36966,7 +36967,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/elements/header_cell.js":
 /*!*****************************************************************!*\
@@ -37089,7 +37090,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/elements/nav_node.js":
 /*!**************************************************************!*\
@@ -37169,7 +37170,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/elements/task_cell.js":
 /*!***************************************************************!*\
@@ -37315,7 +37316,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/elements/task_row.js":
 /*!**************************************************************!*\
@@ -37566,7 +37567,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/keyboard_navigation/modals.js":
 /*!***************************************************!*\
@@ -37660,7 +37661,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/marker.js":
 /*!*******************************!*\
@@ -37784,7 +37785,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/multiselect.js":
 /*!************************************!*\
@@ -38124,7 +38125,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/quick_info/index.ts":
 /*!*****************************************!*\
@@ -38196,7 +38197,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/quick_info/quickInfo.ts":
 /*!*********************************************!*\
@@ -38587,7 +38588,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/tooltip/index.ts":
 /*!**************************************!*\
@@ -38647,7 +38648,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/tooltip/tooltip.ts":
 /*!****************************************!*\
@@ -38804,7 +38805,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/tooltip/tooltipManager.ts":
 /*!***********************************************!*\
@@ -38953,7 +38954,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/undo/index.ts":
 /*!***********************************!*\
@@ -39087,7 +39088,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/undo/monitor.ts":
 /*!*************************************!*\
@@ -39437,7 +39438,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/ext/undo/undo.ts":
 /*!**********************************!*\
@@ -39684,7 +39685,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/factory/make_instance_common.js":
 /*!*************************************************!*\
@@ -39846,7 +39847,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/factory/make_instance_web.js":
 /*!**********************************************!*\
@@ -39870,7 +39871,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/index.ts":
 /*!*********************************!*\
@@ -39955,7 +39956,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_ar.ts":
 /*!*************************************!*\
@@ -40030,7 +40031,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_be.ts":
 /*!*************************************!*\
@@ -40105,7 +40106,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_ca.ts":
 /*!*************************************!*\
@@ -40183,7 +40184,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_cn.ts":
 /*!*************************************!*\
@@ -40266,7 +40267,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_cs.ts":
 /*!*************************************!*\
@@ -40341,7 +40342,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_da.ts":
 /*!*************************************!*\
@@ -40416,7 +40417,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_de.ts":
 /*!*************************************!*\
@@ -40491,7 +40492,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_el.ts":
 /*!*************************************!*\
@@ -40566,7 +40567,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_en.ts":
 /*!*************************************!*\
@@ -40641,7 +40642,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_es.ts":
 /*!*************************************!*\
@@ -40723,7 +40724,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_fa.ts":
 /*!*************************************!*\
@@ -40830,7 +40831,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_fi.ts":
 /*!*************************************!*\
@@ -40905,7 +40906,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_fr.ts":
 /*!*************************************!*\
@@ -40980,7 +40981,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_he.ts":
 /*!*************************************!*\
@@ -41055,7 +41056,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_hr.ts":
 /*!*************************************!*\
@@ -41134,7 +41135,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_hu.ts":
 /*!*************************************!*\
@@ -41209,7 +41210,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_id.ts":
 /*!*************************************!*\
@@ -41284,7 +41285,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_it.ts":
 /*!*************************************!*\
@@ -41364,7 +41365,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_jp.ts":
 /*!*************************************!*\
@@ -41442,7 +41443,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_kr.ts":
 /*!*************************************!*\
@@ -41518,7 +41519,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_manager.ts":
 /*!******************************************!*\
@@ -41550,7 +41551,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_nb.ts":
 /*!*************************************!*\
@@ -41625,7 +41626,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_nl.ts":
 /*!*************************************!*\
@@ -41700,7 +41701,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_no.ts":
 /*!*************************************!*\
@@ -41775,7 +41776,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_pl.ts":
 /*!*************************************!*\
@@ -41850,7 +41851,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_pt.ts":
 /*!*************************************!*\
@@ -41943,7 +41944,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_ro.ts":
 /*!*************************************!*\
@@ -42021,7 +42022,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_ru.ts":
 /*!*************************************!*\
@@ -42096,7 +42097,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_si.ts":
 /*!*************************************!*\
@@ -42171,7 +42172,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_sk.ts":
 /*!*************************************!*\
@@ -42246,7 +42247,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_sv.ts":
 /*!*************************************!*\
@@ -42324,7 +42325,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_tr.ts":
 /*!*************************************!*\
@@ -42402,7 +42403,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/locale/locale_ua.ts":
 /*!*************************************!*\
@@ -42477,7 +42478,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/publish_helpers/void_script_second.ts":
 /*!*******************************************************!*\
@@ -42495,7 +42496,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/publish_helpers/void_script_third.ts":
 /*!******************************************************!*\
@@ -42513,7 +42514,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/env.js":
 /*!******************************!*\
@@ -42542,7 +42543,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = env;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/eventable.js":
 /*!************************************!*\
@@ -42697,7 +42698,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = makeEventable;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/extends.js":
 /*!**********************************!*\
@@ -42719,7 +42720,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/global.js":
 /*!*********************************!*\
@@ -42741,10 +42742,10 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
 
           module.exports = globalScope;
           /* WEBPACK VAR INJECTION */
-}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+        }.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/helpers.js":
 /*!**********************************!*\
@@ -43062,7 +43063,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/is_headless.js":
 /*!**************************************!*\
@@ -43078,7 +43079,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/promise.js":
 /*!**********************************!*\
@@ -43090,7 +43091,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = __webpack_require__(/*! bluebird */ "./node_modules/bluebird/js/browser/bluebird.js");
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/task_tree_helpers.js":
 /*!********************************************!*\
@@ -43139,7 +43140,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/timeout.js":
 /*!**********************************!*\
@@ -43163,7 +43164,7 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         module.exports = checkTimeout;
 
         /***/
-}),
+      }),
 
 /***/ "./sources/utils/utils.js":
 /*!********************************!*\
@@ -43275,8 +43276,8 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
         };
 
         /***/
-})
+      })
 
     /******/
-});
+  });
 });

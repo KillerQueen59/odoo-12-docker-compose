@@ -33,6 +33,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             //Gantt Configurations
             gantt.config.autosize = "y";
             gantt.config.drag_links = self.showLinks === 'true' ? true : false;
+            gantt.config.show_links = self.showLinks === 'true' ? true : false; // Enable link display
             gantt.config.drag_progress = false;
             gantt.config.drag_resize = true;
             gantt.config.grid_width = 350;
@@ -338,6 +339,41 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     self._renderBaselineBars();
                 }, 300);
             });
+
+            // Also try to add toggle after a longer delay to ensure Odoo UI is fully loaded
+            setTimeout(function () {
+                self._addBaselineToggle();
+            }, 1000);
+        },
+
+        /**
+         * Update baseline delayed status for a specific task
+         * Compares current task dates with baseline dates to determine if delayed
+         */
+        _updateBaselineStatus: function (taskId) {
+            var task = gantt.getTask(taskId);
+            if (!task || !task.has_baseline || !task.baseline_start_date || !task.baseline_end_date) {
+                return;
+            }
+
+            // Calculate if task is delayed by comparing actual end date with baseline end date
+            var actualEndDate = moment(task.end_date);
+            var baselineEndDate = moment(task.baseline_end_date);
+            var wasDelayed = task.is_delayed;
+
+            // Task is delayed if actual end date is after baseline end date
+            task.is_delayed = actualEndDate.isAfter(baselineEndDate);
+
+            console.log('Baseline status update for task:', task.id,
+                'actual end:', actualEndDate.format('YYYY-MM-DD'),
+                'baseline end:', baselineEndDate.format('YYYY-MM-DD'),
+                'was delayed:', wasDelayed, 'now delayed:', task.is_delayed);
+
+            // If status changed, re-render baseline bars to update colors
+            if (wasDelayed !== task.is_delayed) {
+                console.log('Baseline status changed for task:', task.id, 'triggering re-render');
+                this._renderBaselineBars();
+            }
         },
 
         _renderBaselineBars: function () {
@@ -355,6 +391,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             console.log('Starting baseline rendering...');
             var baselineCount = 0;
+            var rowHeight = gantt.config.row_height || 50; // Default to 50px if not configured
 
             gantt.eachTask(function (task) {
                 console.log('Task:', task, 'has_baseline:', task.has_baseline, 'baseline_start_date:', task.baseline_start_date, 'baseline_end_date:', task.baseline_end_date);
@@ -368,25 +405,37 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         var endPos = gantt.posFromDate(task.baseline_end_date);
                         var width = endPos - startPos;
 
-                        console.log('Baseline positions - start:', startPos, 'end:', endPos, 'width:', width);
+                        // Get the task's row index to calculate proper vertical position
+                        var taskIndex = gantt.getTaskIndex(task.id);
+                        var verticalOffset = taskIndex * rowHeight;
+
+                        console.log('Baseline positions - start:', startPos, 'end:', endPos, 'width:', width, 'taskIndex:', taskIndex, 'verticalOffset:', verticalOffset);
 
                         if (width > 0) {
                             var baselineBar = document.createElement('div');
-                            baselineBar.className = 'gantt_task_baseline';
+                            // Set baseline class - grey by default, red only if delayed
+                            baselineBar.className = task.is_delayed ? 'gantt_task_baseline is_delayed' : 'gantt_task_baseline';
                             baselineBar.style.left = startPos + 'px';
                             baselineBar.style.width = width + 'px';
                             baselineBar.style.position = 'absolute';
-                            baselineBar.style.transform = 'translateY(100%)';
+                            // Position baseline bar at the bottom of the task row using translateY
+                            baselineBar.style.transform = 'translateY(' + (verticalOffset + rowHeight - 15) + 'px)';
                             baselineBar.style.height = '12px';
                             baselineBar.style.zIndex = '1';
+                            baselineBar.style.top = '0px'; // Start from top of container
 
+                            // Add tooltip to show baseline information
+                            var tooltipText = 'Baseline: ' +
+                                moment(task.baseline_start_date).format('MMM DD') + ' - ' +
+                                moment(task.baseline_end_date).format('MMM DD');
                             if (task.is_delayed) {
-                                baselineBar.classList.add('is_delayed');
+                                tooltipText += ' (DELAYED)';
                             }
+                            baselineBar.title = tooltipText;
 
                             taskElement.parentNode.appendChild(baselineBar);
                             baselineCount++;
-                            console.log('Baseline bar added for task:', task.id, 'at position:', startPos, 'width:', width);
+                            console.log('Baseline bar added for task:', task.id, 'at position:', startPos, 'width:', width, 'vertical offset:', verticalOffset, 'delayed:', task.is_delayed);
                         }
                     }
                 }
@@ -396,20 +445,63 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
         },
 
         _addBaselineToggle: function () {
-            var toolbar = document.querySelector('.gantt_toolbar');
-            if (toolbar && !document.querySelector('.gantt_baseline_toggle')) {
+            // Skip if toggle already exists
+            if (document.querySelector('.gantt_baseline_toggle')) {
+                console.log('Baseline toggle already exists, skipping');
+                return;
+            }
+
+            // Try multiple selectors to find the right toolbar
+            var toolbarSelectors = [
+                '.o_gantt_button_dates',           // Primary Gantt buttons
+                '.o_control_panel .btn-group',     // Control panel button groups
+                '.o_control_panel .o_gantt_button_dates', // Specific Gantt buttons in control panel
+                '.o_cp_buttons',                   // Control panel buttons
+                '.o_cp_left'                       // Left side of control panel
+            ];
+
+            var toolbar = null;
+            for (var i = 0; i < toolbarSelectors.length; i++) {
+                toolbar = document.querySelector(toolbarSelectors[i]);
+                if (toolbar) {
+                    console.log('Found toolbar using selector:', toolbarSelectors[i]);
+                    break;
+                }
+            }
+
+            if (toolbar) {
+                console.log('Adding baseline toggle button to toolbar');
+
+                // Create a button group container for the toggle
+                var buttonGroup = document.createElement('div');
+                buttonGroup.className = 'btn-group ml-2';
+                buttonGroup.setAttribute('role', 'group');
+                buttonGroup.setAttribute('aria-label', 'Baseline controls');
+
                 var toggleBtn = document.createElement('button');
-                toggleBtn.className = 'gantt_baseline_toggle active';
-                toggleBtn.textContent = 'Show Baseline';
+                toggleBtn.className = 'gantt_baseline_toggle btn btn-secondary active';
+                toggleBtn.textContent = 'Hide Baseline';
+                toggleBtn.type = 'button';
+                toggleBtn.title = 'Toggle baseline visibility';
 
                 var self = this;
                 toggleBtn.addEventListener('click', function () {
                     gantt.config.show_baseline = !gantt.config.show_baseline;
                     toggleBtn.classList.toggle('active', gantt.config.show_baseline);
                     toggleBtn.textContent = gantt.config.show_baseline ? 'Hide Baseline' : 'Show Baseline';
+                    console.log('Baseline toggle clicked, show_baseline:', gantt.config.show_baseline);
                     self._renderBaselineBars();
                 });
-                toolbar.appendChild(toggleBtn);
+
+                buttonGroup.appendChild(toggleBtn);
+                toolbar.appendChild(buttonGroup);
+                console.log('Baseline toggle button added successfully');
+            } else {
+                console.log('No suitable toolbar found for baseline toggle. Available elements:');
+                toolbarSelectors.forEach(function (selector) {
+                    var element = document.querySelector(selector);
+                    console.log('  ' + selector + ':', !!element);
+                });
             }
         },
 
@@ -441,7 +533,12 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             var tasks = this.state.data;
             var grouped_by = this.state.grouped_by || [];
             var groups = this.state.groups;
-            var links = this.state.links || [];
+            var links = _.compact(_.map(this.state.link, function (link) {
+                link = _.clone(link);
+                return link;
+            }));
+            console.log('Links data received:', links);
+            console.log('Show links setting:', this.showLinks);
             var gantt_tasks = { 'data': [], 'links': [] };
             var gantt_tasks_data = gantt_tasks['data'];
             var gantt_links_data = gantt_tasks['links'];
@@ -727,6 +824,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             var build_links = function (link) {
                 if (link) {
+                    console.log('Building link:', link);
                     gantt_tasks_links.push({
                         'id': "gantt_link_" + link.id,
                         'source': "gantt_task_" + link.source,
@@ -736,12 +834,14 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 }
             };
 
+            gantt_tasks['links'] = gantt_tasks_links;
             if (self.showLinks === 'true') {
                 _.each(links, function (link) {
                     build_links(link);
                 });
             }
-            gantt_tasks['links'] = gantt_tasks_links;
+            console.log('Final gantt_tasks data:', gantt_tasks);
+            console.log('Total links to render:', gantt_tasks_links.length);
 
             this._renderGanttData(gantt_tasks);
             this._configureGanttEvents(tasks, grouped_by, gantt_tasks);
@@ -917,6 +1017,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         task: task,
                         success: function () {
                             parent_date_update(task_id);
+                            // Update baseline status after successful task drag
+                            self._updateBaselineStatus(task_id);
                         },
                         fail: function () {
                             task.start_date = task._start_date_original;
@@ -925,6 +1027,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                             delete task._start_date_original;
                             delete task._end_date_original;
                             parent_date_update(task_id);
+                            // Update baseline status after task revert
+                            self._updateBaselineStatus(task_id);
                         }
                     });
                 };

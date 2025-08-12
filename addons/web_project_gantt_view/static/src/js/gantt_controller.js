@@ -15,7 +15,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
     var n_direction = false;
 
     var GanttController = AbstractController.extend({
-        
+
         custom_events: _.extend({}, AbstractController.prototype.custom_events, {
             task_update: '_onTaskUpdate',
             task_display: '_onTaskDisplay',
@@ -25,22 +25,41 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
         }),
 
         init: function (parent, model, renderer, params) {
-            this._super.apply(this, arguments);     
-            this.set('title', params.displayName);   
+            this._super.apply(this, arguments);
+            this.set('title', params.displayName);
             this.context = params.context;
             this.displayName = params.displayName;
             this.dateStartField = params.dateStartField;
             this.dateStopField = params.dateStopField;
             this.linkModel = params.linkModel;
+            // Store initial domain and context for filter persistence
+            this.initialDomain = params.domain || [];
+            this.initialContext = params.context || {};
+            console.log(this.initialDomain);
+            console.log(this.initialContext);
+
         },
 
         getTitle: function () {
             return this.get('title');
         },
 
+        /**
+         * Reload the view while preserving current filters (domain and context)
+         * This prevents losing project/revision filters after saving tasks
+         */
+        _reloadWithFilters: function () {
+            var currentState = this.model.get();
+            return this.reload({
+                domain: currentState.domain || this.initialDomain,
+                context: currentState.context || this.initialContext,
+                groupBy: currentState.groupedBy
+            });
+        },
+
         renderButtons: function ($node) {
             var self = this;
-            this.$buttons = $(qweb.render("WebGanttView.buttons", {'isMobile': config.device.isMobile}));
+            this.$buttons = $(qweb.render("WebGanttView.buttons", { 'isMobile': config.device.isMobile }));
             this.$buttons.on('click', '.gantt_task_row .gantt_task_cell', this._onCreateClick.bind(this));
             this.$buttons.on('click', '.o_gantt_scale_button', this._onScaleClick.bind(this));
             this.$buttons.on('click', '.o_gantt_new_button', this._onNewClick.bind(this));
@@ -53,9 +72,9 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             if ($node) {
                 this.$buttons.appendTo($node);
             }
-        },  
+        },
 
-        _onScaleClick: function(event){
+        _onScaleClick: function (event) {
             var self = this;
             self.$buttons.find('.o_gantt_scale_dropdown_button').text($(this).text());
             self.$buttons.find('.o_gantt_scale_button').removeClass('active');
@@ -63,8 +82,8 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             self._updateButtons(scale);
             return self._setScale($(event.target).data('value'));
         },
-        
-        _updateButtons: function(scale){
+
+        _updateButtons: function (scale) {
             var self = this;
             if (!self.$buttons) {
                 return;
@@ -72,18 +91,18 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             self.$buttons.find('.o_gantt_scale_button[data-value="' + scale + '"]').addClass('active');
         },
 
-        _onTodayClick: function(){
+        _onTodayClick: function () {
             var self = this;
             self.model.setFocusDate(moment(new Date()));
             return self.reload();
         },
 
-        _onPreviousClick: function(){
+        _onPreviousClick: function () {
             var self = this;
             var state = self.model.get();
             self._setFocusDate(state.focus_date.subtract(1, state.scale));
         },
-        _onNextClick: function(){
+        _onNextClick: function () {
             var self = this;
             var state = self.model.get();
             self._setFocusDate(state.focus_date.add(1, state.scale));
@@ -98,14 +117,14 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
 
         _onCreateClick: function (event) {
             if (this.activeActions.create) {
-                
+
                 var context = _.clone(this.context);
                 var id = event.target.parentElement.attributes.task_id.value;
                 var task = gantt.getTask(id);
                 var classDate = _.find(event.target.classList, function (e) {
                     return e.indexOf("date_") > -1;
                 });
-                
+
                 var startDate = moment(new Date(parseInt(classDate.split("_")[1], 10))).utc();
                 var endDate;
                 switch (this.model.get().scale) {
@@ -122,10 +141,10 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                         endDate = startDate.clone().add(2, "month");
                         break;
                 }
-                
+
                 var get_create = function (item) {
                     if (item.create) {
-                        context["default_"+item.create[0]] = item.create[1][0];
+                        context["default_" + item.create[0]] = item.create[1][0];
                     }
                     if (item.parent) {
                         var parent = gantt.getTask(item.parent);
@@ -134,12 +153,12 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 };
                 get_create(task);
 
-                context["default_"+this.dateStartField] = startDate.format("YYYY-MM-DD HH:mm:ss");
+                context["default_" + this.dateStartField] = startDate.format("YYYY-MM-DD HH:mm:ss");
                 if (this.dateStopField) {
-                    context["default_"+this.dateStopField] = endDate.format("YYYY-MM-DD HH:mm:ss");
-                } 
+                    context["default_" + this.dateStopField] = endDate.format("YYYY-MM-DD HH:mm:ss");
+                }
                 else {
-                    context["default_"+this.model.mapping.date_delay] = gantt.calculateDuration(startDate, endDate);
+                    context["default_" + this.model.mapping.date_delay] = gantt.calculateDuration(startDate, endDate);
                 }
 
                 context.id = 0;
@@ -147,8 +166,8 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 new dialogs.FormViewDialog(this, {
                     res_model: this.modelName,
                     context: context,
-                    on_saved: this.reload.bind(this),
-                }).open();  
+                    on_saved: this._reloadWithFilters.bind(this),
+                }).open();
             }
         },
 
@@ -157,9 +176,9 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             var success = event.data.success;
             var fail = event.data.fail;
             var fields = this.model.fields;
-            
+
             if (fields[this.dateStopField] === undefined) {
-                    Dialog.alert(this, _t('You have no date_stop field defined!'));
+                Dialog.alert(this, _t('You have no date_stop field defined!'));
                 return fail();
             }
 
@@ -170,7 +189,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
 
             var start = taskObj.start_date;
             var end = taskObj.end_date;
-            
+
             var data = {};
             data[this.dateStartField] = time.auto_date_to_str(start, fields[this.dateStartField].type);
             if (this.dateStopField) {
@@ -182,8 +201,8 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 } else {
                     data[this.dateStopField] = time.auto_date_to_str(end, field_type);
                 }
-            } 
-            
+            }
+
             var taskId = parseInt(taskObj.id.split("gantt_task_").slice(1)[0], 10);
 
             this._rpc({
@@ -191,7 +210,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 method: 'write',
                 args: [taskId, data],
             })
-            .then(success, fail);
+                .then(success, fail);
         },
 
         _onTaskCreate: function () {
@@ -200,7 +219,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 this._createTask(0, startDate);
             }
         },
-        
+
         _onCreateLink: function (item) {
             var linkObj = item.data.link;
             var success = item.data.success;
@@ -211,11 +230,11 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             var linkType = linkObj.type || 0;
 
             var args = [{
-                'task_id' : linkSourceId,
-                'target_task_id' : linkTargetId,
-                'link_type' : linkType,
+                'task_id': linkSourceId,
+                'target_task_id': linkTargetId,
+                'link_type': linkType,
             }];
-            
+
             return this._rpc({
                 model: this.linkModel,
                 method: 'create',
@@ -229,7 +248,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             var fail = item.data.fail;
 
             var Id = parseInt(linkObj.id.split("gantt_link_").slice(1)[0], 10);
-            
+
             return this._rpc({
                 model: this.linkModel,
                 method: 'unlink',
@@ -249,11 +268,11 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 res_model: this.modelName,
                 res_id: taskId,
                 context: session.user_context,
-                on_saved: this.reload.bind(this),
+                on_saved: this._reloadWithFilters.bind(this),
                 readonly: readonly
-            }).open();  
+            }).open();
         },
-    
+
         _setFocusDate: function (focusDate) {
             var self = this;
             this.model.setFocusDate(focusDate);
@@ -279,11 +298,11 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                     endDate = startDate.clone().add(2, "month");
                     break;
             }
-            
-            context["default_"+ this.dateStartField] = startDate.format("YYYY-MM-DD HH:mm:ss");
+
+            context["default_" + this.dateStartField] = startDate.format("YYYY-MM-DD HH:mm:ss");
             if (this.dateStopField) {
-                context["default_"+ this.dateStopField] = endDate.format("YYYY-MM-DD HH:mm:ss");
-            } 
+                context["default_" + this.dateStopField] = endDate.format("YYYY-MM-DD HH:mm:ss");
+            }
 
             new dialogs.FormViewDialog(this, {
                 res_model: this.modelName,
@@ -291,29 +310,29 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 on_saved: this.reload.bind(this),
             }).open();
         },
-        
-        _onSortClick: _.debounce(function(event){
-            event.preventDefault();        
-            if (n_direction){
-                gantt.sort("id",false);
-            } 
+
+        _onSortClick: _.debounce(function (event) {
+            event.preventDefault();
+            if (n_direction) {
+                gantt.sort("id", false);
+            }
             else {
-                gantt.sort("id",true);
+                gantt.sort("id", true);
             }
             n_direction = !n_direction;
         }, 200, true),
 
-        _onExportPNGClick: _.debounce(function(event){
+        _onExportPNGClick: _.debounce(function (event) {
             event.preventDefault();
-            this._onExportOpen('png')        
+            this._onExportOpen('png')
         }, 200, true),
 
-        _onExportPDFClick: _.debounce(function(event){
-            event.preventDefault();    
+        _onExportPDFClick: _.debounce(function (event) {
+            event.preventDefault();
             this._onExportOpen('pdf')
         }, 200, true),
 
-        _onExportOpen(format){
+        _onExportOpen(format) {
             var self = this;
             var format = format;
             var $content = `<div class='form-group'>
@@ -330,48 +349,48 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 $content: $content,
                 buttons: [
                     {
-                        text: _t('Export'),  
-                        classes: 'btn-primary',  
-                        close: false,  
+                        text: _t('Export'),
+                        classes: 'btn-primary',
+                        close: false,
                         click: function () {
                             var date_start = this.$el.find('#startDate');
                             var date_end = this.$el.find('#endDate');
-                            
-                            if (!date_start.val()){  
+
+                            if (!date_start.val()) {
                                 date_start[0].style.borderColor = '#ff0000';
                                 return;
-                            }else{
+                            } else {
                                 date_start[0].style.borderColor = '#ced4da';
                             }
-                            if (!date_end.val()){  
+                            if (!date_end.val()) {
                                 date_end[0].style.borderColor = '#ff0000';
                                 return;
-                            }else{
+                            } else {
                                 date_end[0].style.borderColor = '#ced4da';
                             }
 
-                            if (Date.parse(date_start.val())  >=  Date.parse(date_end.val())){
+                            if (Date.parse(date_start.val()) >= Date.parse(date_end.val())) {
                                 self.displayNotification({ message: _t('Start date must be anterior to end date!'), type: 'warning' });
                                 return;
                             }
 
-                            if(format === 'pdf'){
+                            if (format === 'pdf') {
                                 gantt.exportToPDF({
                                     start: date_start.val(),
                                     end: date_end.val(),
                                 });
-                            }else if(format === 'png'){
+                            } else if (format === 'png') {
                                 gantt.exportToPNG({
                                     start: date_start.val(),
                                     end: date_end.val(),
                                 });
-                            }else{
+                            } else {
                                 self.displayNotification({ message: _t('The export format has not been specified!'), type: 'warning' });
                             }
                         }
-                    }, 
+                    },
                     {
-                        text: _t('Discard'), 
+                        text: _t('Discard'),
                         close: true
                     }
                 ],

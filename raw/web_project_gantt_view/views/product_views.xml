@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="task_ganttview_view" model="ir.ui.view">
+        <field name="name">Gantt Task inherit</field>
+        <field name="model">project.task</field>
+        <field name="arch" type="xml">
+            <ganttview                
+                date_start = "date_from" 
+                date_stop = "date_to"                 
+                color ="color"                
+                progress = "progress"                    
+                round_dnd_dates = "false"
+                default_group_by = "project_id"
+                default_scale = "month"
+                task_type = "task_type"
+                show_links = "true"
+                deadline = "date_deadline"
+                link_model = "task.link"
+                priority = 'task_priority'
+            />            
+        </field>
+    </record>
+    
+    <record id="view_task_form2_gantt_inherit" model="ir.ui.view">
+        <field name="name">Gantt Task inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field eval="0" name="priority"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="before">
+                <field name="task_priority"/>
+                <field name="task_type"/>
+                <field name="date_from"/>
+                <field name="date_to" attrs="{'invisible': [('task_type', '!=', 'task')]}"/>
+                <field name="color" widget="color_picker"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_task_form2_inherit" model="ir.ui.view">
+        <field name="name">Gantt Task inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field eval="0" name="priority"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='extra_info']" position="before">
+                <page name="link_task" string="Link Task">
+                    <field name="task_link_ids" widget="one2many" context="{'show_attribute': False}">
+                        <tree string="Link Type" editable="bottom">
+                            <field name="target_task_id"/>
+                            <field name="link_type"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="project.act_project_project_2_project_task_all" model="ir.actions.act_window">
+        <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity,ganttview</field>
+    </record>
+
+    <record id="project.project_task_action_sub_task" model="ir.actions.act_window">
+        <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity,ganttview</field>
+    </record>
+
+    <record id="project.action_view_task" model="ir.actions.act_window">
+        <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity,ganttview</field>
+    </record>
+
+    <record id="project.project_task_action_from_partner" model="ir.actions.act_window">
+        <field name="view_mode">kanban,tree,form,ganttview</field>
+    </record>
+</odoo>

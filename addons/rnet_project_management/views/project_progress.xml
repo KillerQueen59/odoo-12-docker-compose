@@ -267,44 +267,31 @@
 								</field>
 							</page>
 
-							<page name="progress_plan_task" string="Plan Tasks">
-								<separator string="Plan Tasks" />
-								<field name="project_plan_task_line"
+							<page name="gantt_tasks" string="Gantt Tasks">
+								<separator string="Gantt Tasks with Baseline" />
+								<field name="gantt_task_line"
 									attrs="{'readonly':[('active', '=', False)]}">
-									<tree string="Plan Tasks" editable="bottom">
+									<tree string="Gantt Tasks" editable="bottom" decoration-danger="is_delayed == True">
 										<field name="sequence" widget="handle" />
 										<field name="name" />
 										<field name="project_id" invisible="1" />
 										<field name="supervisor_id" />
-										<field name="duration" />
+										<field name="task_type" />
+										<field name="baseline_start_date" />
+										<field name="baseline_end_date" />
+										<field name="baseline_duration" />
 										<field name="start_date" />
 										<field name="end_date" />
+										<field name="duration" />
+										<field name="delay_days" attrs="{'invisible': [('is_delayed', '=', False)]}" />
 										<field name="progress" widget="progressbar" />
 										<field name="state" />
+										<field name="priority" />
+										<field name="is_delayed" invisible="1" />
 									</tree>
 								</field>
 							</page>
 
-							<page name="progress_actual_task" string="Actual Tasks">
-								<separator string="Actual Tasks" />
-								<field name="project_actual_task_line"
-									attrs="{'readonly':[('active', '=', False)]}">
-									<tree string="Actual Tasks" editable="bottom">
-										<field name="sequence" widget="handle" />
-										<field name="name" />
-										<field name="project_id" invisible="1" />
-										<field name="plan_task_id" />
-										<field name="supervisor_id" />
-										<field name="actual_duration" />
-										<field name="actual_start_date" />
-										<field name="actual_end_date" />
-										<field name="progress" widget="progressbar" />
-										<field name="state" />
-										<field name="delay_reason" />
-										<field name="remarks" />
-									</tree>
-								</field>
-							</page>
 							<!-- <page name="progress_actual_plan_cashout" string="Actual and Plan
 							Cashout">
 								<separator string="Actual and Plan Cashout" />
@@ -492,7 +479,7 @@
 		</record>
 		<!--  -->
 
-		<menuitem id="menu_project_progress_root" sequence="7" name=".Project Management"
+		<menuitem id="menu_project_progress_root" sequence="7" name="Project Management"
 			web_icon="rnet_project_management,static/description/icon.png"
 			groups="project.group_project_manager" />
 		<menuitem id="menu_project_progress_analysis" sequence="6"

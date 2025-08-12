@@ -106,15 +106,26 @@ var  GanttModel = AbstractModel.extend({
         var gannt_start_date = this.gantt.start_date.locale('en').format("YYYY-MM-DD");
         var gannt_to_date = this.gantt.to_date.locale('en').format("YYYY-MM-DD");
         
-        var domain = [
-            [this.dateStartField, '<', gannt_to_date]
-        ];
+        // Fixed domain logic to properly show tasks within the date range
+        var domain = [];
         if (this.fields[this.dateStopField]) {
-             domain = domain.concat([
+            // Show tasks that either:
+            // 1. Start before the end of our range AND end after the start of our range
+            // 2. Start before the end of our range AND have no end date
+            domain = [
+                '&',
+                [this.dateStartField, '<', gannt_to_date],
                 '|',
-                [this.dateStartField, ">", gannt_start_date],
+                [this.dateStopField, '>', gannt_start_date],
                 [this.dateStopField, '=', false]
-            ]);
+            ];
+        } else {
+            // If no end date field, just filter by start date within range
+            domain = [
+                '&',
+                [this.dateStartField, '>=', gannt_start_date],
+                [this.dateStartField, '<', gannt_to_date]
+            ];
         }
         return this.domain.concat(domain);
     },
@@ -189,8 +200,34 @@ var  GanttModel = AbstractModel.extend({
         this.gantt.scale = scale;
         this.gantt.focus_date = focusDate;
 
-        this.gantt.start_date = focusDate.clone().subtract(1, scale).startOf(scale);
-        this.gantt.to_date = focusDate.clone().add(3, scale).endOf(scale);
+        // Expand the default date range to be more inclusive and show existing tasks
+        // This prevents the common issue of empty Gantt view on first load
+        var backwardRange, forwardRange;
+        
+        switch(scale) {
+            case 'day':
+                backwardRange = 30; // 30 days back
+                forwardRange = 60;  // 60 days forward
+                break;
+            case 'week':
+                backwardRange = 12; // 12 weeks back
+                forwardRange = 24;  // 24 weeks forward
+                break;
+            case 'month':
+                backwardRange = 6;  // 6 months back
+                forwardRange = 12;  // 12 months forward
+                break;
+            case 'year':
+                backwardRange = 2;  // 2 years back
+                forwardRange = 3;   // 3 years forward
+                break;
+            default:
+                backwardRange = 6;  // Default: 6 months back
+                forwardRange = 12;  // Default: 12 months forward
+        }
+
+        this.gantt.start_date = focusDate.clone().subtract(backwardRange, scale).startOf(scale);
+        this.gantt.to_date = focusDate.clone().add(forwardRange, scale).endOf(scale);
 
         this.gantt.end_date = this.gantt.to_date.add(1, scale);
         this.gantt.date_display = this._dateReformat(focusDate, scale);

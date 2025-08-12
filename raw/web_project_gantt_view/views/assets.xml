@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" name="web_project_gantt_view assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" type="text/scss" href="/web_project_gantt_view/static/scss/field_colorpicker.scss"/>
+            <script type="text/javascript" src="/web_project_gantt_view/static/src/js/field_colorpicker.js"/>
+
+            <script type="text/javascript" src="/web_project_gantt_view/static/src/js/dhtmlxgantt.js"></script>
+            <script type="text/javascript" src="/web_project_gantt_view/static/src/js/api.js"></script>
+            <link rel="stylesheet" type="text/css" href="/web_project_gantt_view/static/src/css/dhtmlxgantt.css"/>
+
+            <link rel="stylesheet" type="text/css" href="/web_project_gantt_view/static/src/css/gantt.css"/>
+            <script type="text/javascript" src="/web_project_gantt_view/static/src/js/gantt_renderer.js"></script>
+            <script type="text/javascript" src="/web_project_gantt_view/static/src/js/gantt_view.js"></script>
+            <script type="text/javascript" src="/web_project_gantt_view/static/src/js/gantt_model.js"></script>
+            <script type="text/javascript" src="/web_project_gantt_view/static/src/js/gantt_controller.js"></script>
+        </xpath>
+    </template>
+</odoo>

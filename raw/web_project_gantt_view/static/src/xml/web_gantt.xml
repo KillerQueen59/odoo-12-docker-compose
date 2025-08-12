@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    
+    <t t-name="WebGanttView.buttons">
+     
+      <div class="o_gantt_button_dates" role="toolbar" aria-label="Main actions">
+        <button class="o_gantt_left_button btn btn-primary" t-if="!isMobile" aria-label="Previous" title="Previous">
+          <span class="fa fa-arrow-left"/>
+        </button>
+        <button class="o_gantt_today_button btn btn-primary">
+          Today
+        </button>
+        <button class="o_gantt_right_button btn btn-primary" t-if="!isMobile" aria-label="Next" title="Next">	    
+          <span class="fa fa-arrow-right"/>
+        </button>
+      </div>
+
+      <div t-attf-class="btn-group" role="new" aria-label="New">
+        <button class="o_gantt_new_button btn btn-primary" type="button">Create</button>   
+      </div>
+
+      <div t-attf-class="btn-group" role="new" aria-label="New">
+        <button type="button" class="o_dropdown_toggler_btn btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Export</button>
+        <ul role="menu" class="o_dropdown_menu dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(67px, 118px, 0px);">
+          <li role="menuitem" class="o_menu_item">
+              <a aria-checked="false" role="menuitemcheckbox" report_type="pdf" class="dropdown-item o_gantt_export_pdf">PDF</a>
+          </li>
+          <li role="menuitem" class="o_menu_item">
+              <a aria-checked="false" role="menuitemcheckbox" report_type="png" class="dropdown-item o_gantt_export_png">PNG</a>
+          </li>         
+        </ul>
+      </div>
+
+      <div class="btn-group" t-if="isMobile">
+          <a role="button" class="btn btn-link dropdown-toggle" href="#" data-toggle="dropdown" aria-expanded="false">
+            <span class="o_gantt_scale_dropdown_button mr4">Month</span><i class="fa fa-caret-down" role="img" aria-label="Dropdown menu" title="Dropdown menu"></i>
+          </a>
+          <div class="dropdown-menu" role="menu">
+              <a role="menuitem" class="o_gantt_scale_button btn btn-secondary dropdown-item" data-value="day">Day</a>
+              <a role="menuitem" class="o_gantt_scale_button btn btn-secondary dropdown-item" data-value="week">Week</a>
+              <a role="menuitem" class="o_gantt_scale_button btn btn-secondary dropdown-item active" data-value="month">Month</a>
+              <a role="menuitem" class="o_gantt_scale_button btn btn-secondary dropdown-item" data-value="year">Year</a>
+          </div>
+      </div>
+
+      <div t-attf-class="btn-group" t-else="" role="toolbar" aria-label="Period">          
+          <button class="o_gantt_scale_button btn btn-secondary" type="button" data-value="day">Day</button>
+          <button class="o_gantt_scale_button btn btn-secondary" type="button" data-value="week">Week</button>
+          <button class="o_gantt_scale_button btn btn-secondary active" type="button" data-value="month">Month</button>
+          <button class="o_gantt_scale_button btn btn-secondary" type="button" data-value="year">Year</button>
+      </div>
+
+      <div class="btn-group">
+        <button class="o_gantt_sort_button btn btn-secondary" title="Sort">
+            <i class="fa fa-sort"/>
+        </button>            
+      </div>      
+    </t>
+    
+    <t t-name="WebGanttView">
+        <div t-attf-class="o_gantt_view table-responsive">
+        </div>
+    </t>
+
+</templates>

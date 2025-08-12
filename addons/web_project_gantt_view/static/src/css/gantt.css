@@ -74,7 +74,9 @@
 .deadline_alert {
 	width: 20px;
 	display: inline-table;
+	box-sizing: border-box;
 	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
 	line-height: 20px;
 	text-align: center;
 	position: relative;
@@ -86,7 +88,9 @@
 .progress_alert {
 	width: 20px;
 	display: inline-table;
+	box-sizing: border-box;
 	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
 	line-height: 20px;
 	text-align: center;
 	position: relative;
@@ -105,4 +109,41 @@
 
 .priority_normal {
 	border-left: #b1d43a 3px solid;
+}
+
+/* Custom styles for task row with additional bar */
+.gantt_task_row_with_custom_bar {
+	position: relative;
+}
+
+.gantt_task_wrapper {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+}
+
+.gantt_task_wrapper .gantt_task_line {
+	flex: 1;
+	margin-bottom: 2px;
+}
+
+.custom_task_bottom_bar {
+	height: 12px !important;
+	background-color: #e0e0e0 !important;
+	border-radius: 2px !important;
+	font-size: 10px !important;
+	line-height: 12px !important;
+	text-align: center !important;
+	color: #666 !important;
+	border: 1px solid #ccc !important;
+	box-sizing: border-box !important;
+	-moz-box-sizing: border-box !important;
+	-webkit-box-sizing: border-box !important;
+	margin-top: 2px;
+	width: 100%;
+}
+
+.custom_task_bottom_bar:hover {
+	background-color: #d0d0d0 !important;
 }

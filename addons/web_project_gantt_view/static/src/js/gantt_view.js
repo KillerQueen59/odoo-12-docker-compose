@@ -20,7 +20,7 @@ odoo.define('web_project_gantt_view.GanttView', function (require) {
         icon: 'fa-tasks',
         viewType: 'ganttview',
         cssLibs: [
-            "/web_project_gantt_view/static/src/css/dhtmlxgantt.css"
+            "/web_project_gantt_view/static/src/css/dhtmlxgantt.css",
         ],
         jsLibs: [
             "/web_project_gantt_view/static/src/js/dhtmlxgantt.js",

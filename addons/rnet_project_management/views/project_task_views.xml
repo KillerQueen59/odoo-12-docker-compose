@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_task_gantt" model="ir.ui.view">
-        <field name="name">project.plan.task.gantt</field>
-        <field name="model">project.plan.task</field>
+        <field name="name">gantt.task.gantt</field>
+        <field name="model">gantt.task</field>
         <field name="priority">10</field>
         <field name="type">ganttview</field>
         <field name="arch" type="xml">
@@ -13,10 +13,10 @@
                 default_group_by="project_id"
                 string="Tasks Gantt"
                 show_links="true"
-                link_model="project.plan.task.link"
+                link_model="gantt.task.link"
                 task_type="task_type"
-                baseline_start="baseline_start"
-                baseline_end="baseline_end"
+                baseline_start="baseline_start_date"
+                baseline_end="baseline_end_date"
                 round_dnd_dates="false"
                 default_scale="month"
                 highlight_critical_path="true"
@@ -25,26 +25,31 @@
     </record>
 
     <record id="view_task_tree" model="ir.ui.view">
-        <field name="name">project.plan.task.tree</field>
-        <field name="model">project.plan.task</field>
+        <field name="name">gantt.task.tree</field>
+        <field name="model">gantt.task</field>
         <field name="arch" type="xml">
-            <tree string="Tasks" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancelled'">
+            <tree string="Tasks" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancelled' or is_delayed == True">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="project_id"/>
                 <field name="supervisor_id"/>
+                <field name="baseline_start_date"/>
+                <field name="baseline_end_date"/>
                 <field name="start_date"/>
                 <field name="end_date"/>
                 <field name="duration"/>
+                <field name="baseline_duration"/>
+                <field name="delay_days"/>
                 <field name="progress" widget="progressbar"/>
                 <field name="state"/>
+                <field name="is_delayed" invisible="1"/>
             </tree>
         </field>
     </record>
 
     <record id="view_task_form" model="ir.ui.view">
-        <field name="name">project.plan.task.form</field>
-        <field name="model">project.plan.task</field>
+        <field name="name">gantt.task.form</field>
+        <field name="model">gantt.task</field>
         <field name="arch" type="xml">
             <form string="Task">
                 <header>
@@ -57,20 +62,34 @@
                             <field name="name" placeholder="Task Name"/>
                         </h1>
                     </div>
+                    <div class="alert alert-warning" attrs="{'invisible': [('is_delayed', '=', False)]}">
+                        <strong>Delayed Task:</strong> This task is <field name="delay_days"/> days behind baseline schedule.
+                    </div>
+                    <group>
+                        <group string="Baseline (Original Plan)">
+                            <field name="baseline_start_date"/>
+                            <field name="baseline_end_date"/>
+                            <field name="baseline_duration"/>
+                        </group>
+                        <group string="Actual (Current Plan)">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="duration"/>
+                        </group>
+                    </group>
                     <group>
                         <group>
                             <field name="project_id"/>
                             <field name="supervisor_id"/>
-                            <field name="start_date"/>
-                            <field name="end_date"/>
                             <field name="task_type"/>
-                            <field name="baseline_start"/>
-                            <field name="baseline_end"/>
+                            <field name="priority"/>
+                            <field name="deadline"/>
                         </group>
                         <group>
-                            <field name="duration"/>
                             <field name="progress" widget="percentage"/>
                             <field name="sequence"/>
+                            <field name="color"/>
+                            <field name="is_delayed" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -89,8 +108,8 @@
     </record>
 
     <record id="view_task_search" model="ir.ui.view">
-        <field name="name">project.plan.task.search</field>
-        <field name="model">project.plan.task</field>
+        <field name="name">gantt.task.search</field>
+        <field name="model">gantt.task</field>
         <field name="arch" type="xml">
             <search string="Tasks">
                 <field name="name"/>
@@ -100,23 +119,27 @@
                 <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Delayed Tasks" name="delayed" domain="[('is_delayed', '=', True)]"/>
+                <filter string="On Schedule" name="on_schedule" domain="[('is_delayed', '=', False)]"/>
                 <group expand="0" string="Group By">
                     <filter string="Project" name="project" context="{'group_by': 'project_id'}"/>
                     <filter string="Supervisor" name="supervisor" context="{'group_by': 'supervisor_id'}"/>
                     <filter string="State" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="Delay Status" name="delay_status" context="{'group_by': 'is_delayed'}"/>
                 </group>
             </search>
         </field>
     </record>
 
     <record id="action_project_task" model="ir.actions.act_window">
-        <field name="name">Tasks</field>
-        <field name="res_model">project.plan.task</field>
+        <field name="name">Gantt Tasks</field>
+        <field name="res_model">gantt.task</field>
         <field name="view_mode">tree,form,ganttview</field>
         <field name="search_view_id" ref="view_task_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create a new task
+                Create a new gantt task with baseline tracking
             </p>
         </field>
     </record>

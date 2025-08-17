@@ -1143,6 +1143,28 @@ div.dhx_modal_cover {
 .gantt_critical_link .gantt_link_arrow {
   border-color: #e63030;
 }
+
+/* Critical Path Toggle Button Styles - Matching Baseline Toggle */
+.gantt_critical_path_toggle.btn.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.gantt_critical_path_toggle.btn.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+.gantt_critical_path_toggle.btn.btn-secondary.active {
+  background-color: #e63030 !important;
+  border-color: #9d3a3a !important;
+  color: white !important;
+}
+
+.gantt_critical_path_toggle.btn.btn-secondary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(230, 48, 48, 0.25);
+}
 .gantt_row:focus,
 .gantt_cell:focus,
 .gantt_btn_set:focus,

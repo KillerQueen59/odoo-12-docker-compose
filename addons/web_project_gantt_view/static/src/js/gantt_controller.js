@@ -35,8 +35,8 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             // Store initial domain and context for filter persistence
             this.initialDomain = params.domain || [];
             this.initialContext = params.context || {};
-            console.log(this.initialDomain);
-            console.log(this.initialContext);
+            this._setScale('month');
+            console.log('gant_controller init');
 
         },
 
@@ -49,11 +49,32 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
          * This prevents losing project/revision filters after saving tasks
          */
         _reloadWithFilters: function () {
+            var self = this;
             var currentState = this.model.get();
+
+            // Get the current domain and context from the model state
+            var currentDomain = currentState.domain || this.initialDomain;
+            var currentContext = currentState.context || this.initialContext;
+
+            // Try to get search panel state if available
+            if (this.searchPanel && this.searchPanel.getState) {
+                var searchState = this.searchPanel.getState();
+                console.log('Search panel state:', searchState);
+            }
+
+            // Get search model state if available
+            if (this.searchModel && this.searchModel.get) {
+                var searchQuery = this.searchModel.get('query');
+                console.log('Search model query:', searchQuery);
+            }
+
+            // Force reload with current filters
             return this.reload({
-                domain: currentState.domain || this.initialDomain,
-                context: currentState.context || this.initialContext,
+                domain: currentDomain,
+                context: currentContext,
                 groupBy: currentState.groupedBy
+            }).then(function () {
+                console.log('Reload completed with filters preserved');
             });
         },
 
@@ -94,7 +115,8 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
         _onTodayClick: function () {
             var self = this;
             self.model.setFocusDate(moment(new Date()));
-            return self.reload();
+            // Use _reloadWithFilters to preserve project/revision filters
+            return self._reloadWithFilters();
         },
 
         _onPreviousClick: function () {
@@ -110,12 +132,17 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
 
         _setScale: function (scale) {
             var self = this;
+            console.log('setScale', scale);
+
             this.model.setScale(scale);
             self.set('title', self.displayName + ' (' + self.model.get().date_display + ')');
-            this.reload();
+            // Use _reloadWithFilters to preserve project/revision filters
+            this._reloadWithFilters();
         },
 
         _onCreateClick: function (event) {
+            console.log('_onCreateClick', event);
+
             if (this.activeActions.create) {
 
                 var context = _.clone(this.context);
@@ -214,6 +241,8 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
         },
 
         _onTaskCreate: function () {
+            console.log('_createTask', _createTask);
+
             if (this.activeActions.create) {
                 var startDate = moment(new Date()).utc();
                 this._createTask(0, startDate);
@@ -277,7 +306,8 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             var self = this;
             this.model.setFocusDate(focusDate);
             self.set('title', self.displayName + ' (' + self.model.get().date_display + ')');
-            this.reload();
+            // Use _reloadWithFilters to preserve project/revision filters
+            this._reloadWithFilters();
         },
 
         _onNewClick: function (event) {

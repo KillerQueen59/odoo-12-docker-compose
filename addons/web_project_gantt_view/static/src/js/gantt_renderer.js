@@ -26,6 +26,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             this.deadLine = params.deadLine;
             this.showLinks = params.showLinks;
             this.roundDndDates = params.roundDndDates;
+            console.log('gant_render init');
+
         },
 
         _configGantt: function () {
@@ -60,6 +62,9 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             // Enable baseline functionality
             gantt.config.show_baseline = true;
+
+            // Enable critical path functionality
+            gantt.config.highlight_critical_path = false;
 
             gantt.config.columns = [
                 {
@@ -310,11 +315,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
         _setupBaselineRendering: function () {
             var self = this;
 
-            console.log('Setting up baseline rendering...');
-
             // Custom task rendering to show baseline bars
             gantt.attachEvent("onGanttRender", function () {
-                console.log('onGanttRender event fired');
                 // Add baseline bars after gantt renders
                 setTimeout(function () {
                     self._renderBaselineBars();
@@ -331,12 +333,12 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             // Add baseline toggle button and legend after gantt is ready
             gantt.attachEvent("onGanttReady", function () {
-                console.log('onGanttReady event fired');
                 setTimeout(function () {
                     self._addBaselineToggle();
                     self._addBaselineLegend();
                     // Initial render of baseline bars
                     self._renderBaselineBars();
+
                 }, 300);
             });
 
@@ -389,16 +391,13 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 return;
             }
 
-            console.log('Starting baseline rendering...');
             var baselineCount = 0;
             var rowHeight = gantt.config.row_height || 50; // Default to 50px if not configured
 
             gantt.eachTask(function (task) {
-                console.log('Task:', task, 'has_baseline:', task.has_baseline, 'baseline_start_date:', task.baseline_start_date, 'baseline_end_date:', task.baseline_end_date);
 
                 if (task.has_baseline && task.baseline_start_date && task.baseline_end_date) {
                     var taskElement = gantt.getTaskNode(task.id);
-                    console.log('Task element found:', !!taskElement);
 
                     if (taskElement) {
                         var startPos = gantt.posFromDate(task.baseline_start_date);
@@ -409,7 +408,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         var taskIndex = gantt.getTaskIndex(task.id);
                         var verticalOffset = taskIndex * rowHeight;
 
-                        console.log('Baseline positions - start:', startPos, 'end:', endPos, 'width:', width, 'taskIndex:', taskIndex, 'verticalOffset:', verticalOffset);
 
                         if (width > 0) {
                             var baselineBar = document.createElement('div');
@@ -435,19 +433,16 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
                             taskElement.parentNode.appendChild(baselineBar);
                             baselineCount++;
-                            console.log('Baseline bar added for task:', task.id, 'at position:', startPos, 'width:', width, 'vertical offset:', verticalOffset, 'delayed:', task.is_delayed);
                         }
                     }
                 }
             });
 
-            console.log('Total baseline bars rendered:', baselineCount);
         },
 
         _addBaselineToggle: function () {
             // Skip if toggle already exists
             if (document.querySelector('.gantt_baseline_toggle')) {
-                console.log('Baseline toggle already exists, skipping');
                 return;
             }
 
@@ -528,6 +523,282 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             }
         },
 
+        /**
+         * Setup critical path functionality
+         * Implements critical path calculation using longest path algorithm
+         */
+        _setupCriticalPath: function () {
+            var self = this;
+
+            this.criticalPathCache = {
+                tasks: new Set(),
+                links: new Set(),
+                lastCalculated: null
+            };
+
+            gantt.isCriticalTask = function (task) {
+                return self.criticalPathCache.tasks.has(task.id);
+            };
+
+            gantt.isCriticalLink = function (link) {
+                return self.criticalPathCache.links.has(link.id);
+            };
+
+            gantt.templates.task_class = function (start, end, task) {
+                var classes = [];
+                if (gantt.config.highlight_critical_path && gantt.isCriticalTask && gantt.isCriticalTask(task)) {
+                    classes.push('gantt_critical_task');
+                }
+                return classes.join(' ');
+            };
+
+            gantt.templates.link_class = function (link) {
+                var classes = [];
+                if (gantt.config.highlight_critical_path && gantt.isCriticalLink && gantt.isCriticalLink(link)) {
+                    classes.push('gantt_critical_link');
+                }
+
+                return classes.join(' ');
+            };
+
+            // Calculate critical path using longest path algorithm
+            this._calculateCriticalPath();
+        },
+
+        /**
+         * Calculate critical path using topological sort and longest path algorithm
+         * Based on Microsoft Project's critical path methodology
+         */
+        _calculateCriticalPath: function () {
+            var self = this;
+            var tasks = gantt.getTaskByTime();
+            var links = gantt.getLinks();
+            if (!tasks.length) {
+                return;
+            }
+            this.criticalPathCache.tasks.clear();
+            this.criticalPathCache.links.clear();
+
+            var graph = {};
+            var inDegree = {};
+            var taskDurations = {};
+            var earliestStart = {};
+            var earliestFinish = {};
+            var latestStart = {};
+            var latestFinish = {};
+
+            tasks.forEach(function (task) {
+                if (!task.is_group) {
+                    graph[task.id] = [];
+                    inDegree[task.id] = 0;
+                    taskDurations[task.id] = gantt.calculateDuration(task.start_date, task.end_date);
+                    earliestStart[task.id] = 0;
+                    earliestFinish[task.id] = 0;
+                    latestStart[task.id] = Infinity;
+                    latestFinish[task.id] = Infinity;
+                }
+            });
+
+            links.forEach(function (link) {
+                var sourceTask = gantt.getTask(link.source);
+                var targetTask = gantt.getTask(link.target);
+
+                if (sourceTask && targetTask && !sourceTask.is_group && !targetTask.is_group) {
+                    graph[link.source] = graph[link.source] || [];
+                    graph[link.source].push({
+                        target: link.target,
+                        linkId: link.id,
+                        type: link.type || "0"
+                    });
+                    inDegree[link.target] = (inDegree[link.target] || 0) + 1;
+                }
+            });
+
+            var queue = [];
+            Object.keys(inDegree).forEach(function (taskId) {
+                if (inDegree[taskId] === 0) {
+                    queue.push(taskId);
+                    earliestStart[taskId] = 0;
+                    earliestFinish[taskId] = taskDurations[taskId];
+                }
+            });
+
+            while (queue.length > 0) {
+                var currentTask = queue.shift();
+                var dependencies = graph[currentTask] || [];
+
+                dependencies.forEach(function (dep) {
+                    var targetId = dep.target;
+                    var linkType = dep.type;
+                    var newEarliestStart = 0;
+
+                    if (linkType === "0" || !linkType) { // Finish-to-start
+                        newEarliestStart = earliestFinish[currentTask];
+                    }
+
+                    if (newEarliestStart > earliestStart[targetId]) {
+                        earliestStart[targetId] = newEarliestStart;
+                        earliestFinish[targetId] = newEarliestStart + taskDurations[targetId];
+                    }
+
+                    inDegree[targetId]--;
+                    if (inDegree[targetId] === 0) {
+                        queue.push(targetId);
+                    }
+                });
+            }
+
+            var projectEndTime = Math.max.apply(Math, Object.values(earliestFinish));
+
+            Object.keys(latestFinish).forEach(function (taskId) {
+                if (earliestFinish[taskId] === projectEndTime) {
+                    latestFinish[taskId] = projectEndTime;
+                    latestStart[taskId] = projectEndTime - taskDurations[taskId];
+                }
+            });
+
+            var processed = new Set();
+            var reverseQueue = Object.keys(earliestFinish).filter(function (taskId) {
+                return earliestFinish[taskId] === projectEndTime;
+            });
+
+            while (reverseQueue.length > 0) {
+                var currentTask = reverseQueue.shift();
+                if (processed.has(currentTask)) continue;
+                processed.add(currentTask);
+
+                links.forEach(function (link) {
+                    if (link.target === currentTask) {
+                        var sourceId = link.source;
+                        var sourceTask = gantt.getTask(sourceId);
+
+                        if (sourceTask && !sourceTask.is_group) {
+                            var newLatestFinish = latestStart[currentTask];
+
+                            if (newLatestFinish < latestFinish[sourceId]) {
+                                latestFinish[sourceId] = newLatestFinish;
+                                latestStart[sourceId] = newLatestFinish - taskDurations[sourceId];
+
+                                if (!processed.has(sourceId)) {
+                                    reverseQueue.push(sourceId);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            Object.keys(earliestStart).forEach(function (taskId) {
+                var slack = latestStart[taskId] - earliestStart[taskId];
+                if (Math.abs(slack) < 0.001) { // Account for floating point precision
+                    self.criticalPathCache.tasks.add(taskId);
+                }
+            });
+
+            links.forEach(function (link) {
+                var sourceTask = gantt.getTask(link.source);
+                var targetTask = gantt.getTask(link.target);
+
+                if (sourceTask && targetTask &&
+                    !sourceTask.is_group && !targetTask.is_group &&
+                    self.criticalPathCache.tasks.has(link.source) &&
+                    self.criticalPathCache.tasks.has(link.target)) {
+                    self.criticalPathCache.links.add(link.id);
+                }
+            });
+
+            this.criticalPathCache.lastCalculated = new Date();
+        },
+
+        /**
+         * Add critical path toggle button to gantt toolbar
+         */
+        _addCriticalPathToggle: function () {
+            // Skip if toggle already exists
+            if (document.querySelector('.gantt_critical_path_toggle')) {
+                console.log('Critical path toggle already exists, skipping');
+                return;
+            }
+
+            var toolbarSelectors = [
+                '.o_gantt_button_dates',
+                '.o_control_panel .btn-group',
+                '.o_control_panel .o_gantt_button_dates',
+                '.o_cp_buttons',
+                '.o_cp_left'
+            ];
+
+            var toolbar = null;
+            for (var i = 0; i < toolbarSelectors.length; i++) {
+                toolbar = document.querySelector(toolbarSelectors[i]);
+                if (toolbar) {
+                    console.log('Found toolbar for critical path toggle using selector:', toolbarSelectors[i]);
+                    break;
+                }
+            }
+
+            if (toolbar) {
+                console.log('Adding critical path toggle button to toolbar');
+
+                // Create a button group container for the toggle (matching baseline style)
+                var buttonGroup = document.createElement('div');
+                buttonGroup.className = 'btn-group ml-2';
+                buttonGroup.setAttribute('role', 'group');
+                buttonGroup.setAttribute('aria-label', 'Critical path controls');
+
+                var toggleBtn = document.createElement('button');
+                toggleBtn.className = 'gantt_critical_path_toggle btn btn-secondary';
+                toggleBtn.textContent = 'Critical Path';
+                toggleBtn.type = 'button';
+                toggleBtn.title = 'Toggle critical path highlighting';
+
+                var self = this;
+                toggleBtn.addEventListener('click', function () {
+                    self._toggleCriticalPath();
+                });
+
+                buttonGroup.appendChild(toggleBtn);
+                toolbar.appendChild(buttonGroup);
+                console.log('Critical path toggle button added successfully');
+            } else {
+                console.log('No suitable toolbar found for critical path toggle. Available elements:');
+                toolbarSelectors.forEach(function (selector) {
+                    var element = document.querySelector(selector);
+                    console.log('  ' + selector + ':', !!element);
+                });
+            }
+        },
+
+        /**
+         * Toggle critical path display on/off
+         */
+        _toggleCriticalPath: function () {
+            var isEnabled = gantt.config.highlight_critical_path;
+            gantt.config.highlight_critical_path = !isEnabled;
+
+            // Find the toggle button
+            var toggleBtn = document.querySelector('.gantt_critical_path_toggle');
+            if (toggleBtn) {
+                // Update button state and text (matching baseline toggle behavior)
+                toggleBtn.classList.toggle('active', gantt.config.highlight_critical_path);
+                toggleBtn.textContent = gantt.config.highlight_critical_path ? 'Hide Critical Path' : 'Critical Path';
+            }
+
+            // Recalculate critical path if enabling
+            if (gantt.config.highlight_critical_path) {
+                this._calculateCriticalPath();
+            } else {
+                // Clear critical path cache when disabling
+                this.criticalPathCache.tasks.clear();
+                this.criticalPathCache.links.clear();
+            }
+
+            // Force complete refresh to apply/remove critical path classes
+            gantt.refreshData();
+            gantt.refreshLink();
+
+        },
+
         _renderGantt: function () {
             var self = this;
             var tasks = this.state.data;
@@ -537,13 +808,13 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 link = _.clone(link);
                 return link;
             }));
-            console.log('Links data received:', links);
-            console.log('Show links setting:', this.showLinks);
             var gantt_tasks = { 'data': [], 'links': [] };
             var gantt_tasks_data = gantt_tasks['data'];
             var gantt_links_data = gantt_tasks['links'];
             var gantt_tasks_links = [];
             var mapping = this.state.mapping;
+            console.log('_renderGantt', tasks);
+
 
             var tasks = _.compact(_.map(this.state.data, function (task) {
                 task = _.clone(task);
@@ -622,7 +893,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     color = "#7C7BAD";
                 }
                 task.color = color;
-                console.log('task', task);
+                console.log('task 123 ', task);
 
 
                 var type;
@@ -648,7 +919,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
                 // Add baseline data processing
                 var baseline_start_date, baseline_end_date;
-                console.log('Processing task:', task.name, 'baseline_start_date:', task.baseline_start_date, 'baseline_end_date:', task.baseline_end_date);
 
                 if (task.baseline_start_date) {
                     // Try different date parsing methods
@@ -685,7 +955,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     task.is_delayed = false;
                 }
 
-                console.log('Processed baseline data - start:', baseline_start_date, 'end:', baseline_end_date, 'has_baseline:', task.has_baseline, 'is_delayed:', task.is_delayed);
 
                 return task;
             }));
@@ -824,7 +1093,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             var build_links = function (link) {
                 if (link) {
-                    console.log('Building link:', link);
                     gantt_tasks_links.push({
                         'id': "gantt_link_" + link.id,
                         'source': "gantt_task_" + link.source,
@@ -873,6 +1141,14 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             var scroll_state = gantt.getScrollState();
             gantt.scrollTo(scroll_state.x, scroll_state.y);
+
+            // Setup critical path functionality after gantt is initialized
+            this._setupCriticalPath();
+
+            // Add critical path toggle button
+            setTimeout(function () {
+                self._addCriticalPathToggle();
+            }, 100);
         },
 
         _configureGanttEvents: function (tasks, grouped_by, groups) {
@@ -1019,6 +1295,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                             parent_date_update(task_id);
                             // Update baseline status after successful task drag
                             self._updateBaselineStatus(task_id);
+                            // Recalculate critical path if enabled
+                            if (gantt.config.highlight_critical_path) {
+                                self._calculateCriticalPath();
+                            }
                         },
                         fail: function () {
                             task.start_date = task._start_date_original;
@@ -1029,6 +1309,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                             parent_date_update(task_id);
                             // Update baseline status after task revert
                             self._updateBaselineStatus(task_id);
+                            // Recalculate critical path if enabled
+                            if (gantt.config.highlight_critical_path) {
+                                self._calculateCriticalPath();
+                            }
                         }
                     });
                 };
@@ -1050,6 +1334,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                                 var newID = "gantt_task_" + newID;
                                 gantt.changeLinkId(item.id, newID);
                             }
+                            // Recalculate critical path when link is added
+                            if (gantt.config.highlight_critical_path) {
+                                self._calculateCriticalPath();
+                            }
                         },
                         fail: function () { },
                     });
@@ -1062,7 +1350,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     self.trigger_up('delete_link', {
                         link: item,
                         success: function (delete_links) {
-
+                            // Recalculate critical path when link is deleted
+                            if (gantt.config.highlight_critical_path) {
+                                self._calculateCriticalPath();
+                            }
                         },
                         fail: function () {
 

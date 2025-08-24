@@ -113,6 +113,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 if (task.is_delayed) {
                     classes.push("is_delayed");
                 }
+                // Hide actual task bar if no actual dates are provided
+                if (!task.has_actual_dates) {
+                    classes.push("hide_actual_bar");
+                }
                 return classes.join(" ");
             };
 
@@ -303,12 +307,22 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
         _render: function () {
             this._configGantt();
             this._setupBaselineRendering();
-            this._renderGantt();
+            // Only render if data is available
+            if (this.state && this.state.data) {
+                this._renderGantt();
+            } else {
+                console.log('_render - No data available, deferring render');
+            }
             return $.when();
         },
         on_attach_callback: function () {
-            this._renderGantt();
-            this._configureGanttEvents(this.state.data, this.state.grouped_by, this.state.groups);
+            // Only render if data is available
+            if (this.state && this.state.data) {
+                this._renderGantt();
+                this._configureGanttEvents(this.state.data, this.state.grouped_by, this.state.groups);
+            } else {
+                console.log('on_attach_callback - No data available, deferring render');
+            }
             this._setupBaselineRendering();
         },
 
@@ -465,7 +479,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             }
 
             if (toolbar) {
-                console.log('Adding baseline toggle button to toolbar');
 
                 // Create a button group container for the toggle
                 var buttonGroup = document.createElement('div');
@@ -484,13 +497,11 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     gantt.config.show_baseline = !gantt.config.show_baseline;
                     toggleBtn.classList.toggle('active', gantt.config.show_baseline);
                     toggleBtn.textContent = gantt.config.show_baseline ? 'Hide Baseline' : 'Show Baseline';
-                    console.log('Baseline toggle clicked, show_baseline:', gantt.config.show_baseline);
                     self._renderBaselineBars();
                 });
 
                 buttonGroup.appendChild(toggleBtn);
                 toolbar.appendChild(buttonGroup);
-                console.log('Baseline toggle button added successfully');
             } else {
                 console.log('No suitable toolbar found for baseline toggle. Available elements:');
                 toolbarSelectors.forEach(function (selector) {
@@ -799,12 +810,55 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
         },
 
+        /**
+         * Update renderer state with new data
+         */
+        updateState: function(state, params) {
+            console.log('updateState - Received state:', state);
+            console.log('updateState - State has data:', !!state.data, 'Length:', state.data ? state.data.length : 0);
+            console.log('updateState - State keys:', Object.keys(state));
+            this.state = state;
+            return Promise.resolve();
+        },
+
+        /**
+         * Trigger rendering after data is loaded
+         * This method should be called by the controller after model data loading completes
+         */
+        renderAfterDataLoad: function() {
+            console.log('renderAfterDataLoad - Triggering render after data load');
+            console.log('renderAfterDataLoad - Current state:', this.state);
+            
+            // The model's get() method returns the gantt object directly
+            if (this.state && this.state.data && this.state.data.length > 0) {
+                console.log('renderAfterDataLoad - Data found, rendering...', this.state.data.length, 'tasks');
+                this._renderGantt();
+                this._configureGanttEvents(this.state.data, this.state.grouped_by || this.state.groupedBy, this.state.groups);
+            } else {
+                console.log('renderAfterDataLoad - Still no data available');
+                console.log('renderAfterDataLoad - state:', this.state);
+                console.log('renderAfterDataLoad - state.data:', this.state ? this.state.data : 'no state');
+                if (this.state) {
+                    console.log('renderAfterDataLoad - Available state keys:', Object.keys(this.state));
+                }
+            }
+        },
+
         _renderGantt: function () {
             var self = this;
+            console.log('_renderGantt - full state:', this.state);
+            
+            // Check if state and data are properly loaded
+            if (!this.state || !this.state.data) {
+                console.log('_renderGantt - No data available, skipping render');
+                console.log('_renderGantt - Available state keys:', this.state ? Object.keys(this.state) : 'no state');
+                return;
+            }
+            
             var tasks = this.state.data;
             var grouped_by = this.state.grouped_by || [];
             var groups = this.state.groups;
-            var links = _.compact(_.map(this.state.link, function (link) {
+            var links = _.compact(_.map(this.state.link || [], function (link) {
                 link = _.clone(link);
                 return link;
             }));
@@ -813,7 +867,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             var gantt_links_data = gantt_tasks['links'];
             var gantt_tasks_links = [];
             var mapping = this.state.mapping;
-            console.log('_renderGantt', tasks);
+            console.log('_renderGantt - tasks:', tasks);
+            console.log('_renderGantt - links:', links);
 
 
             var tasks = _.compact(_.map(this.state.data, function (task) {

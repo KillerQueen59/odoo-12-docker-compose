@@ -52,6 +52,7 @@ var  GanttModel = AbstractModel.extend({
             domain: params.domain || [],
             context: params.context || {},
         };
+        console.log('GanttModel load - initialDate:', params.initialDate, 'scale:', params.scale);
         this._setFocusDate(params.initialDate, params.scale);
         return this._fetchData().then(function () {
             return Promise.resolve();
@@ -106,6 +107,8 @@ var  GanttModel = AbstractModel.extend({
         var gannt_start_date = this.gantt.start_date.locale('en').format("YYYY-MM-DD");
         var gannt_to_date = this.gantt.to_date.locale('en').format("YYYY-MM-DD");
         
+        console.log('_getDomain - date range:', gannt_start_date, 'to', gannt_to_date);
+        
         // Fixed domain logic to properly show tasks within the date range
         var domain = [];
         if (this.fields[this.dateStopField]) {
@@ -157,6 +160,11 @@ var  GanttModel = AbstractModel.extend({
     _fetchData: function () {
         var self = this;
         var domain = self._getDomain();   
+        console.log('_fetchData - modelName:', self.modelName);
+        console.log('_fetchData - domain:', self.gantt.domain.concat(domain));
+        console.log('_fetchData - context:', self.gantt.context);
+        console.log('_fetchData - fields:', self._getFields());
+        
         var promise =  new Promise(function (resolve, reject) {
             var defs = [
                 self._rpc({
@@ -164,7 +172,7 @@ var  GanttModel = AbstractModel.extend({
                     method: 'search_read',  
                     context: self.gantt.context,
                     domain: self.gantt.domain.concat(domain),
-                    fields: _.uniq(self.fields),
+                    fields: self._getFields(),
                 })
             ];
             if (self.showLinks === 'true'){
@@ -178,19 +186,30 @@ var  GanttModel = AbstractModel.extend({
                 );
             }
             Promise.all(defs).then(function (records) {
+                console.log('_fetchData - search_read result:', records[0]);
                 self.gantt.data = records[0];
                 
-                var start_min_date = new Date(Math.min.apply(null, self.gantt.data.map(function(e) {
-                    return new Date(e[self.dateStartField]);                
-                })));
-                if (start_min_date.valueOf()){
-                    gantt.config.start_date = moment(start_min_date);
+                if (self.gantt.data && self.gantt.data.length > 0) {
+                    var start_min_date = new Date(Math.min.apply(null, self.gantt.data.map(function(e) {
+                        return new Date(e[self.dateStartField]);                
+                    })));
+                    if (start_min_date.valueOf()){
+                        gantt.config.start_date = moment(start_min_date);
+                    }
+                } else {
+                    console.log('_fetchData - No data returned from search_read');
                 }
                 
                 if (self.showLinks === 'true'){           
                     self.gantt.link = records[1];
+                    console.log('_fetchData - links result:', records[1]);
                 }
                 resolve();                
+            }).catch(function (error) {
+                console.error('_fetchData - Error:', error);
+                self.gantt.data = [];
+                self.gantt.link = [];
+                reject(error);
             });
         });
         return promise;
@@ -198,6 +217,11 @@ var  GanttModel = AbstractModel.extend({
 
     _setFocusDate: function (focusDate, scale) {
         this.gantt.scale = scale;
+        // Ensure focusDate is a valid moment object, fallback to current date
+        if (!focusDate || !moment.isMoment(focusDate)) {
+            focusDate = moment();
+        }
+        console.log('_setFocusDate - focusDate:', focusDate.format('YYYY-MM-DD'), 'scale:', scale);
         this.gantt.focus_date = focusDate;
 
         // Expand the default date range to be more inclusive and show existing tasks

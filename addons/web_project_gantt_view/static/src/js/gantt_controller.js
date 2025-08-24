@@ -36,7 +36,6 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             this.initialDomain = params.domain || [];
             this.initialContext = params.context || {};
             this._setScale('month');
-            console.log('gant_controller init');
 
         },
 
@@ -75,6 +74,61 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 groupBy: currentState.groupedBy
             }).then(function () {
                 console.log('Reload completed with filters preserved');
+                // Get the current state from the model and update renderer
+                var currentState = self.model.get();
+                console.log('Current model state after _reloadWithFilters:', currentState);
+                
+                // Update renderer state first, then trigger render
+                if (self.renderer) {
+                    if (self.renderer.updateState) {
+                        return self.renderer.updateState(currentState).then(function() {
+                            if (self.renderer.renderAfterDataLoad) {
+                                self.renderer.renderAfterDataLoad();
+                            }
+                        });
+                    } else if (self.renderer.renderAfterDataLoad) {
+                        // Manually set state if updateState doesn't exist
+                        self.renderer.state = currentState;
+                        self.renderer.renderAfterDataLoad();
+                    }
+                }
+            });
+        },
+
+        /**
+         * Override base reload to ensure renderer gets triggered after data loads
+         */
+        reload: function (params) {
+            var self = this;
+            console.log('Controller reload called with params:', params);
+            
+            return this._super.apply(this, arguments).then(function (result) {
+                console.log('Base reload completed, triggering renderer');
+                // Get the current state from the model and update renderer
+                var currentState = self.model.get();
+                console.log('Current model state after reload:', currentState);
+                console.log('Model data available:', !!currentState.data, 'Length:', currentState.data ? currentState.data.length : 0);
+                
+                // Update renderer state first, then trigger render with a small delay
+                if (self.renderer) {
+                    if (self.renderer.updateState) {
+                        return self.renderer.updateState(currentState).then(function() {
+                            // Add small delay to ensure data is fully processed
+                            setTimeout(function() {
+                                if (self.renderer.renderAfterDataLoad) {
+                                    self.renderer.renderAfterDataLoad();
+                                }
+                            }, 100);
+                        });
+                    } else if (self.renderer.renderAfterDataLoad) {
+                        // Manually set state if updateState doesn't exist
+                        self.renderer.state = currentState;
+                        setTimeout(function() {
+                            self.renderer.renderAfterDataLoad();
+                        }, 100);
+                    }
+                }
+                return result;
             });
         },
 

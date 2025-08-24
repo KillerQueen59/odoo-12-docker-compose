@@ -7,8 +7,8 @@
         <field name="type">ganttview</field>
         <field name="arch" type="xml">
             <ganttview
-                date_start="start_date"
-                date_stop="end_date"
+                date_start="effective_start_date"
+                date_stop="effective_end_date"
                 progress="progress"
                 default_group_by="project_id"
                 string="Tasks Gantt"
@@ -19,8 +19,14 @@
                 baseline_end="baseline_end_date"
                 round_dnd_dates="false"
                 default_scale="month"
-                highlight_critical_path="true"
-            />
+                highlight_critical_path="true">
+                <field name="has_actual_dates"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="baseline_start_date"/>
+                <field name="baseline_end_date"/>
+                <field name="is_delayed"/>
+            </ganttview>
         </field>
     </record>
 
@@ -65,14 +71,14 @@
                         <strong>Delayed Task:</strong> This task is <field name="delay_days"/> days behind baseline schedule.
                     </div>
                     <group>
-                        <group string="Baseline (Original Plan)">
-                            <field name="baseline_start_date"/>
-                            <field name="baseline_end_date"/>
+                        <group string="Baseline (Original Plan) - Required">
+                            <field name="baseline_start_date" required="1"/>
+                            <field name="baseline_end_date" required="1"/>
                             <field name="baseline_duration"/>
                         </group>
-                        <group string="Actual (Current Plan)">
-                            <field name="start_date"/>
-                            <field name="end_date"/>
+                        <group string="Actual (Current Plan) - Optional">
+                            <field name="start_date" placeholder="Leave blank to use baseline date"/>
+                            <field name="end_date" placeholder="Leave blank to use baseline date"/>
                             <field name="duration"/>
                         </group>
                     </group>

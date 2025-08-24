@@ -16,14 +16,16 @@ class ProjectTaskManagement(models.Model):
         tree_view = self.env.ref('rnet_project_management.view_task_tree')
         form_view = self.env.ref('rnet_project_management.view_task_form')
 
-        # Find the earliest start_date among gantt tasks for this project
+        # Find the earliest effective start_date among gantt tasks for this project
         gantt_tasks = self.gantt_task_line
         initial_date = None
         if gantt_tasks:
-            # Filter out tasks without a start_date (use baseline if available, otherwise actual)
+            # Use effective_start_date which automatically falls back to baseline if no actual date
             dates = []
             for t in gantt_tasks:
-                if t.baseline_start_date:
+                if t.effective_start_date:
+                    dates.append(t.effective_start_date)
+                elif t.baseline_start_date:
                     dates.append(t.baseline_start_date)
                 elif t.start_date:
                     dates.append(t.start_date)
@@ -48,11 +50,8 @@ class ProjectTaskManagement(models.Model):
         if hasattr(self, 'revision_id') and self.revision_id:
             domain.append(('revision_id', '=', self.revision_id.id))
 
-        # Check if there are any tasks for this project and revision
-        task_count = self.env['gantt.task'].search_count(domain)
-        if not task_count:
-            # Optionally, show a warning to the user
-            raise UserError(_('No tasks found for the selected project and revision. Please add tasks to see them in the Gantt view.'))
+        # Allow Gantt view to open even if no tasks exist
+        # Users can create tasks directly in the Gantt view
 
         return {
             'type': 'ir.actions.act_window',
@@ -82,14 +81,21 @@ class GanttTask(models.Model):
     revision_id = fields.Many2one('project.revision', string='Revision', ondelete='set null')
     
     # Baseline dates (original plan)
-    baseline_start_date = fields.Date(string='Baseline Start Date')
-    baseline_end_date = fields.Date(string='Baseline End Date')
+    baseline_start_date = fields.Date(string='Baseline Start Date', required=True)
+    baseline_end_date = fields.Date(string='Baseline End Date', required=True)
     baseline_duration = fields.Integer(string='Baseline Duration (Days)', compute='_compute_baseline_duration', store=True)
     
     # Actual dates (current/revised plan)
-    start_date = fields.Date(string='Actual Start Date', required=True)
-    end_date = fields.Date(string='Actual End Date', required=True)
+    start_date = fields.Date(string='Actual Start Date')
+    end_date = fields.Date(string='Actual End Date')
     duration = fields.Integer(string='Actual Duration (Days)', compute='_compute_duration', store=True)
+    
+    # Effective dates for Gantt view (computed fields that fallback to baseline)
+    effective_start_date = fields.Date(string='Effective Start Date', compute='_compute_effective_dates', store=True)
+    effective_end_date = fields.Date(string='Effective End Date', compute='_compute_effective_dates', store=True)
+    
+    # Flag to indicate if actual dates are provided (for Gantt view rendering)
+    has_actual_dates = fields.Boolean(string='Has Actual Dates', compute='_compute_has_actual_dates', store=True)
     
     supervisor_id = fields.Many2one('hr.employee', string='Supervisor')
     state = fields.Selection([
@@ -122,22 +128,24 @@ class GanttTask(models.Model):
     @api.model
     def search_read_links(self, domain=None):
         """Return links data for gantt view"""
-        # Filter domain to only include fields that exist on gantt.task.link model
+        # Build a simple domain for links based on project_id only
         link_domain = []
+        project_ids = set()
+        
         if domain:
+            # Extract project_id values from the domain
             for condition in domain:
                 if isinstance(condition, (list, tuple)) and len(condition) >= 3:
                     field, operator, value = condition[0], condition[1], condition[2]
-                    # Map task fields to link model fields
-                    if field == 'project_id':
-                        link_domain.append(('project_id', operator, value))
-                    elif field in ['start_date', 'end_date']:
-                        # For date filters, we need to filter through related task fields
-                        link_domain.append(('task_id.' + field, operator, value))
-                    # Skip other fields that don't apply to links
-                else:
-                    # Handle logical operators like '&', '|', '!'
-                    link_domain.append(condition)
+                    if field == 'project_id' and operator == '=':
+                        project_ids.add(value)
+        
+        # Create a clean domain with unique project_ids
+        if project_ids:
+            if len(project_ids) == 1:
+                link_domain = [('project_id', '=', list(project_ids)[0])]
+            else:
+                link_domain = [('project_id', 'in', list(project_ids))]
         
         links = self.env['gantt.task.link'].search(link_domain)
         result = []
@@ -153,16 +161,35 @@ class GanttTask(models.Model):
     @api.constrains('start_date', 'end_date', 'baseline_start_date', 'baseline_end_date')
     def _check_dates(self):
         for task in self:
+            # Check baseline dates (required)
+            if task.baseline_start_date > task.baseline_end_date:
+                raise ValidationError(_('Baseline start date must be before baseline end date'))
+            # Check actual dates only if both are provided
             if task.start_date and task.end_date and task.start_date > task.end_date:
                 raise ValidationError(_('Actual start date must be before actual end date'))
-            if task.baseline_start_date and task.baseline_end_date and task.baseline_start_date > task.baseline_end_date:
-                raise ValidationError(_('Baseline start date must be before baseline end date'))
+
+    @api.depends('start_date', 'end_date', 'baseline_start_date', 'baseline_end_date')
+    def _compute_effective_dates(self):
+        for task in self:
+            # Use actual dates if provided, otherwise fallback to baseline dates
+            task.effective_start_date = task.start_date or task.baseline_start_date
+            task.effective_end_date = task.end_date or task.baseline_end_date
 
     @api.depends('start_date', 'end_date')
+    def _compute_has_actual_dates(self):
+        for task in self:
+            # Task has actual dates if both start_date and end_date are provided
+            task.has_actual_dates = bool(task.start_date and task.end_date)
+
+    @api.depends('start_date', 'end_date', 'baseline_start_date', 'baseline_end_date')
     def _compute_duration(self):
         for task in self:
-            if task.start_date and task.end_date:
-                delta = fields.Date.from_string(task.end_date) - fields.Date.from_string(task.start_date)
+            # Use actual dates if both are provided, otherwise use baseline dates
+            start_date = task.start_date or task.baseline_start_date
+            end_date = task.end_date or task.baseline_end_date
+            
+            if start_date and end_date:
+                delta = fields.Date.from_string(end_date) - fields.Date.from_string(start_date)
                 task.duration = delta.days
             else:
                 task.duration = 0
@@ -179,9 +206,11 @@ class GanttTask(models.Model):
     @api.depends('start_date', 'end_date', 'baseline_start_date', 'baseline_end_date')
     def _compute_delay_status(self):
         for task in self:
-            if task.baseline_end_date and task.end_date:
+            if task.baseline_end_date:
+                # Use actual end date if provided, otherwise use baseline (no delay)
+                actual_end_date = task.end_date or task.baseline_end_date
                 baseline_end = fields.Date.from_string(task.baseline_end_date)
-                actual_end = fields.Date.from_string(task.end_date)
+                actual_end = fields.Date.from_string(actual_end_date)
                 delay = (actual_end - baseline_end).days
                 task.delay_days = delay
                 task.is_delayed = delay > 0
@@ -191,10 +220,19 @@ class GanttTask(models.Model):
 
     def write(self, vals):
         # Handle datetime conversion for all date fields
-        date_fields = ['start_date', 'end_date', 'baseline_start_date', 'baseline_end_date']
+        date_fields = ['start_date', 'end_date', 'baseline_start_date', 'baseline_end_date', 'effective_start_date', 'effective_end_date']
         for field in date_fields:
             if field in vals and isinstance(vals[field], datetime):
                 vals[field] = vals[field].strftime('%Y-%m-%d')
+        
+        # When Gantt view updates effective dates, map them to actual dates
+        if 'effective_start_date' in vals:
+            vals['start_date'] = vals['effective_start_date']
+            del vals['effective_start_date']
+        if 'effective_end_date' in vals:
+            vals['end_date'] = vals['effective_end_date']
+            del vals['effective_end_date']
+            
         return super(GanttTask, self).write(vals)
 
     @api.model
@@ -205,11 +243,8 @@ class GanttTask(models.Model):
             if field in vals and isinstance(vals[field], datetime):
                 vals[field] = vals[field].strftime('%Y-%m-%d')
         
-        # If baseline dates are not provided, copy from actual dates
-        if 'start_date' in vals and 'baseline_start_date' not in vals:
-            vals['baseline_start_date'] = vals['start_date']
-        if 'end_date' in vals and 'baseline_end_date' not in vals:
-            vals['baseline_end_date'] = vals['end_date']
+        # If actual dates are not provided, they will default to None (optional)
+        # Baseline dates are now required and must be provided
             
         return super(GanttTask, self).create(vals)
 

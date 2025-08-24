@@ -147,3 +147,18 @@
 .custom_task_bottom_bar:hover {
 	background-color: #d0d0d0 !important;
 }
+
+/* Hide actual task bar when only baseline dates are provided */
+.gantt_task_line.hide_actual_bar {
+	opacity: 0 !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+/* Ensure baseline bars are still visible when actual bars are hidden */
+.gantt_task_line.hide_actual_bar ~ .gantt_task_baseline,
+.hide_actual_bar + .gantt_task_baseline {
+	opacity: 1 !important;
+	visibility: visible !important;
+	pointer-events: auto !important;
+}

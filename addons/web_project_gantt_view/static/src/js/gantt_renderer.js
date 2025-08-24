@@ -142,20 +142,40 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             };
 
             gantt.templates.tooltip_text = function (start, end, task) {
-                var tooltip = "<b>Task:</b> " + task.text + "<br/>" +
-                    "<b>Start date:</b>" + gantt.templates.tooltip_date_format(start) +
-                    "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(end) +
-                    "<br/><b>Progress:</b> " + (Math.round(task.progress * 100)) + "%";
+                var tooltip = "<b>Task:</b> " + task.text + "<br/>";
+                
+                // Safe date formatting with null checks
+                if (start) {
+                    tooltip += "<b>Start date:</b> " + gantt.templates.tooltip_date_format(start) + "<br/>";
+                } else {
+                    tooltip += "<b>Start date:</b> Not set<br/>";
+                }
+                
+                if (end) {
+                    tooltip += "<b>End date:</b> " + gantt.templates.tooltip_date_format(end) + "<br/>";
+                } else {
+                    tooltip += "<b>End date:</b> Not set<br/>";
+                }
+                
+                tooltip += "<b>Progress:</b> " + (Math.round(task.progress * 100)) + "%";
 
                 // Add baseline information if available
                 if (task.has_baseline && task.baseline_start_date && task.baseline_end_date) {
                     tooltip += "<div class='gantt_tooltip_baseline'>";
                     tooltip += "<b>Baseline:</b><br/>";
-                    tooltip += "Start: " + gantt.templates.tooltip_date_format(new Date(task.baseline_start_date)) + "<br/>";
-                    tooltip += "End: " + gantt.templates.tooltip_date_format(new Date(task.baseline_end_date));
+                    
+                    var baselineStart = new Date(task.baseline_start_date);
+                    var baselineEnd = new Date(task.baseline_end_date);
+                    
+                    if (!isNaN(baselineStart.getTime())) {
+                        tooltip += "Start: " + gantt.templates.tooltip_date_format(baselineStart) + "<br/>";
+                    }
+                    if (!isNaN(baselineEnd.getTime())) {
+                        tooltip += "End: " + gantt.templates.tooltip_date_format(baselineEnd);
+                    }
 
-                    if (task.is_delayed) {
-                        var delayDays = Math.ceil((end - new Date(task.baseline_end_date)) / (1000 * 60 * 60 * 24));
+                    if (task.is_delayed && end && !isNaN(baselineEnd.getTime())) {
+                        var delayDays = Math.ceil((end - baselineEnd) / (1000 * 60 * 60 * 24));
                         tooltip += "<br/><span class='gantt_tooltip_delay'>Delayed by " + delayDays + " days</span>";
                     }
                     tooltip += "</div>";

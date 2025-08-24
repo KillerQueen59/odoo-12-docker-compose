@@ -391,7 +391,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             new dialogs.FormViewDialog(this, {
                 res_model: this.modelName,
                 context: context,
-                on_saved: this.reload.bind(this),
+                on_saved: this._reloadWithFilters.bind(this),
             }).open();
         },
 

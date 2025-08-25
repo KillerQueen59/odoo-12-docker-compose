@@ -285,7 +285,6 @@
 										<field name="duration" />
 										<field name="delay_days" attrs="{'invisible': [('is_delayed', '=', False)]}" />
 										<field name="progress" widget="percentage" />
-										<field name="progress" widget="progressbar" />
 										<field name="state" />
 										<field name="priority" />
 										<field name="is_delayed" invisible="1" />

@@ -62,9 +62,7 @@ odoo.define('web_project_gantt_view.GanttView', function (require) {
             this.loadParams.scale = scale;
             // Extract initialDate from context or params, fallback to current date
             var initialDate = (params.context && params.context.initialDate) || params.initialDate || new Date();
-            console.log('GanttView init - raw initialDate:', initialDate);
             this.loadParams.initialDate = moment(initialDate);
-            console.log('GanttView init - moment initialDate:', this.loadParams.initialDate.format('YYYY-MM-DD'));
             this.loadParams.defaultGroupBy = arch.attrs.default_group_by;
 
             this.loadParams.dateStartField = arch.attrs.date_start;

@@ -58,13 +58,11 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             // Try to get search panel state if available
             if (this.searchPanel && this.searchPanel.getState) {
                 var searchState = this.searchPanel.getState();
-                console.log('Search panel state:', searchState);
             }
 
             // Get search model state if available
             if (this.searchModel && this.searchModel.get) {
                 var searchQuery = this.searchModel.get('query');
-                console.log('Search model query:', searchQuery);
             }
 
             // Force reload with current filters
@@ -73,15 +71,12 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 context: currentContext,
                 groupBy: currentState.groupedBy
             }).then(function () {
-                console.log('Reload completed with filters preserved');
-                // Get the current state from the model and update renderer
                 var currentState = self.model.get();
-                console.log('Current model state after _reloadWithFilters:', currentState);
-                
+
                 // Update renderer state first, then trigger render
                 if (self.renderer) {
                     if (self.renderer.updateState) {
-                        return self.renderer.updateState(currentState).then(function() {
+                        return self.renderer.updateState(currentState).then(function () {
                             if (self.renderer.renderAfterDataLoad) {
                                 self.renderer.renderAfterDataLoad();
                             }
@@ -100,21 +95,17 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
          */
         reload: function (params) {
             var self = this;
-            console.log('Controller reload called with params:', params);
-            
+
             return this._super.apply(this, arguments).then(function (result) {
-                console.log('Base reload completed, triggering renderer');
                 // Get the current state from the model and update renderer
                 var currentState = self.model.get();
-                console.log('Current model state after reload:', currentState);
-                console.log('Model data available:', !!currentState.data, 'Length:', currentState.data ? currentState.data.length : 0);
-                
+
                 // Update renderer state first, then trigger render with a small delay
                 if (self.renderer) {
                     if (self.renderer.updateState) {
-                        return self.renderer.updateState(currentState).then(function() {
+                        return self.renderer.updateState(currentState).then(function () {
                             // Add small delay to ensure data is fully processed
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 if (self.renderer.renderAfterDataLoad) {
                                     self.renderer.renderAfterDataLoad();
                                 }
@@ -123,7 +114,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                     } else if (self.renderer.renderAfterDataLoad) {
                         // Manually set state if updateState doesn't exist
                         self.renderer.state = currentState;
-                        setTimeout(function() {
+                        setTimeout(function () {
                             self.renderer.renderAfterDataLoad();
                         }, 100);
                     }
@@ -186,8 +177,6 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
 
         _setScale: function (scale) {
             var self = this;
-            console.log('setScale', scale);
-
             this.model.setScale(scale);
             self.set('title', self.displayName + ' (' + self.model.get().date_display + ')');
             // Use _reloadWithFilters to preserve project/revision filters
@@ -195,8 +184,6 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
         },
 
         _onCreateClick: function (event) {
-            console.log('_onCreateClick', event);
-
             if (this.activeActions.create) {
 
                 var context = _.clone(this.context);
@@ -295,8 +282,6 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
         },
 
         _onTaskCreate: function () {
-            console.log('_createTask', _createTask);
-
             if (this.activeActions.create) {
                 var startDate = moment(new Date()).utc();
                 this._createTask(0, startDate);

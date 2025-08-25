@@ -26,8 +26,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             this.deadLine = params.deadLine;
             this.showLinks = params.showLinks;
             this.roundDndDates = params.roundDndDates;
-            console.log('gant_render init');
-
         },
 
         _configGantt: function () {
@@ -143,30 +141,30 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             gantt.templates.tooltip_text = function (start, end, task) {
                 var tooltip = "<b>Task:</b> " + task.text + "<br/>";
-                
+
                 // Safe date formatting with null checks
                 if (start) {
                     tooltip += "<b>Start date:</b> " + gantt.templates.tooltip_date_format(start) + "<br/>";
                 } else {
                     tooltip += "<b>Start date:</b> Not set<br/>";
                 }
-                
+
                 if (end) {
                     tooltip += "<b>End date:</b> " + gantt.templates.tooltip_date_format(end) + "<br/>";
                 } else {
                     tooltip += "<b>End date:</b> Not set<br/>";
                 }
-                
+
                 tooltip += "<b>Progress:</b> " + (Math.round(task.progress * 100)) + "%";
 
                 // Add baseline information if available
                 if (task.has_baseline && task.baseline_start_date && task.baseline_end_date) {
                     tooltip += "<div class='gantt_tooltip_baseline'>";
                     tooltip += "<b>Baseline:</b><br/>";
-                    
+
                     var baselineStart = new Date(task.baseline_start_date);
                     var baselineEnd = new Date(task.baseline_end_date);
-                    
+
                     if (!isNaN(baselineStart.getTime())) {
                         tooltip += "Start: " + gantt.templates.tooltip_date_format(baselineStart) + "<br/>";
                     }
@@ -268,8 +266,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
                                 // Add the wrapper back to the task row
                                 taskRow.appendChild(taskWrapper);
-                                console.log("taskRow", taskRow);
-                                console.log("customBar", customBar);
+
                             }
                         }
                     });
@@ -331,7 +328,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             if (this.state && this.state.data) {
                 this._renderGantt();
             } else {
-                console.log('_render - No data available, deferring render');
             }
             return $.when();
         },
@@ -340,10 +336,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             if (this.state && this.state.data) {
                 this._renderGantt();
                 this._configureGanttEvents(this.state.data, this.state.grouped_by, this.state.groups);
-            } else {
-                console.log('on_attach_callback - No data available, deferring render');
-            }
-            this._setupBaselineRendering();
+            } this._setupBaselineRendering();
         },
 
         _setupBaselineRendering: function () {
@@ -359,7 +352,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             // Also render baselines after task updates
             gantt.attachEvent("onAfterTaskUpdate", function () {
-                console.log('onAfterTaskUpdate event fired');
                 setTimeout(function () {
                     self._renderBaselineBars();
                 }, 100);
@@ -400,14 +392,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             // Task is delayed if actual end date is after baseline end date
             task.is_delayed = actualEndDate.isAfter(baselineEndDate);
 
-            console.log('Baseline status update for task:', task.id,
-                'actual end:', actualEndDate.format('YYYY-MM-DD'),
-                'baseline end:', baselineEndDate.format('YYYY-MM-DD'),
-                'was delayed:', wasDelayed, 'now delayed:', task.is_delayed);
-
             // If status changed, re-render baseline bars to update colors
             if (wasDelayed !== task.is_delayed) {
-                console.log('Baseline status changed for task:', task.id, 'triggering re-render');
                 this._renderBaselineBars();
             }
         },
@@ -421,7 +407,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             });
 
             if (!gantt.config.show_baseline) {
-                console.log('Baseline rendering disabled');
                 return;
             }
 
@@ -747,7 +732,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
         _addCriticalPathToggle: function () {
             // Skip if toggle already exists
             if (document.querySelector('.gantt_critical_path_toggle')) {
-                console.log('Critical path toggle already exists, skipping');
                 return;
             }
 
@@ -769,7 +753,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             }
 
             if (toolbar) {
-                console.log('Adding critical path toggle button to toolbar');
 
                 // Create a button group container for the toggle (matching baseline style)
                 var buttonGroup = document.createElement('div');
@@ -790,9 +773,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
                 buttonGroup.appendChild(toggleBtn);
                 toolbar.appendChild(buttonGroup);
-                console.log('Critical path toggle button added successfully');
             } else {
-                console.log('No suitable toolbar found for critical path toggle. Available elements:');
                 toolbarSelectors.forEach(function (selector) {
                     var element = document.querySelector(selector);
                     console.log('  ' + selector + ':', !!element);
@@ -833,10 +814,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
         /**
          * Update renderer state with new data
          */
-        updateState: function(state, params) {
-            console.log('updateState - Received state:', state);
-            console.log('updateState - State has data:', !!state.data, 'Length:', state.data ? state.data.length : 0);
-            console.log('updateState - State keys:', Object.keys(state));
+        updateState: function (state, params) {
             this.state = state;
             return Promise.resolve();
         },
@@ -845,36 +823,23 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
          * Trigger rendering after data is loaded
          * This method should be called by the controller after model data loading completes
          */
-        renderAfterDataLoad: function() {
-            console.log('renderAfterDataLoad - Triggering render after data load');
-            console.log('renderAfterDataLoad - Current state:', this.state);
-            
+        renderAfterDataLoad: function () {
+
             // The model's get() method returns the gantt object directly
             if (this.state && this.state.data && this.state.data.length > 0) {
-                console.log('renderAfterDataLoad - Data found, rendering...', this.state.data.length, 'tasks');
                 this._renderGantt();
                 this._configureGanttEvents(this.state.data, this.state.grouped_by || this.state.groupedBy, this.state.groups);
-            } else {
-                console.log('renderAfterDataLoad - Still no data available');
-                console.log('renderAfterDataLoad - state:', this.state);
-                console.log('renderAfterDataLoad - state.data:', this.state ? this.state.data : 'no state');
-                if (this.state) {
-                    console.log('renderAfterDataLoad - Available state keys:', Object.keys(this.state));
-                }
             }
         },
 
         _renderGantt: function () {
             var self = this;
-            console.log('_renderGantt - full state:', this.state);
-            
+
             // Check if state and data are properly loaded
             if (!this.state || !this.state.data) {
-                console.log('_renderGantt - No data available, skipping render');
-                console.log('_renderGantt - Available state keys:', this.state ? Object.keys(this.state) : 'no state');
                 return;
             }
-            
+
             var tasks = this.state.data;
             var grouped_by = this.state.grouped_by || [];
             var groups = this.state.groups;
@@ -887,9 +852,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             var gantt_links_data = gantt_tasks['links'];
             var gantt_tasks_links = [];
             var mapping = this.state.mapping;
-            console.log('_renderGantt - tasks:', tasks);
-            console.log('_renderGantt - links:', links);
-
 
             var tasks = _.compact(_.map(this.state.data, function (task) {
                 task = _.clone(task);
@@ -968,7 +930,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     color = "#7C7BAD";
                 }
                 task.color = color;
-                console.log('task 123 ', task);
 
 
                 var type;
@@ -1183,8 +1144,6 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     build_links(link);
                 });
             }
-            console.log('Final gantt_tasks data:', gantt_tasks);
-            console.log('Total links to render:', gantt_tasks_links.length);
 
             this._renderGanttData(gantt_tasks);
             this._configureGanttEvents(tasks, grouped_by, gantt_tasks);

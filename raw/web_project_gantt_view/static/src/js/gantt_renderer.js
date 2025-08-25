@@ -1,11 +1,11 @@
 odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
     "use strict";
-    
+
     var AbstractRenderer = require('web.AbstractRenderer');
     var core = require('web.core');
     var field_utils = require('web.field_utils');
     var time = require('web.time');
-    
+
     var _lt = core._lt;
 
     var GanttRenderer = AbstractRenderer.extend({
@@ -27,12 +27,12 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             this.showLinks = params.showLinks;
             this.roundDndDates = params.roundDndDates;
         },
-        
+
         _configGantt: function () {
-            var self = this;          
+            var self = this;
             //Gantt Configurations
             gantt.config.autosize = "y";
-            gantt.config.drag_links = self.showLinks === 'true' ?  true : false;
+            gantt.config.drag_links = self.showLinks === 'true' ? true : false;
             gantt.config.drag_progress = false;
             gantt.config.drag_resize = true;
             gantt.config.grid_width = 350;
@@ -41,15 +41,16 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             gantt.config.initial_scroll = true;
             gantt.config.preserve_scroll = true;
             gantt.config.start_on_monday = moment().startOf("week").day();
-            gantt.config.start_date = this.state.start_date;
-            gantt.config.end_date = this.state.end_date;
+            // Removed fixed date range restrictions to allow unlimited scrolling
+            // gantt.config.start_date = this.state.start_date;
+            // gantt.config.end_date = this.state.end_date;
             gantt.config.round_dnd_dates = !!this.roundDndDates;
             gantt.config.drag_move = this.edit ? JSON.parse(this.edit) : true;
             gantt.config.sort = true;
             gantt.config.work_time = true;
             gantt.config.skip_off_time = true;
 
-            gantt.plugins({ 
+            gantt.plugins({
                 tooltip: true,
                 fullscreen: true,
                 marker: true,
@@ -57,14 +58,14 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 fullscreen: true
             });
 
-            gantt.config.columns = [    
+            gantt.config.columns = [
                 {
                     name: "text",
                     label: _lt("Gantt View"),
                     tree: true,
                     width: "*",
                     resize: true,
-                    template: function(task) {
+                    template: function (task) {
                         var html = '';
                         if (task.deadline) {
                             var deadline = new Date(task.deadline);
@@ -77,21 +78,21 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         }
                         return html + task.text;
                     },
-                },   
+                },
                 {
-                    name: "duration", 
+                    name: "duration",
                     label: _lt("Duration(d)"),
-                    align: "center", 
-                    width: 80, 
-                },                                             
+                    align: "center",
+                    width: 80,
+                },
             ];
-        
+
             gantt.templates.grid_indent = function () {
                 return "<div class='gantt_tree_indent' style='width:20px;'></div>";
             };
 
             gantt.templates.task_class = function (start, end, task) {
-                var classes = ["o_gantt_color" + task.color + "_0"];               
+                var classes = ["o_gantt_color" + task.color + "_0"];
                 if (task.is_group) {
                     classes.push("has_child");
                 } else {
@@ -115,36 +116,36 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     classes += " today";
                 }
                 return classes;
-            };     
-
-            gantt.templates.task_text = function (start, end, task) {                      
-                return task.text  + "<span style='text-align:left;'> (" + Math.round(task.progress * 100) + "%)</span>";
             };
 
-            gantt.templates.tooltip_text = function(start,end,task){            
-                return "<b>Task:</b> "+task.text+"<br/>" + 
-                    "<b>Start date:</b>" + gantt.templates.tooltip_date_format(start) + 
-                    "<br/><b>End date:</b> "+gantt.templates.tooltip_date_format(end) +
-                    "<br/><b>Progress:</b> "+ (Math.round(task.progress * 100)) + "%";
+            gantt.templates.task_text = function (start, end, task) {
+                return task.text + "<span style='text-align:left;'> (" + Math.round(task.progress * 100) + "%)</span>";
             };
-            
-            gantt.templates.grid_folder = function(item) {
+
+            gantt.templates.tooltip_text = function (start, end, task) {
+                return "<b>Task:</b> " + task.text + "<br/>" +
+                    "<b>Start date:</b>" + gantt.templates.tooltip_date_format(start) +
+                    "<br/><b>End date:</b> " + gantt.templates.tooltip_date_format(end) +
+                    "<br/><b>Progress:</b> " + (Math.round(task.progress * 100)) + "%";
+            };
+
+            gantt.templates.grid_folder = function (item) {
                 return "<div class='gantt_tree_icon gantt_folder_" +
-                (item.$open ? "open" : "closed") + "'></div>";
+                    (item.$open ? "open" : "closed") + "'></div>";
             };
-    
-            gantt.templates.grid_file = function(task) {
+
+            gantt.templates.grid_file = function (task) {
                 var html = '';
-                if (!task.is_group){
+                if (!task.is_group) {
                     if (task.priority === 'high') {
                         html += "<div class='gantt_tree_icon gantt_file priority_high'></div>";
                     }
-                    else if(task.priority === 'low'){
+                    else if (task.priority === 'low') {
                         html += "<div class='gantt_tree_icon gantt_file priority_low'></div>";
                     }
-                    else{
+                    else {
                         html += "<div class='gantt_tree_icon gantt_file priority_normal'></div>";
-                    }                           
+                    }
                 }
                 return html;
             };
@@ -167,70 +168,70 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             gantt.templates.rightside_text = function (start, end, task) {
                 if (task.deadline) {
                     if (end.valueOf() > new Date(task.deadline).valueOf()) {
-                        var endTime = Math.abs(( new Date(end).getTime() ));
-                        var deadLine = Math.abs(( new Date(task.deadline).getTime() ));
+                        var endTime = Math.abs((new Date(end).getTime()));
+                        var deadLine = Math.abs((new Date(task.deadline).getTime()));
                         var overdue = Math.ceil((endTime - deadLine) / (24 * 60 * 60 * 1000));
                         var text = "<b>Overdue: " + overdue + " days</b>";
                         return text;
-                    }                   
-                }                
+                    }
+                }
             };
         },
 
-        _setScaleConfig: function (value) {            
+        _setScaleConfig: function (value) {
             gantt.config.min_column_width = 48;
             gantt.config.scale_height = 48;
             gantt.config.step = 1;
-                                
+
             switch (value) {
-                case "day":                    
+                case "day":
                     gantt.config.scale_unit = "day";
                     gantt.config.date_scale = "%d %M";
                     gantt.templates.scale_cell_class = getcss;
-                    gantt.config.subscales = [{unit:"hour", step:1, date:"%H h"}];
+                    gantt.config.subscales = [{ unit: "hour", step: 1, date: "%H h" }];
                     gantt.config.scale_height = 27;
                     break;
                 case "week":
-                    var weekScaleTemplate = function (date){
+                    var weekScaleTemplate = function (date) {
                         var dateToStr = gantt.date.date_to_str("%d %M %Y");
                         var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
                         return dateToStr(date) + " - " + dateToStr(endDate);
                     };
                     gantt.config.scale_unit = "week";
                     gantt.templates.date_scale = weekScaleTemplate;
-                    gantt.config.subscales = [{unit:"day", step:1, date:"%d, %D", css:getcss}];
+                    gantt.config.subscales = [{ unit: "day", step: 1, date: "%d, %D", css: getcss }];
                     break;
                 case "month":
                     gantt.config.scale_unit = "month";
                     gantt.config.date_scale = "%F, %Y";
-                    gantt.config.subscales = [{unit:"day", step:1, date:"%d", css:getcss}];
+                    gantt.config.subscales = [{ unit: "day", step: 1, date: "%d", css: getcss }];
                     gantt.config.min_column_width = 25;
                     break;
                 case "year":
                     gantt.config.scale_unit = "year";
                     gantt.config.date_scale = "%Y";
-                    gantt.config.subscales = [{unit:"month", step:1, date:"%M"}];
+                    gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
                     break;
             }
             function getcss(date) {
                 var today = new Date();
-                if(date.getDay() === 0 || date.getDay() === 6){
+                if (date.getDay() === 0 || date.getDay() === 6) {
                     return "weekend_scale";
                 }
-                if(date.getMonth() === today.getMonth() && date.getDate() === today.getDate()){
+                if (date.getMonth() === today.getMonth() && date.getDate() === today.getDate()) {
                     return "today";
-                } 
+                }
             }
         },
 
-        _render: function () {            
+        _render: function () {
             this._configGantt();
             this._renderGantt();
             return $.when();
         },
-        on_attach_callback: function() {
+        on_attach_callback: function () {
             this._super();
-            if(!this.events_set){
+            if (!this.events_set) {
                 var self = this;
                 this._configureGanttEvents();
                 this.events_set = true;
@@ -240,13 +241,13 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
         _renderGantt: function () {
             var self = this;
-            
+
             var mapping = this.state.mapping;
             var grouped_by = this.state.groupedBy;
-            
+
             var links = _.compact(_.map(this.state.link, function (link) {
                 link = _.clone(link);
-                return link;            
+                return link;
             }));
 
             var tasks = _.compact(_.map(this.state.data, function (task) {
@@ -255,12 +256,12 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 var task_start;
                 if (task[self.dateStartField]) {
                     task_start = time.auto_str_to_date(task[self.dateStartField]);
-                }                
-                else{
+                }
+                else {
                     return false;
                 }
                 task.task_start = task_start;
-                
+
                 var task_stop;
                 if (task[self.dateStopField]) {
                     task_stop = time.auto_str_to_date(task[self.dateStopField]);
@@ -276,61 +277,61 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 var percent;
                 if (_.isNumber(task[self.progressField])) {
                     percent = task[self.progressField] || 0;
-                } 
+                }
                 else {
                     percent = 0;
                 }
                 task.percent = percent;
-    
-                
+
+
                 if (self.min_date && task_stop < new Date(self.min_date)) {
                     return false;
                 }
-    
+
                 var color;
                 if (task[self.colorField]) {
-                    if (task[self.colorField] == '1'){
+                    if (task[self.colorField] == '1') {
                         color = '#F06050';
                     }
-                    if (task[self.colorField] == '2'){
+                    if (task[self.colorField] == '2') {
                         color = '#F4A460';
                     }
-                    if (task[self.colorField] == '3'){
+                    if (task[self.colorField] == '3') {
                         color = '#F7CD1F';
                     }
-                    if (task[self.colorField] == '4'){
+                    if (task[self.colorField] == '4') {
                         color = '#6CC1ED';
                     }
-                    if (task[self.colorField] == '5'){
+                    if (task[self.colorField] == '5') {
                         color = '#814968';
                     }
-                    if (task[self.colorField] == '6'){
+                    if (task[self.colorField] == '6') {
                         color = '#EB7E7F';
                     }
-                    if (task[self.colorField] == '7'){
+                    if (task[self.colorField] == '7') {
                         color = '#2C8397';
                     }
-                    if (task[self.colorField] == '8'){
+                    if (task[self.colorField] == '8') {
                         color = '#475577';
                     }
-                    if (task[self.colorField] == '9'){
+                    if (task[self.colorField] == '9') {
                         color = '#D6145F';
                     }
-                    if (task[self.colorField] == '10'){
+                    if (task[self.colorField] == '10') {
                         color = '#30C381';
                     }
-                    if (task[self.colorField] == '11'){
+                    if (task[self.colorField] == '11') {
                         color = '#9365B8';
                     }
-                }else{
+                } else {
                     color = "#7C7BAD";
                 }
                 task.color = color;
-    
+
                 var type;
                 if (task[self.taskType]) {
                     type = task[self.taskType];
-                }else{
+                } else {
                     type = 'task';
                 }
                 task.type = type;
@@ -341,36 +342,36 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 }
                 task.deadline = deadline;
 
-                
+
                 var priority;
                 if (task[self.taskPriority]) {
                     priority = task[self.taskPriority];
                 }
                 task.priority = priority;
-    
+
                 return task;
             }));
-    
+
 
             var split_groups = function (tasks, grouped_by) {
                 if (grouped_by.length === 0) {
                     return tasks;
                 }
-                
+
                 var groups = [];
                 _.each(tasks, function (task) {
-                    var group_name = task[_.first(grouped_by)];                    
+                    var group_name = task[_.first(grouped_by)];
                     var group = _.find(groups, function (group) {
                         return _.isEqual(group.name, group_name);
                     });
 
                     if (group === undefined) {
                         group = {
-                            name:group_name, 
-                            tasks: [], 
+                            name: group_name,
+                            tasks: [],
                             __is_group: true,
-                            group_start: false, 
-                            group_stop: false, 
+                            group_start: false,
+                            group_stop: false,
                             percent: [],
                             open: true
                         };
@@ -392,38 +393,34 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 return groups;
             };
             var groups = split_groups(tasks, grouped_by);
-    
+
+            // Handle empty state - show empty message instead of dummy tasks
             if (groups.length === 0) {
-                groups = [{
-                    'id': 0,
-                    'display_name': '',
-                    'task_start': this.state.focus_date.toDate(),
-                    'task_stop': this.state.focus_date.toDate(),
-                    'percent': 0,
-                }];
+                this.$el.html('<div class="o_view_nocontent"><div class="o_nocontent_help"><p class="o_view_nocontent_smiling_face">No tasks found for this project!</p><p>Get started by creating your first task to begin project planning and tracking.</p><p><strong>Features available:</strong></p><ul><li>📊 Gantt chart visualization with baseline tracking</li><li>🔗 Task dependencies and critical path analysis</li><li>📈 Progress monitoring and delay detection</li><li>👥 Supervisor assignment and team collaboration</li></ul></div></div>');
+                return;
             }
 
             var gantt_tasks = [];
             var gantt_tasks_data = []
             var gantt_tasks_links = []
-    
+
             var build_tasks = function (task, level, parent_id) {
                 if ((task.__is_group && !task.group_start) || (!task.__is_group && !task.task_start)) {
                     return;
                 }
 
                 if (task.__is_group) {
-                    if (level > 0 && task.tasks.length === 0){
+                    if (level > 0 && task.tasks.length === 0) {
                         return;
                     }
                     var project_id = _.uniqueId("gantt_project_");
                     var field = self.state.fields[grouped_by[level]];
 
                     var group_name = task[mapping.name] ? field_utils.format[field.type](task[mapping.name], field) : "-";
-                    
-                    var sum = _.reduce(task.percent, function (acc, num) { return acc+num; }, 0);
+
+                    var sum = _.reduce(task.percent, function (acc, num) { return acc + num; }, 0);
                     var progress = sum / task.percent.length / 100 || 0;
-                    
+
                     var t = {
                         'id': project_id,
                         'text': group_name,
@@ -437,21 +434,21 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         'color': '#f4f7f4',
                         'textColor': '#000000'
                     };
-                    
-                    if (parent_id) { 
-                        t.parent = parent_id; 
+
+                    if (parent_id) {
+                        t.parent = parent_id;
                     }
                     gantt_tasks_data.push(t);
-                    
+
                     _.each(task.tasks, function (subtask) {
-                        build_tasks(subtask, level+1, project_id);
+                        build_tasks(subtask, level + 1, project_id);
                     });
                 }
                 else {
                     var parent;
-                    if (task.parent_id){
+                    if (task.parent_id) {
                         parent = "gantt_task_" + task.parent_id[0];
-                    }else{
+                    } else {
                         parent = parent_id;
                     }
                     gantt_tasks_data.push({
@@ -465,34 +462,34 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         'open': true,
                         'color': task.color || 0,
                         'index': gantt_tasks.length,
-                        'type':task.type,
+                        'type': task.type,
                         'rollup': true,
                         'deadline': task.deadline,
-                        'priority': task.priority,                        
+                        'priority': task.priority,
                     });
                 }
             };
-            gantt_tasks['data'] = gantt_tasks_data;            
-            
+            gantt_tasks['data'] = gantt_tasks_data;
+
             _.each(groups, function (group) {
-                build_tasks(group, 0); 
+                build_tasks(group, 0);
             });
-            
+
             var build_links = function (link) {
-                if (link){
+                if (link) {
                     gantt_tasks_links.push({
-                        'id': "gantt_link_" + link.id, 
+                        'id': "gantt_link_" + link.id,
                         'source': "gantt_task_" + link.source,
-                        'target': "gantt_task_" + link.target, 
+                        'target': "gantt_task_" + link.target,
                         'type': link.type,
                     });
                 }
             };
 
             gantt_tasks['links'] = gantt_tasks_links;
-            if (self.showLinks === 'true'){
+            if (self.showLinks === 'true') {
                 _.each(links, function (link) {
-                    build_links(link); 
+                    build_links(link);
                 });
             }
 
@@ -500,64 +497,64 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             this._configureGanttEvents(tasks, grouped_by, gantt_tasks);
         },
 
-        _renderGanttData: function (gantt_tasks) {            
-            var self = this;            
+        _renderGanttData: function (gantt_tasks) {
+            var self = this;
             var container_height = $('.o_main_navbar').height() + $('.o_control_panel').height() + 80;
             this.$el.get(0).style.minHeight = (window.outerHeight - container_height) + "px";
-          
+
             while (this.gantt_events.length) {
                 gantt.detachEvent(this.gantt_events.pop());
             }
-            this._setScaleConfig(this.state.scale);            
+            this._setScaleConfig(this.state.scale);
 
             gantt.init(this.$el.get(0));
             gantt.clearAll();
-            
+
             gantt.showDate(this.state.focus_date);
             gantt.parse(gantt_tasks);
-            
+
             var dateToStr = gantt.date.date_to_str(gantt.config.task_date);
-            var markerId = gantt.addMarker({  
-                start_date: new Date(), 
-                css: "today", 
-                text: "Now", 
-                title: dateToStr(new Date()) 
-            }); 
+            var markerId = gantt.addMarker({
+                start_date: new Date(),
+                css: "today",
+                text: "Now",
+                title: dateToStr(new Date())
+            });
 
             var scroll_state = gantt.getScrollState();
             gantt.scrollTo(scroll_state.x, scroll_state.y);
         },
-        
+
         _configureGanttEvents: function (tasks, grouped_by, groups) {
             var self = this;
-            
-            this.gantt_events.push(gantt.attachEvent("onTaskClick", function (id, e) {                    
-                if(gantt.getTask(id).is_group) {
+
+            this.gantt_events.push(gantt.attachEvent("onTaskClick", function (id, e) {
+                if (gantt.getTask(id).is_group) {
                     return true;
                 }
                 if (id.indexOf("unused") >= 0) {
                     var task = gantt.getTask(id);
-                    var key = "default_"+task.create[0];
+                    var key = "default_" + task.create[0];
                     var context = {};
                     context[key] = task.create[1][0];
                     self.trigger_up('task_create', context);
-                } 
-				else {
+                }
+                else {
                     self.trigger_up('task_display', gantt.getTask(id));
                 }
                 return true;
             }));
-    
-            this.gantt_events.push(gantt.attachEvent("onTaskDblClick", function (){ 
-                return false; 
+
+            this.gantt_events.push(gantt.attachEvent("onTaskDblClick", function () {
+                return false;
             }));
-            
+
             this.gantt_events.push(gantt.attachEvent("onBeforeTaskSelected", function (id) {
-                if(gantt.getTask(id).is_group){   
-                    if($("[task_id="+id+"] .gantt_tree_icon")){
-                        $("[task_id="+id+"] .gantt_tree_icon").click();
+                if (gantt.getTask(id).is_group) {
+                    if ($("[task_id=" + id + "] .gantt_tree_icon")) {
+                        $("[task_id=" + id + "] .gantt_tree_icon").click();
                         return false;
-                    }                                        
+                    }
                 }
                 return true;
             }));
@@ -565,26 +562,26 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             var parent_date_update = function (id) {
                 var start_date, stop_date;
                 var clicked_task = gantt.getTask(id);
-                
+
                 if (!clicked_task.parent) {
                     return;
                 }
-    
+
                 var parent = gantt.getTask(clicked_task.parent);
-    
-                _.each(gantt.getChildren(parent.id), function (task_id){
+
+                _.each(gantt.getChildren(parent.id), function (task_id) {
                     var task_start_date = gantt.getTask(task_id).start_date;
                     var task_stop_date = gantt.getTask(task_id).end_date;
-                    if(!start_date){
+                    if (!start_date) {
                         start_date = task_start_date;
                     }
-                    if(!stop_date){
+                    if (!stop_date) {
                         stop_date = task_stop_date;
                     }
-                    if(start_date > task_start_date){
+                    if (start_date > task_start_date) {
                         start_date = task_start_date;
                     }
-                    if(stop_date < task_stop_date){
+                    if (stop_date < task_stop_date) {
                         stop_date = task_stop_date;
                     }
                 });
@@ -594,13 +591,13 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 gantt.updateTask(parent.id);
                 if (parent.parent) parent_date_update(parent.id);
             };
-            
-            this.gantt_events.push(gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e){
+
+            this.gantt_events.push(gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
                 var task = gantt.getTask(id);
                 task._start_date_original = task.start_date;
                 task._end_date_original = task.end_date;
                 this.lastX = e.pageX;
-                
+
                 if (task.is_group) {
                     var attr = e.target.attributes.getNamedItem("consolidation_ids");
                     if (attr) {
@@ -615,10 +612,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 }
                 return true;
             }));
-            
-            this.gantt_events.push(gantt.attachEvent("onTaskDrag", function (id, mode, task, original, e){
-                if(gantt.getTask(id).is_group){
-                    var day;                                                        
+
+            this.gantt_events.push(gantt.attachEvent("onTaskDrag", function (id, mode, task, original, e) {
+                if (gantt.getTask(id).is_group) {
+                    var day;
                     if (self.state.scale === "year") {
                         day = 51840000;
                     }
@@ -631,25 +628,26 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     if (self.state.scale === "day") {
                         day = 72000;
                     }
-                    
+
                     var diff = (e.pageX - this.lastX) * day;
                     this.lastX = e.pageX;
-    
-                    if (task.start_date > original.start_date){ 
-                        task.start_date = original.start_date; 
+
+                    if (task.start_date > original.start_date) {
+                        task.start_date = original.start_date;
                     }
-                    if (task.end_date < original.end_date){ 
-                        task.end_date = original.end_date; 
+                    if (task.end_date < original.end_date) {
+                        task.end_date = original.end_date;
                     }
-    
-                    if (this.drag_child){
-                        _.each(this.drag_child, function (child_id){
+
+                    if (this.drag_child) {
+                        _.each(this.drag_child, function (child_id) {
                             var child = gantt.getTask(child_id);
                             var new_start = +child.start_date + diff;
                             var new_stop = +child.end_date + diff;
-                            if (new_start < gantt.config.start_date || new_stop > gantt.config.end_date){
-                                return false;
-                            }
+                            // Removed date range restriction to allow dragging tasks to any date
+                            // if (new_start < gantt.config.start_date || new_stop > gantt.config.end_date){
+                            //     return false;
+                            // }
                             child.start_date = new Date(new_start);
                             child.end_date = new Date(new_stop);
                             gantt.updateTask(child.id);
@@ -662,8 +660,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 parent_date_update(id);
                 return true;
             }));
-    
-            this.gantt_events.push(gantt.attachEvent("onAfterTaskDrag", function (id){
+
+            this.gantt_events.push(gantt.attachEvent("onAfterTaskDrag", function (id) {
                 var update_task = function (task_id) {
                     var task = gantt.getTask(task_id);
                     self.trigger_up('task_update', {
@@ -678,9 +676,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                             delete task._start_date_original;
                             delete task._end_date_original;
                             parent_date_update(task_id);
-                        }});
+                        }
+                    });
                 };
-    
+
                 if (gantt.getTask(id).is_group && this.drag_child) {
                     _.each(this.drag_child, function (child_id) {
                         update_task(child_id);
@@ -688,24 +687,24 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 }
                 update_task(id);
             }));
-                       
-            this.gantt_events.push(gantt.attachEvent("onAfterLinkAdd", function(id,item){                
+
+            this.gantt_events.push(gantt.attachEvent("onAfterLinkAdd", function (id, item) {
                 var crate_link = function (item) {
                     self.trigger_up('crate_link', {
                         link: item,
                         success: function (newID) {
-                            if (newID){
+                            if (newID) {
                                 var newID = "gantt_task_" + newID;
                                 gantt.changeLinkId(item.id, newID);
-                            }                            
+                            }
                         },
-                        fail: function () {},
+                        fail: function () { },
                     });
                 };
                 crate_link(item);
-            }));  
+            }));
 
-            this.gantt_events.push(gantt.attachEvent("onAfterLinkDelete", function(id,item){
+            this.gantt_events.push(gantt.attachEvent("onAfterLinkDelete", function (id, item) {
                 var delete_link = function (item) {
                     self.trigger_up('delete_link', {
                         link: item,
@@ -718,21 +717,21 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     });
                 };
                 delete_link(item);
-            }));  
-			
-			this.gantt_events.push(gantt.attachEvent("onBeforeLinkAdd", function(id,item){
-				var sourceTask = gantt.getTask(item.source);
+            }));
+
+            this.gantt_events.push(gantt.attachEvent("onBeforeLinkAdd", function (id, item) {
+                var sourceTask = gantt.getTask(item.source);
                 var targetTask = gantt.getTask(item.target);
-				if (sourceTask.is_group) {
-                    gantt.message({type:"error", text:"You can't create link task with group."});
-					return false;
-				}
-                if(sourceTask.parent != targetTask.parent){
-                    gantt.message({type:"error", text:"You can't create link with other project task / parent task."});
+                if (sourceTask.is_group) {
+                    gantt.message({ type: "error", text: "You can't create link task with group." });
                     return false;
                 }
-				return true;
-			}));            
+                if (sourceTask.parent != targetTask.parent) {
+                    gantt.message({ type: "error", text: "You can't create link with other project task / parent task." });
+                    return false;
+                }
+                return true;
+            }));
         },
 
         destroy: function () {

@@ -138,8 +138,20 @@
         <field name="search_view_id" ref="view_task_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create a new gantt task with baseline tracking
+                No tasks found for this project!
             </p>
+            <p>
+                Get started by creating your first task to begin project planning and tracking.
+            </p>
+            <p>
+                <strong>Features available:</strong>
+            </p>
+            <ul>
+                <li>📊 Gantt chart visualization with baseline tracking</li>
+                <li>🔗 Task dependencies and critical path analysis</li>
+                <li>📈 Progress monitoring and delay detection</li>
+                <li>👥 Supervisor assignment and team collaboration</li>
+            </ul>
         </field>
     </record>
 

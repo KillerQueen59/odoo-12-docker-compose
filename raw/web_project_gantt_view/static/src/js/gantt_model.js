@@ -169,12 +169,8 @@ var  GanttModel = AbstractModel.extend({
             Promise.all(defs).then(function (records) {
                 self.gantt.data = records[0];
                 
-                var start_min_date = new Date(Math.min.apply(null, self.gantt.data.map(function(e) {
-                    return new Date(e[self.dateStartField]);                
-                })));
-                if (start_min_date.valueOf()){
-                    gantt.config.start_date = moment(start_min_date);
-                }
+                // Removed start_date restriction to allow scrolling/moving tasks before earliest task date
+                // This allows users to move tasks to any date, not just after the minimum existing date
                 
                 if (self.showLinks === 'true'){           
                     self.gantt.link = records[1];

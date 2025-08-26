@@ -58,6 +58,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 fullscreen: true
             });
 
+            // Disable built-in click handlers to prevent double modals
+            gantt.config.details_on_click = false;
+            gantt.config.details_on_dblclick = false;
+
             // Enable baseline functionality
             gantt.config.show_baseline = true;
 
@@ -1188,7 +1192,20 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
         _configureGanttEvents: function (tasks, grouped_by, groups) {
             var self = this;
 
+            // Clear any existing event handlers to prevent duplicates
+            if (this.gantt_events && this.gantt_events.length > 0) {
+                this.gantt_events.forEach(function (eventId) {
+                    gantt.detachEvent(eventId);
+                });
+                this.gantt_events = [];
+            }
+
+            // Detach all existing onTaskClick handlers
+            gantt.detachAllEvents();
+
+
             this.gantt_events.push(gantt.attachEvent("onTaskClick", function (id, e) {
+
                 if (gantt.getTask(id).is_group) {
                     return true;
                 }

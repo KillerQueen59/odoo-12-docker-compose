@@ -151,7 +151,7 @@ odoo.define('web_project_gantt_view.GanttModel', function (require) {
             }
 
             // Add baseline fields for baseline functionality
-            fields.push('baseline_start_date', 'baseline_end_date', 'has_baseline', 'is_delayed');
+            fields.push('actual_start_date', 'actual_end_date', 'has_actual', 'is_delayed');
 
             return _.uniq(fields);
         },

@@ -62,8 +62,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             gantt.config.details_on_click = false;
             gantt.config.details_on_dblclick = false;
 
-            // Enable baseline functionality
-            gantt.config.show_baseline = true;
+            // Always show actual functionality - no toggle option
+            gantt.config.show_actual = true;
 
             // Enable critical path functionality
             gantt.config.highlight_critical_path = false;
@@ -109,8 +109,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     classes.push("is_leaf");
                 }
                 // Add baseline and delay classes
-                if (task.has_baseline) {
-                    classes.push("has_baseline");
+                if (task.has_actual) {
+                    classes.push("has_actual");
                 }
                 if (task.is_delayed) {
                     classes.push("is_delayed");
@@ -162,22 +162,22 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 tooltip += "<b>Progress:</b> " + (Math.round(task.progress * 100)) + "%";
 
                 // Add baseline information if available
-                if (task.has_baseline && task.baseline_start_date && task.baseline_end_date) {
+                if (task.has_actual && task.actual_start_date && task.actual_end_date) {
                     tooltip += "<div class='gantt_tooltip_baseline'>";
-                    tooltip += "<b>Baseline:</b><br/>";
+                    tooltip += "<b>Actual:</b><br/>";
 
-                    var baselineStart = new Date(task.baseline_start_date);
-                    var baselineEnd = new Date(task.baseline_end_date);
+                    var actualStart = new Date(task.actual_start_date);
+                    var actualEnd = new Date(task.actual_end_date);
 
-                    if (!isNaN(baselineStart.getTime())) {
-                        tooltip += "Start: " + gantt.templates.tooltip_date_format(baselineStart) + "<br/>";
+                    if (!isNaN(actualStart.getTime())) {
+                        tooltip += "Start: " + gantt.templates.tooltip_date_format(actualStart) + "<br/>";
                     }
-                    if (!isNaN(baselineEnd.getTime())) {
-                        tooltip += "End: " + gantt.templates.tooltip_date_format(baselineEnd);
+                    if (!isNaN(actualEnd.getTime())) {
+                        tooltip += "End: " + gantt.templates.tooltip_date_format(actualEnd);
                     }
 
-                    if (task.is_delayed && end && !isNaN(baselineEnd.getTime())) {
-                        var delayDays = Math.ceil((end - baselineEnd) / (1000 * 60 * 60 * 24));
+                    if (task.is_delayed && end && !isNaN(actualEnd.getTime())) {
+                        var delayDays = Math.ceil((end - actualEnd) / (1000 * 60 * 60 * 24));
                         tooltip += "<br/><span class='gantt_tooltip_delay'>Delayed by " + delayDays + " days</span>";
                     }
                     tooltip += "</div>";
@@ -327,7 +327,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
         _render: function () {
             this._configGantt();
-            this._setupBaselineRendering();
+            this._setupActualRendering();
             // Only render if data is available
             if (this.state && this.state.data) {
                 this._renderGantt();
@@ -340,69 +340,63 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             if (this.state && this.state.data) {
                 this._renderGantt();
                 this._configureGanttEvents(this.state.data, this.state.grouped_by, this.state.groups);
-            } this._setupBaselineRendering();
+            } this._setupActualRendering();
         },
 
-        _setupBaselineRendering: function () {
+        _setupActualRendering: function () {
             var self = this;
 
             // Custom task rendering to show baseline bars
             gantt.attachEvent("onGanttRender", function () {
                 // Add baseline bars after gantt renders
                 setTimeout(function () {
-                    self._renderBaselineBars();
+                    self._renderActualBars();
                 }, 200);
             });
 
             // Also render baselines after task updates
             gantt.attachEvent("onAfterTaskUpdate", function () {
                 setTimeout(function () {
-                    self._renderBaselineBars();
+                    self._renderActualBars();
                 }, 100);
             });
 
-            // Add baseline toggle button and legend after gantt is ready
+            // Add baseline legend after gantt is ready
             gantt.attachEvent("onGanttReady", function () {
                 setTimeout(function () {
-                    self._addBaselineToggle();
-                    self._addBaselineLegend();
+                    self._addActualLegend();
                     // Initial render of baseline bars
-                    self._renderBaselineBars();
+                    self._renderActualBars();
 
                 }, 300);
             });
-
-            // Also try to add toggle after a longer delay to ensure Odoo UI is fully loaded
-            setTimeout(function () {
-                self._addBaselineToggle();
-            }, 1000);
         },
 
         /**
-         * Update baseline delayed status for a specific task
-         * Compares current task dates with baseline dates to determine if delayed
+         * Update actual delayed status for a specific task
+         * Compares current task dates with actual dates to determine if delayed
          */
-        _updateBaselineStatus: function (taskId) {
+        _updateActualStatus: function (taskId) {
             var task = gantt.getTask(taskId);
-            if (!task || !task.has_baseline || !task.baseline_start_date || !task.baseline_end_date) {
+            if (!task || !task.has_actual || !task.actual_start_date || !task.actual_end_date) {
                 return;
             }
 
             // Calculate if task is delayed by comparing actual end date with baseline end date
             var actualEndDate = moment(task.end_date);
-            var baselineEndDate = moment(task.baseline_end_date);
+            var actualEndDate = moment(task.actual_end_date);
             var wasDelayed = task.is_delayed;
 
             // Task is delayed if actual end date is after baseline end date
-            task.is_delayed = actualEndDate.isAfter(baselineEndDate);
+            task.is_delayed = actualEndDate.isAfter(task.actual_end_date);
 
             // If status changed, re-render baseline bars to update colors
             if (wasDelayed !== task.is_delayed) {
-                this._renderBaselineBars();
+                this._renderActualBars();
             }
         },
 
-        _renderBaselineBars: function () {
+        _renderActualBars: function () {
             var self = this;
 
             // Remove existing baseline bars
@@ -410,21 +404,19 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 el.remove();
             });
 
-            if (!gantt.config.show_baseline) {
-                return;
-            }
+            // Always show actual bars - no toggle option
 
-            var baselineCount = 0;
+            var actualCount = 0;
             var rowHeight = gantt.config.row_height || 50; // Default to 50px if not configured
 
             gantt.eachTask(function (task) {
 
-                if (task.has_baseline && task.baseline_start_date && task.baseline_end_date) {
+                if (task.has_actual && task.actual_start_date && task.actual_end_date) {
                     var taskElement = gantt.getTaskNode(task.id);
 
                     if (taskElement) {
-                        var startPos = gantt.posFromDate(task.baseline_start_date);
-                        var endPos = gantt.posFromDate(task.baseline_end_date);
+                        var startPos = gantt.posFromDate(task.actual_start_date);
+                        var endPos = gantt.posFromDate(task.actual_end_date);
                         var width = endPos - startPos;
 
                         // Get the task's row index to calculate proper vertical position
@@ -434,8 +426,38 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
                         if (width > 0) {
                             var baselineBar = document.createElement('div');
-                            // Set baseline class - grey by default, red only if delayed
-                            baselineBar.className = task.is_delayed ? 'gantt_task_baseline is_delayed' : 'gantt_task_baseline';
+                            
+                            // Compare actual dates with baseline dates to determine color
+                            var actualStart = moment(task.actual_start_date);
+                            var actualEnd = moment(task.actual_end_date);
+                            var baselineStart = moment(task.start_date);
+                            var baselineEnd = moment(task.end_date);
+                            
+                            var colorClass = 'gantt_task_baseline';
+                            var statusText = '';
+                            
+                            // Determine color based on comparison with baseline
+                            if (actualStart.isSame(baselineStart, 'day') && actualEnd.isSame(baselineEnd, 'day')) {
+                                // Grey: Actual matches baseline exactly
+                                colorClass += ' same_as_baseline';
+                                statusText = 'ON SCHEDULE';
+                            } else if (actualEnd.isAfter(baselineEnd)) {
+                                // Red: Actual end is after baseline end (delayed)
+                                colorClass += ' over_baseline';
+                                var delayDays = actualEnd.diff(baselineEnd, 'days');
+                                statusText = 'DELAYED (' + delayDays + ' days)';
+                            } else if (actualEnd.isBefore(baselineEnd) || actualStart.isAfter(baselineStart)) {
+                                // Green: Actual is ahead of baseline or finishes early
+                                colorClass += ' ahead_of_baseline';
+                                var aheadDays = baselineEnd.diff(actualEnd, 'days');
+                                statusText = 'AHEAD (' + aheadDays + ' days)';
+                            } else {
+                                // Default grey for other cases
+                                colorClass += ' same_as_baseline';
+                                statusText = 'ON SCHEDULE';
+                            }
+                            
+                            baselineBar.className = colorClass;
                             baselineBar.style.left = startPos + 'px';
                             baselineBar.style.width = width + 'px';
                             baselineBar.style.position = 'absolute';
@@ -446,16 +468,17 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                             baselineBar.style.top = '0px'; // Start from top of container
 
                             // Add tooltip to show baseline information
-                            var tooltipText = 'Baseline: ' +
-                                moment(task.baseline_start_date).format('MMM DD') + ' - ' +
-                                moment(task.baseline_end_date).format('MMM DD');
-                            if (task.is_delayed) {
-                                tooltipText += ' (DELAYED)';
-                            }
+                            var tooltipText = 'Actual: ' +
+                                actualStart.format('MMM DD') + ' - ' +
+                                actualEnd.format('MMM DD') + '\n' +
+                                'Baseline: ' +
+                                baselineStart.format('MMM DD') + ' - ' +
+                                baselineEnd.format('MMM DD') + '\n' +
+                                'Status: ' + statusText;
                             baselineBar.title = tooltipText;
 
                             taskElement.parentNode.appendChild(baselineBar);
-                            baselineCount++;
+                            actualCount++;
                         }
                     }
                 }
@@ -463,64 +486,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
         },
 
-        _addBaselineToggle: function () {
-            // Skip if toggle already exists
-            if (document.querySelector('.gantt_baseline_toggle')) {
-                return;
-            }
 
-            // Try multiple selectors to find the right toolbar
-            var toolbarSelectors = [
-                '.o_gantt_button_dates',           // Primary Gantt buttons
-                '.o_control_panel .btn-group',     // Control panel button groups
-                '.o_control_panel .o_gantt_button_dates', // Specific Gantt buttons in control panel
-                '.o_cp_buttons',                   // Control panel buttons
-                '.o_cp_left'                       // Left side of control panel
-            ];
-
-            var toolbar = null;
-            for (var i = 0; i < toolbarSelectors.length; i++) {
-                toolbar = document.querySelector(toolbarSelectors[i]);
-                if (toolbar) {
-                    console.log('Found toolbar using selector:', toolbarSelectors[i]);
-                    break;
-                }
-            }
-
-            if (toolbar) {
-
-                // Create a button group container for the toggle
-                var buttonGroup = document.createElement('div');
-                buttonGroup.className = 'btn-group ml-2';
-                buttonGroup.setAttribute('role', 'group');
-                buttonGroup.setAttribute('aria-label', 'Baseline controls');
-
-                var toggleBtn = document.createElement('button');
-                toggleBtn.className = 'gantt_baseline_toggle btn btn-secondary active';
-                toggleBtn.textContent = 'Hide Baseline';
-                toggleBtn.type = 'button';
-                toggleBtn.title = 'Toggle baseline visibility';
-
-                var self = this;
-                toggleBtn.addEventListener('click', function () {
-                    gantt.config.show_baseline = !gantt.config.show_baseline;
-                    toggleBtn.classList.toggle('active', gantt.config.show_baseline);
-                    toggleBtn.textContent = gantt.config.show_baseline ? 'Hide Baseline' : 'Show Baseline';
-                    self._renderBaselineBars();
-                });
-
-                buttonGroup.appendChild(toggleBtn);
-                toolbar.appendChild(buttonGroup);
-            } else {
-                console.log('No suitable toolbar found for baseline toggle. Available elements:');
-                toolbarSelectors.forEach(function (selector) {
-                    var element = document.querySelector(selector);
-                    console.log('  ' + selector + ':', !!element);
-                });
-            }
-        },
-
-        _addBaselineLegend: function () {
+        _addActualLegend: function () {
             var ganttContainer = document.querySelector('.gantt_container');
             if (ganttContainer && !document.querySelector('.gantt_baseline_legend')) {
                 var legend = document.createElement('div');
@@ -528,7 +495,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 legend.innerHTML = `
                     <div class="gantt_baseline_legend_item">
                         <div class="gantt_baseline_legend_color baseline"></div>
-                        <span>Baseline</span>
+                        <span>Actual</span>
                     </div>
                     <div class="gantt_baseline_legend_item">
                         <div class="gantt_baseline_legend_color actual"></div>
@@ -833,6 +800,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             if (this.state && this.state.data && this.state.data.length > 0) {
                 this._renderGantt();
                 this._configureGanttEvents(this.state.data, this.state.grouped_by || this.state.groupedBy, this.state.groups);
+                // Re-setup actual rendering events after data reload to ensure actual bars persist after save
+                this._setupActualRendering();
             }
         },
 
@@ -958,39 +927,39 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 task.priority = priority;
 
                 // Add baseline data processing
-                var baseline_start_date, baseline_end_date;
+                var actual_start_date, actual_end_date;
 
-                if (task.baseline_start_date) {
+                if (task.actual_start_date) {
                     // Try different date parsing methods
-                    if (typeof task.baseline_start_date === 'string') {
-                        baseline_start_date = new Date(task.baseline_start_date);
+                    if (typeof task.actual_start_date === 'string') {
+                        actual_start_date = new Date(task.actual_start_date);
                         // If invalid date, try time.auto_str_to_date
-                        if (isNaN(baseline_start_date.getTime())) {
-                            baseline_start_date = time.auto_str_to_date(task.baseline_start_date);
+                        if (isNaN(actual_start_date.getTime())) {
+                            actual_start_date = time.auto_str_to_date(task.actual_start_date);
                         }
                     } else {
-                        baseline_start_date = time.auto_str_to_date(task.baseline_start_date);
+                        actual_start_date = time.auto_str_to_date(task.actual_start_date);
                     }
                 }
-                if (task.baseline_end_date) {
+                if (task.actual_end_date) {
                     // Try different date parsing methods
-                    if (typeof task.baseline_end_date === 'string') {
-                        baseline_end_date = new Date(task.baseline_end_date);
+                    if (typeof task.actual_end_date === 'string') {
+                        actual_end_date = new Date(task.actual_end_date);
                         // If invalid date, try time.auto_str_to_date
-                        if (isNaN(baseline_end_date.getTime())) {
-                            baseline_end_date = time.auto_str_to_date(task.baseline_end_date);
+                        if (isNaN(actual_end_date.getTime())) {
+                            actual_end_date = time.auto_str_to_date(task.actual_end_date);
                         }
                     } else {
-                        baseline_end_date = time.auto_str_to_date(task.baseline_end_date);
+                        actual_end_date = time.auto_str_to_date(task.actual_end_date);
                     }
                 }
-                task.baseline_start_date = baseline_start_date;
-                task.baseline_end_date = baseline_end_date;
-                task.has_baseline = !!(baseline_start_date && baseline_end_date && !isNaN(baseline_start_date.getTime()) && !isNaN(baseline_end_date.getTime()));
+                task.actual_start_date = actual_start_date;
+                task.actual_end_date = actual_end_date;
+                task.has_actual = !!(actual_start_date && actual_end_date && !isNaN(actual_start_date.getTime()) && !isNaN(actual_end_date.getTime()));
 
                 // Check if task is delayed
-                if (task.has_baseline && task.task_stop) {
-                    task.is_delayed = task.task_stop > baseline_end_date;
+                if (task.has_actual && task.task_stop) {
+                    task.is_delayed = task.task_stop > actual_end_date;
                 } else {
                     task.is_delayed = false;
                 }
@@ -1118,9 +1087,9 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         'deadline': task.deadline,
                         'priority': task.priority,
                         // Baseline data for dual-bar rendering
-                        'baseline_start_date': task.baseline_start_date,
-                        'baseline_end_date': task.baseline_end_date,
-                        'has_baseline': !!(task.baseline_start_date && task.baseline_end_date),
+                        'actual_start_date': task.actual_start_date,
+                        'actual_end_date': task.actual_end_date,
+                        'has_actual': !!(task.actual_start_date && task.actual_end_date),
                         'is_delayed': task.is_delayed || false,
                     });
                 }
@@ -1345,7 +1314,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         success: function () {
                             parent_date_update(task_id);
                             // Update baseline status after successful task drag
-                            self._updateBaselineStatus(task_id);
+                            self._updateActualStatus(task_id);
                             // Recalculate critical path if enabled
                             if (gantt.config.highlight_critical_path) {
                                 self._calculateCriticalPath();
@@ -1359,7 +1328,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                             delete task._end_date_original;
                             parent_date_update(task_id);
                             // Update baseline status after task revert
-                            self._updateBaselineStatus(task_id);
+                            self._updateActualStatus(task_id);
                             // Recalculate critical path if enabled
                             if (gantt.config.highlight_critical_path) {
                                 self._calculateCriticalPath();

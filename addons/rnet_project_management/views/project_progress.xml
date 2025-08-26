@@ -277,9 +277,9 @@
 										<field name="project_id" invisible="1" />
 										<field name="supervisor_id" />
 										<field name="task_type" />
-										<field name="baseline_start_date" />
-										<field name="baseline_end_date" />
-										<field name="baseline_duration" />
+										<field name="actual_start_date" />
+										<field name="actual_end_date" />
+										<field name="actual_duration" />
 										<field name="start_date" />
 										<field name="end_date" />
 										<field name="duration" />

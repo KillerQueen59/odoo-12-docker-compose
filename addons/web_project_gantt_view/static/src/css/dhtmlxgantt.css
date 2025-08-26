@@ -86,17 +86,29 @@ To use dhtmlxGantt in non-GPL projects (and get Pro version of the product), ple
   */
 .gantt_task_baseline {
   height: 12px;
-  background-color: #a6a6a6;
   border: 1px solid #8c8c8c;
   border-radius: 2px;
-  opacity: 0.7;
+  position: absolute;
   z-index: 1;
   pointer-events: none;
 }
 
-.gantt_task_baseline.is_delayed {
+/* Grey: Actual matches baseline exactly */
+.gantt_task_baseline.same_as_baseline {
+  background-color: #a6a6a6;
+  border-color: #8c8c8c;
+}
+
+/* Red: Actual is over baseline (delayed) */
+.gantt_task_baseline.over_baseline {
   background-color: #ff6b6b;
   border-color: #e55656;
+}
+
+/* Green: Actual is ahead of baseline */
+.gantt_task_baseline.ahead_of_baseline {
+  background-color: #4CAF50;
+  border-color: #45a049;
 }
 
 /* Baseline toggle button */

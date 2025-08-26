@@ -66,12 +66,12 @@
                     </div>
                     <group>
                         <group string="Baseline (Original Plan)">
-                            <field name="start_date"/>
+                            <field name="start_date" on_change="1"/>
                             <field name="end_date"/>
                             <field name="duration"/>
                         </group>
                         <group string="Actual (Current Plan)">
-                            <field name="actual_start_date" placeholder="Optional - Leave blank to use baseline"/>
+                            <field name="actual_start_date" placeholder="Optional - Leave blank to use baseline" on_change="1"/>
                             <field name="actual_end_date" placeholder="Optional - Leave blank to use baseline"/>
                             <field name="actual_duration"/>
                         </group>

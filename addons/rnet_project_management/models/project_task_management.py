@@ -231,8 +231,17 @@ class GanttTask(models.Model):
             
         return super(GanttTask, self).create(vals)
 
+    @api.onchange('start_date')
+    def _onchange_baseline_start_date(self):
+        """Auto-fill baseline end date when baseline start date is selected"""
+        if self.start_date and not self.end_date:
+            self.end_date = self.start_date
 
-
+    @api.onchange('actual_start_date')
+    def _onchange_actual_start_date(self):
+        """Auto-fill actual end date when actual start date is selected"""
+        if self.actual_start_date and not self.actual_end_date:
+            self.actual_end_date = self.actual_start_date
 
 
 class GanttTaskLink(models.Model):

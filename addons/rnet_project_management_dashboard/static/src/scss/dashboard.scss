@@ -1,0 +1,165 @@
+/*
+ * RNET Project Management Dashboard Styles
+ * A complete, standalone stylesheet for the entire dashboard.
+ */
+
+/* ==========================================================================
+   1. Main Dashboard Layout
+   ========================================================================== */
+.o_pm_dashboard { padding: 15px; background-color: #f0f4f7; height: 100%; overflow-y: auto; }
+.card { margin-bottom: 20px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+
+/* ==========================================================================
+   3. Filter Bar Styles
+   ========================================================================== */
+.dashboard_filters_row {
+    padding: 20px;
+    .filter_item_row {
+        display: flex;
+        gap: 20px;
+        align-items: flex-end;
+    }
+    .filter_item {
+        flex: 1;
+        .filter_label_container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            label {
+                margin-bottom: 4px;
+                font-weight: 600;
+                color: #555;
+                font-size: 0.85em;
+            }
+            .toggle_filter_btn {
+                font-size: 0.8em;
+                cursor: pointer;
+                color: #007bff;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+    .select2-container {
+        width: 100% !important;
+    }
+}
+
+/* ==========================================================================
+   5. Chart & Table Styles
+   ========================================================================== */
+.chart_wrapper .card-body {
+    height: 350px;
+    position: relative;
+}
+/* --- FIX: Increased height for the cash flow chart to give legend space --- */
+.chart_wrapper.cashflow_chart_container .card-body {
+    height: 400px;
+}
+.chart_wrapper.cashflow_chart_container {
+    margin-bottom: 30px;
+}
+
+/* ==========================================================================
+   FIX: Improved and Forceful Styles for Chart Toggle Buttons
+   ========================================================================== */
+.chart-controls .chart-toggle-btn {
+    background-color: #e9ecef;
+    color: #495057;
+    border-color: #dee2e6;
+    transition: all 0.2s ease-in-out;
+}
+
+.chart-controls .chart-toggle-btn:hover {
+    background-color: #d3d9df;
+    color: #212529;
+}
+
+.chart-controls .chart-toggle-btn.active {
+    /* !important is used here to override Odoo's default styles */
+    background-color: #007bff !important;
+    color: white !important;
+    border-color: #007bff !important;
+    z-index: 2; /* Ensures the active button's border is on top in a group */
+}
+.table-responsive {
+    overflow-x: auto;
+}
+.table {
+    white-space: nowrap;
+    .project-name-column {
+        max-width: 350px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* --- FIX: Styles for truncating long text in table cells --- */
+.truncate-cell {
+    max-width: 0; /* Base for truncation */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.truncate-cell.project-col {
+    max-width: 200px; /* Specific width for the project column */
+}
+.truncate-cell.manager-col {
+    max-width: 80px; /* Specific, shorter width for the manager column */
+}
+
+
+.table-hover .clickable-row:hover {
+    cursor: pointer;
+    background-color: #f5f5f5;
+}
+.dashboard_table_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.rating_filters_stars {
+    display: flex;
+    gap: 15px;
+    .rating-filter-item {
+        cursor: pointer;
+        font-size: 1.2em;
+        .fa-star {
+            color: #dcdcdc;
+            transition: color 0.2s;
+        }
+        &:hover .fa-star, &.active .fa-star {
+            color: #FFB100;
+        }
+    }
+}
+.sortable_header {
+    cursor: pointer;
+    transition: color 0.2s;
+    white-space: nowrap;
+    &:hover {
+        color: #0056b3;
+    }
+    .fa {
+        margin-left: 5px;
+        color: #ccc;
+    }
+    &.sort_asc .fa, &.sort_desc .fa {
+        color: #007bff;
+    }
+}
+.rating-display .fa-star {
+    color: #FFB100;
+}
+.dashboard_pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #dee2e6;
+}

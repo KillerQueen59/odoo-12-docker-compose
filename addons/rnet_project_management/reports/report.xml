@@ -1009,12 +1009,12 @@
 
         <report
             id="report_project_management_test_pdf"
-            string="ProjectDasboard_' + (object.name.no or '') + '_' + object.current_date"
+            string="ProjectDashboard_' + (object.name.no or '') + '_' + object.current_date"
             model="project.progress.plan"
             report_type="qweb-pdf"
             name="rnet_project_management.project_progress_test_pdf"
             file="rnet_project_management.project_progress_test_pdf"
-            print_report_name="'ProjectDasboard_' + (object.name.no or '') + '_' + object.current_date"
+            print_report_name="'ProjectDashboard_' + (object.name.no or '') + '_' + object.current_date"
             paperformat="rnet_project_management.paperformat_custom_a4_landscape" />
 
         <template id="project_progress_test_pdf">

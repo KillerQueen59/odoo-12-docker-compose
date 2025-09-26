@@ -1,0 +1,95 @@
+/*
+ * Custom styles for the Project Management Approval Banner (v6 - Final Polished Layout)
+ */
+
+//== Color Variables for easy maintenance
+$color-cvr-bg: #e7e9fd;
+$color-cvr-fg: #5a65c2;
+
+$color-bar-bg: #d1f7e4;
+$color-bar-fg: #3aa77c;
+
+$color-po-bg: #fff0d4;
+$color-po-fg: #f0a526;
+
+$color-pr-bg: #d4eefd;
+$color-pr-fg: #3a8ee6;
+
+$color-asset-bg: #fde4e4;
+$color-asset-fg: #d9534f;
+
+$color-inventory-bg: #e9ecef;
+$color-inventory-fg: #495057;
+
+
+//== Main Banner Styles
+.o_content .pm_approval_banner {
+    .o_onboarding_wrap {
+        padding: 8px 16px;
+    }
+
+    .o_onboarding_header {
+        margin-bottom: 16px; /* Increased space below the title */
+    }
+
+    /* --- THIS IS THE NEW STYLE FOR THE 'APPROVAL' TITLE --- */
+    .o_onboarding_title {
+        display: inline-block; /* Crucial for the background to wrap the text */
+        padding: 5px 15px;
+        background-color: #714B67; /* Odoo's primary purple color for consistency */
+        color: white;
+        border-radius: 5px;
+        font-size: 0.9em;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    /* -------------------------------------------------------- */
+
+
+    .o_onboarding_steps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-start;
+    }
+
+    .o_onboarding_step {
+        flex: 1 1 180px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        transition: all .2s ease-in-out;
+        margin-bottom: 0;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+
+        .o_onboarding_step_action {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            text-decoration: none;
+        }
+
+        .o_onboarding_step_icon {
+            font-size: 1.6em;
+            margin-right: 10px;
+        }
+
+        .o_onboarding_step_title {
+            font-size: 0.95em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+    }
+
+    //== Apply Card Colors using variables
+    .card-cvr { background-color: $color-cvr-bg; color: $color-cvr-fg; }
+    .card-bar { background-color: $color-bar-bg; color: $color-bar-fg; }
+    .card-po { background-color: $color-po-bg; color: $color-po-fg; }
+    .card-pr { background-color: $color-pr-bg; color: $color-pr-fg; }
+    .card-asset { background-color: $color-asset-bg; color: $color-asset-fg; }
+    .card-inventory { background-color: $color-inventory-bg; color: $color-inventory-fg; }
+}

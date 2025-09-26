@@ -498,7 +498,7 @@ class ProjectProgressExport(models.Model):
             total_actual_cash_out = 0
             remaining_budget = 0
             if self.remaining_budget:
-                remaining_budget = self.remaining_budget           
+                remaining_budget = self.remaining_budget
             if self.total_actual_cash_out:
                 total_actual_cash_out = self.total_actual_cash_out
 
@@ -972,7 +972,7 @@ class ProjectProgressExport(models.Model):
             worksheet.write(start_row, start_col, "Table 6 Cashflow Actual Accumulative", cell_format['sub-title'])
             start_row += 1
             colunms = [
-                'Year - Week', 'Accumulative Actual Cash In', 'Accumulative Actual Cash Out', 
+                'Year - Week', 'Accumulative Actual Cash In', 'Accumulative Actual Cash Out',
                 'Accumulative Actual CashFlow'
             ]
             for col_idx, col_name in enumerate(colunms):
@@ -1789,25 +1789,24 @@ class ProjectProgressExport(models.Model):
             # Group data by weeks
             weekly_data = {}
 
-            # Process actual cash out data
+            # Process actual manhour data
             for actual in actual_man_hour_data:
                 year_start = datetime(actual.date_from.year, 1, 1).date()
                 week_number = math.ceil((actual.date_from - year_start).days / 7.0)
                 year = actual.date_from.year
-                key = str(year) + "-" + str(week_number)  # Use a tuple for the key
+                key = str(year) + "-" + str(week_number)
                 weekly_data.setdefault(key, {'actual_manhour': 0, 'plan_manhour': 0})
-                act = self.env['project.actual.manhour'].search([('actual_manhour_line_id', '=', rec.id)])
-                weekly_data[key]['actual_manhour'] += sum(line.total for line in act)
+                weekly_data[key]['actual_manhour'] += actual.total
 
-            # Process planned cash out data
+
+            # Process planned manhour data
             for plan in plan_man_hour_data:
                 year_start = datetime(plan.date.year, 1, 1).date()
                 week_number = math.ceil((plan.date - year_start).days / 7.0)
                 year = plan.date.year
-                key = str(year) + "-" + str(week_number)  # Use a tuple for the key
+                key = str(year) + "-" + str(week_number)
                 weekly_data.setdefault(key, {'actual_manhour': 0, 'plan_manhour': 0})
-                pln = self.env['project.plan.manhour'].search([('plan_plan_manhour_id', '=', rec.id)])
-                weekly_data[key]['plan_manhour'] += sum(line.name for line in pln)
+                weekly_data[key]['plan_manhour'] += plan.name  # assuming `plan.name` is the number of manhours
 
             # Create report data
             for key in sorted(weekly_data.keys(), key=lambda x: (int(x.split('-')[0]), int(x.split('-')[1]))):

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- =================================================================
+    1. Main Dashboard Template (The main shell)
+    ================================================================== -->
+    <t t-name="rnet_project_management_dashboard.DashboardTemplate">
+        <div class="o_pm_dashboard">
+            <!-- <div class="pm_approval_banner_container mb-4"/> -->
+            <div class="dashboard_filters_row card">
+                <div class="filter_item_row">
+                    <div class="filter_item">
+                        <label>Date Range</label>
+                        <input type="text" class="form-control" id="db_date_range_picker" placeholder="Filter by date..."/>
+                    </div>
+                    <div class="filter_item">
+                        <label>Project</label>
+                        <select id="db_project_filter" style="width:100%;"/>
+                    </div>
+                    <div class="filter_item">
+                        <label>Employee</label>
+                        <select id="db_employee_filter" style="width:100%;"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header"><h5 class="mb-0">Project Progress Overview</h5></div>
+                        <div class="card-body table-responsive">
+                            <table class="table table-hover table-bordered"> <!-- Added table-bordered for clarity -->
+                                <thead class="thead-dark-custom">
+                                    <tr>
+                                        <th style="width:5%; text-align:center; vertical-align:middle; width: 5%;" rowspan="2">No.</th>
+                                        <th style="width:5%; text-align:center; vertical-align:middle;" rowspan="2">Project</th>
+                                        <th style="text-align: center;" colspan="2">Progress (%)</th>
+                                        <th style="text-align: center;" colspan="2">Cash In</th>
+                                        <th style="text-align: center;" colspan="3">Cash Out</th>
+                                        <th style="text-align: center;" colspan="2">Invoice</th>
+                                        <th style="text-align: center;" colspan="2">Manhour</th>
+                                        <th style="width:5%; text-align:center; vertical-align:middle;" rowspan="2">Manager</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align: center;">Plan</th>
+                                        <th style="text-align: center;">Actual</th>
+                                        <th style="text-align: center;">Plan</th>
+                                        <th style="text-align: center;">Actual</th>
+                                        <th style="text-align: center;">Plan</th>
+                                        <th style="text-align: center;">Actual</th>
+                                        <th style="text-align: center;">Final Actual</th>
+                                        <th style="text-align: center;">Plan</th>
+                                        <th style="text-align: center;">Actual</th>
+                                        <th style="text-align: center;">Plan</th>
+                                        <th style="text-align: center;">Actual</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="project_progress_body"/>
+                            </table>
+                        </div>
+                        <div class="card-footer dashboard_pagination"><span id="progress_page_info"/><div class="btn-group"><button id="progress_prev_page_btn" class="btn btn-secondary fa fa-chevron-left"/><button id="progress_next_page_btn" class="btn btn-secondary fa fa-chevron-right"/></div></div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="chart_wrapper card">
+                        <div class="card-header"><h5>Monthly Cash Flow Summary</h5></div>
+                        <div class="card-body"><canvas id="cashflow_summary_chart"/></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Plan vs Actual chart section -->
+            <div class="row">
+                <div class="col-lg-6"><div class="chart_wrapper card">
+                    <div class="card-header"><h5>S-Curve (Plan vs Actual)</h5></div>
+                    <div class="card-body"><canvas id="s_curve_chart"/></div>
+                </div></div>
+                <div class="col-lg-6"><div class="chart_wrapper card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Actual Cash In vs Plan Cash Out</h5>
+                        <div class="btn-group btn-group-sm chart-controls">
+                            <a href="#" class="btn btn-secondary chart-toggle-btn active" title="Line Chart" data-chart="cashInOut" data-type="line"><i class="fa fa-line-chart"/></a>
+                            <a href="#" class="btn btn-secondary chart-toggle-btn" title="Bar Chart" data-chart="cashInOut" data-type="bar"><i class="fa fa-bar-chart"/></a>
+                        </div>
+                    </div>
+                    <div class="card-body"><canvas id="cash_in_out_chart"/></div>
+                </div></div>
+                <div class="col-lg-6"><div class="chart_wrapper card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Invoice (Plan vs Actual)</h5>
+                        <div class="btn-group btn-group-sm chart-controls">
+                            <a href="#" class="btn btn-secondary chart-toggle-btn active" title="Line Chart" data-chart="invoice" data-type="line"><i class="fa fa-line-chart"/></a>
+                            <a href="#" class="btn btn-secondary chart-toggle-btn" title="Bar Chart" data-chart="invoice" data-type="bar"><i class="fa fa-bar-chart"/></a>
+                        </div>
+                    </div>
+                    <div class="card-body"><canvas id="invoice_chart"/></div>
+                </div></div>
+                <div class="col-lg-6"><div class="chart_wrapper card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Manhour (Plan vs Actual)</h5>
+                        <div class="btn-group btn-group-sm chart-controls">
+                            <a href="#" class="btn btn-secondary chart-toggle-btn active" title="Line Chart" data-chart="manhour" data-type="line"><i class="fa fa-line-chart"/></a>
+                            <a href="#" class="btn btn-secondary chart-toggle-btn" title="Bar Chart" data-chart="manhour" data-type="bar"><i class="fa fa-bar-chart"/></a>
+                        </div>
+                    </div>
+                    <div class="card-body"><canvas id="manhour_chart"/></div>
+                </div></div>
+            </div>
+            
+            <!-- <div class="row kpi_cards_container"/> -->
+<div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header dashboard_table_header">
+                            <h5 class="mb-0">Employee Performance Reviews</h5>
+                            <div class="d-flex align-items-center" style="gap: 20px;">
+                                <div class="rating_filters_stars"/>
+                                <div class="input-group" style="width: 300px;">
+                                    <input type="text" id="review_search_bar" class="form-control" placeholder="Search Reviews..."/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%;">No.</th>
+                                        <th class="sortable_header" data-sort="employee_name asc">Employee <i class="fa fa-sort"/></th>
+                                        <th class="sortable_header" data-sort="job_position asc">Job Position <i class="fa fa-sort"/></th>
+                                        <th class="sortable_header" data-sort="avg_rating desc">Avg. Rating <i class="fa fa-sort"/></th>
+                                        <th>Notes</th>
+                                        <th>Projects</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="review_list_body"/>
+                            </table>
+                        </div>
+                        <div class="card-footer dashboard_pagination">
+                            <span id="page_info"/>
+                            <div class="btn-group">
+                                <button id="prev_page_btn" class="btn btn-secondary fa fa-chevron-left" title="Previous Page"/>
+                                <button id="next_page_btn" class="btn btn-secondary fa fa-chevron-right" title="Next Page"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================
+    2. Reusable Component Templates
+    ================================================================== -->
+
+    <!-- Approval Banner Template -->
+    <template id="approval_banner_template" name="Approval Banner">
+        <div class="pm_approval_banner card">
+            <div class="approval_header">APPROVAL</div>
+            <div class="o_onboarding_steps">
+                <div class="o_onboarding_step card-cvr" t-if="approval_counts.get('cvr', 0)"><a type="action" name="rnet_project_management.action_hr_expense_report" class="o_onboarding_step_action"><div class="o_onboarding_step_icon"><i class="fa fa-file-text-o"/></div><div><h4 class="o_onboarding_step_title"><t t-esc="approval_counts.get('cvr')"/> CVR</h4></div></a></div>
+                <div class="o_onboarding_step card-bar" t-if="approval_counts.get('bar', 0)"><a type="action" name="rnet_project_management.action_hr_expense_BAR" class="o_onboarding_step_action"><div class="o_onboarding_step_icon"><i class="fa fa-clipboard"/></div><div><h4 class="o_onboarding_step_title"><t t-esc="approval_counts.get('bar')"/> BAR</h4></div></a></div>
+                <div class="o_onboarding_step card-pr" t-if="approval_counts.get('pr', 0)"><a type="action" name="rnet_project_management.action_material_purchase_requisition" class="o_onboarding_step_action"><div class="o_onboarding_step_icon"><i class="fa fa-list-alt"/></div><div><h4 class="o_onboarding_step_title"><t t-esc="approval_counts.get('pr')"/> Purchase Requisitions</h4></div></a></div>
+                <div class="o_onboarding_step card-po" t-if="approval_counts.get('po', 0)"><a type="action" name="rnet_project_management.action_purchase_oder_pm" class="o_onboarding_step_action"><div class="o_onboarding_step_icon"><i class="fa fa-shopping-cart"/></div><div><h4 class="o_onboarding_step_title"><t t-esc="approval_counts.get('po')"/> Purchase Orders</h4></div></a></div>
+                <div class="o_onboarding_step card-asset" t-if="approval_counts.get('receipt_asset', 0)"><a type="action" name="rnet_project_management.open_receipt_asset_pm" class="o_onboarding_step_action"><div class="o_onboarding_step_icon"><i class="fa fa-cubes"/></div><div><h4 class="o_onboarding_step_title"><t t-esc="approval_counts.get('receipt_asset')"/> Asset Receipts</h4></div></a></div>
+                <div class="o_onboarding_step card-inventory" t-if="approval_counts.get('receipt_inventory', 0)"><a type="action" name="rnet_project_management.open_receipt_inventory_pm" class="o_onboarding_step_action"><div class="o_onboarding_step_icon"><i class="fa fa-archive"/></div><div><h4 class="o_onboarding_step_title"><t t-esc="approval_counts.get('receipt_inventory')"/> Goods Receipts</h4></div></a></div>
+                <div t-if="not approval_counts.get('cvr') and not approval_counts.get('bar') and not approval_counts.get('pr') and not approval_counts.get('po') and not approval_counts.get('receipt_asset') and not approval_counts.get('receipt_inventory')" class="text-muted p-2"><i class="fa fa-check-circle-o mr-2"/>No items are currently waiting for your approval.</div>
+            </div>
+        </div>
+    </template>
+    
+    
+    
+    <!-- Recent Reviews Table Template -->
+    <t t-name="rnet_project_management_dashboard.RecentReviewsTable">
+        <t t-if="!reviews.length">
+            <tr><td colspan="6" class="text-center p-4">No employee reviews found for the selected criteria.</td></tr>
+        </t>
+        <t t-foreach="reviews" t-as="emp">
+            <tr>
+                <td><t t-esc="(widget.reviewCurrentPage - 1) * widget.reviewLimit + emp_index + 1"/></td>
+                <td><t t-esc="emp.employee_name"/></td>
+                <td><t t-esc="emp.job_position"/></td>
+                <td>
+                    <div class="rating-display">
+                        <t t-set="full_stars" t-value="Math.floor(emp.avg_rating)"/>
+                        <t t-set="has_half_star" t-value="emp.avg_rating - full_stars >= 0.5"/>
+                        <t t-foreach="_.range(full_stars)" t-as="i"><i class="fa fa-star"/></t>
+                        <t t-if="has_half_star"><i class="fa fa-star-half-o"/></t>
+                    </div>
+                    <span class="text-muted ml-1">(<t t-esc="emp.avg_rating"/>)</span>
+                </td>
+                <td style="white-space: pre-wrap; min-width: 300px;"><t t-esc="emp.all_notes"/></td>
+                <td style="white-space: normal; min-width: 250px;"><t t-esc="emp.projects_str"/></td>
+            </tr>
+        </t>
+    </t>
+    <!-- Project Progress Table Template -->
+    <t t-name="rnet_project_management_dashboard.ProjectProgressTable">
+        <t t-if="!progress_data.length">
+            <tr><td colspan="14" class="text-center p-4">No active project progress plans found for the selected criteria.</td></tr>
+        </t>
+        <tr t-foreach="progress_data" t-as="p" t-att-data-id="p.id" class="clickable-row">
+            <td><t t-esc="p.seq"/></td>
+            <td class="project-name-column" t-att-title="p.name"><t t-esc="p.name"/></td>
+            <td><t t-if="p.plan_progress != 0"><t t-esc="p.plan_progress"/> %</t></td>
+            <td><t t-if="p.actual_progress != 0"><t t-esc="p.actual_progress"/> %</t></td>
+            <td><t t-if="p.plan_cash_in != '0'"><t t-esc="p.plan_cash_in"/></t></td>
+            <td><t t-if="p.actual_cash_in != '0'"><t t-esc="p.actual_cash_in"/></t></td>
+            <td><t t-if="p.plan_cash_out != '0'"><t t-esc="p.plan_cash_out"/></t></td>
+            <td><t t-if="p.actual_cash_out != '0'"><t t-esc="p.actual_cash_out"/></t></td>
+            <td><t t-if="p.final_cumulative_cash_out != '0'"><t t-esc="p.final_cumulative_cash_out"/></t></td>
+            <td><t t-if="p.plan_invoice != '0'"><t t-esc="p.plan_invoice"/></t></td>
+            <td><t t-if="p.actual_invoice != '0'"><t t-esc="p.actual_invoice"/></t></td>
+            <td><t t-if="p.plan_manhour != '0'"><t t-esc="p.plan_manhour"/></t></td>
+            <td><t t-if="p.actual_manhour != '0'"><t t-esc="p.actual_manhour"/></t></td>
+            <td class="truncate-cell manager-col" t-att-title="p.project_manager">
+                <t t-esc="p.project_manager"/>
+            </td>
+        </tr>
+    </t>
+
+</templates>

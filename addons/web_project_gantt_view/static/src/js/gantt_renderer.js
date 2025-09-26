@@ -54,8 +54,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 tooltip: true,
                 fullscreen: true,
                 marker: true,
-                drag_timeline: true,
-                fullscreen: true
+                drag_timeline: true
             });
 
             // Disable built-in click handlers to prevent double modals
@@ -426,16 +425,16 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
                         if (width > 0) {
                             var baselineBar = document.createElement('div');
-                            
+
                             // Compare actual dates with baseline dates to determine color
                             var actualStart = moment(task.actual_start_date);
                             var actualEnd = moment(task.actual_end_date);
                             var baselineStart = moment(task.start_date);
                             var baselineEnd = moment(task.end_date);
-                            
+
                             var colorClass = 'gantt_task_baseline';
                             var statusText = '';
-                            
+
                             // Determine color based on comparison with baseline
                             if (actualStart.isSame(baselineStart, 'day') && actualEnd.isSame(baselineEnd, 'day')) {
                                 // Grey: Actual matches baseline exactly
@@ -456,7 +455,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                                 colorClass += ' same_as_baseline';
                                 statusText = 'ON SCHEDULE';
                             }
-                            
+
                             baselineBar.className = colorClass;
                             baselineBar.style.left = startPos + 'px';
                             baselineBar.style.width = width + 'px';
@@ -1407,3 +1406,4 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
     });
     return GanttRenderer;
 });
+

@@ -1,0 +1,80 @@
+/*
+ * Custom styles for the Project Management Approval Banner (v8 - CSS with All Features)
+ * This version uses high-specificity selectors and includes the styled title and Takeout cards.
+ */
+
+/* Add horizontal padding to the main wrapper for spacing */
+.o_content .pm_approval_banner .o_onboarding_wrap {
+    padding: 8px 16px !important;
+}
+
+/* Style for the header title */
+.o_content .pm_approval_banner .o_onboarding_header {
+    margin-bottom: 16px !important;
+}
+
+/* --- UPDATED STYLE FOR 'APPROVAL' TITLE BADGE --- */
+.o_content .pm_approval_banner .o_onboarding_title {
+    display: inline-block !important;
+    padding: 5px 15px !important;
+    background-color: #714B67 !important; /* Odoo primary purple */
+    color: white !important;
+    border-radius: 5px !important;
+    font-size: 0.9em !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+/* ----------------------------------------------- */
+
+.o_content .pm_approval_banner .o_onboarding_steps {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    justify-content: flex-start !important;
+}
+
+/* Base style for all cards with high specificity */
+.o_content .pm_approval_banner .o_onboarding_step {
+    flex: 1 1 180px !important;
+    border: 1px solid transparent !important;
+    border-radius: 8px !important;
+    transition: all .2s ease-in-out !important;
+    margin-bottom: 0 !important;
+}
+
+.o_content .pm_approval_banner .o_onboarding_step:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.o_content .pm_approval_banner .o_onboarding_step_action {
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    text-decoration: none !important;
+}
+
+.o_content .pm_approval_banner .o_onboarding_step_icon {
+    font-size: 1.6em !important;
+    margin-right: 10px !important;
+}
+
+.o_content .pm_approval_banner .o_onboarding_step_title {
+    font-size: 0.95em !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+}
+
+/* --- Card Color Definitions --- */
+.o_content .pm_approval_banner .card-cvr { background-color: #e7e9fd !important; color: #5a65c2 !important; }
+.o_content .pm_approval_banner .card-bar { background-color: #d1f7e4 !important; color: #3aa77c !important; }
+.o_content .pm_approval_banner .card-po { background-color: #fff0d4 !important; color: #f0a526 !important; }
+.o_content .pm_approval_banner .card-pr { background-color: #d4eefd !important; color: #3a8ee6 !important; }
+.o_content .pm_approval_banner .card-asset { background-color: #fde4e4 !important; color: #d9534f !important; }
+.o_content .pm_approval_banner .card-inventory { background-color: #e9ecef !important; color: #495057 !important; }
+
+/* --- NEW STYLES FOR TAKEOUT CARDS --- */
+.o_content .pm_approval_banner .card-takeout-asset { background-color: #fdf4d4 !important; color: #856404 !important; }
+.o_content .pm_approval_banner .card-takeout-inventory { background-color: #e2e3e5 !important; color: #6c757d !important; }
+/* ------------------------------------ */

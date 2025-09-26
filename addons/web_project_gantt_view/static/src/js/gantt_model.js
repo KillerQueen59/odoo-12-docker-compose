@@ -188,9 +188,6 @@ odoo.define('web_project_gantt_view.GanttModel', function (require) {
                             return new Date(e[self.dateStartField]);
                         })));
                         if (start_min_date.valueOf()) {
-                            // Do not clamp the timeline to the earliest task start only.
-                            // Allow navigation to earlier dates by using the minimum between
-                            // our computed window start and the earliest task start.
                             var computedWindowStart = moment(self.gantt.start_date);
                             var earliestTaskStart = moment(start_min_date);
                             var effectiveStart = moment.min(computedWindowStart, earliestTaskStart);
@@ -271,3 +268,4 @@ odoo.define('web_project_gantt_view.GanttModel', function (require) {
     });
     return GanttModel;
 });
+

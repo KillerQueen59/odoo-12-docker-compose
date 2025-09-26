@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_project_management_dashboard" model="ir.actions.client">
+        <field name="name">Project Dashboard</field>
+        <field name="tag">rnet_pm_dashboard</field>
+        <!-- This context is important for the JS to know its model -->
+        <field name="context" eval="{'active_model': 'project.management.dashboard'}" />
+    </record>
+
+    <!-- override first time open dashboard menu module project management -->
+    <!-- <record id="rnet_project_management.menu_project_progress_root" model="ir.ui.menu">
+        <field name="action" ref="action_project_management_dashboard"/>
+    </record> -->
+
+    <menuitem
+        id="menu_project_management_dashboard"
+        name="Dashboard"
+        parent="rnet_project_management.menu_project_progress_root"
+        action="action_project_management_dashboard"
+        sequence="3"/>
+</odoo>
+

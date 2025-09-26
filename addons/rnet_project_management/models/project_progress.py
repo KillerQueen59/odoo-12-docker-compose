@@ -2,14 +2,104 @@ import math
 
 from odoo.exceptions import UserError
 from odoo import api, fields, models, _, SUPERUSER_ID
-from datetime import datetime, date 
+from datetime import datetime, date,timedelta
 from collections import defaultdict
+from dateutil.relativedelta import relativedelta
+import calendar
 import hashlib
 import json
 
 import logging
 
 _logger = logging.getLogger(__name__)
+
+# log changed in chatter
+class ChildChatterMixin(models.AbstractModel):
+    _name = "child.chatter.mixin"
+    _description = "Child Chatter Mixin"
+
+    def _get_parent_info(self):
+        """Find parent record + label for chatter"""
+        parent_field = next(
+            (
+                f
+                for f, field_def in self._fields.items()
+                if isinstance(field_def, fields.Many2one)
+                and field_def.comodel_name == "project.progress.plan"
+            ),
+            False,
+        )
+        parent = self[parent_field] if parent_field else False
+        label = None
+        if parent:
+            rel_field = next(
+                (
+                    fdef
+                    for fdef in parent._fields.values()
+                    if isinstance(fdef, fields.One2many)
+                    and fdef.comodel_name == self._name
+                ),
+                None,
+            )
+            label = rel_field and rel_field.string or self._name
+        return parent, label
+
+    def write(self, vals):
+        tracked_fields = [
+            f for f in self._fields if getattr(self._fields[f], "track_visibility", None)
+        ]
+        for record in self:
+            diffs = []
+            for field in tracked_fields:
+                if field in vals:
+                    old_val = record[field]
+                    new_val = vals[field]
+                    if old_val != new_val:
+                        diffs.append(
+                            "{}: {} → {}".format(
+                                self._fields[field].string,
+                                old_val or "∅",
+                                new_val or "∅",
+                            )
+                        )
+            if diffs:
+                record.message_post(body="; ".join(diffs))
+                parent, label = record._get_parent_info()
+                if parent:
+                    parent.message_post(
+                        body="Update on {} [{}]: {}".format(
+                            label, record.display_name, "; ".join(diffs)
+                        )
+                    )
+        return super(ChildChatterMixin, self).write(vals)
+
+    @api.model
+    def create(self, vals):
+        record = super(ChildChatterMixin, self).create(vals)
+
+        tracked_fields = [
+            f for f in record._fields if getattr(record._fields[f], "track_visibility", None)
+        ]
+        diffs = []
+        for field in tracked_fields:
+            if field in vals:
+                diffs.append(
+                    "{}: {}".format(
+                        record._fields[field].string, vals[field] or "∅"
+                    )
+                )
+        if diffs:
+            record.message_post(body="Created with: " + "; ".join(diffs))
+            parent, label = record._get_parent_info()
+            if parent:
+                parent.message_post(
+                    body="New {} [{}] created: {}".format(
+                        label, record.display_name, "; ".join(diffs)
+                    )
+                )
+        return record
+
+
 
 class ProjectProgress(models.Model):
     _name = 'project.progress.plan'
@@ -159,7 +249,6 @@ class ProjectProgress(models.Model):
         for record in self: # Process record by record, self is usually one record from button context
             _logger.info("  Processing action_update_actual_value for PP ID: %s (Project: %s)", 
                          record.id, record.name.name if record.name else "N/A")
-            self.ensure_one() # Add this at the top of action_update_actual_value
             # Trigger onchange methods by writing to 'refresh_onchange_actual_value'
             # This is the mechanism your original code used to make the onchange methods fire.
             # The onchange methods themselves will modify the record's O2M actual lines.
@@ -191,27 +280,11 @@ class ProjectProgress(models.Model):
             if hasattr(record, 'onchange_actual_manhour'):
                 _logger.debug("    Calling onchange_actual_manhour for PP ID %s", record.id)
                 record.onchange_actual_manhour()
-            
-            # Methods to update chart-specific 'project_actual_plan_...' lines
-            # These lines combine actuals (just fetched) and plans for chart displays.
-            # If these project_actual_plan_... lines are also inputs to your
-            # _get_current_report_data_signature, ensure they are up-to-date here.
-            if hasattr(record, 'onchange_actual_plan_curve'): # Assuming this one exists too, based on pattern
-                _logger.debug("    Calling onchange_actual_plan_curve for PP ID %s", record.id)
-                record.onchange_actual_plan_curve() # You might have this for S-curve chart
-            if hasattr(record, 'onchange_actual_plan_cashout'):
-                _logger.debug("    Calling onchange_actual_plan_cashout for PP ID %s", record.id)
-                record.onchange_actual_plan_cashout()
-            if hasattr(record, 'onchange_actual_plan_invoice'):
-                _logger.debug("    Calling onchange_actual_plan_invoice for PP ID %s", record.id)
-                record.onchange_actual_plan_invoice()
-            if hasattr(record, 'onchange_actual_plan_cashin'):
-                _logger.debug("    Calling onchange_actual_plan_cashin for PP ID %s", record.id)
-                record.onchange_actual_plan_cashin()
-            if hasattr(record, 'onchange_actual_plan_manhour'):
-                _logger.debug("    Calling onchange_actual_plan_manhour for PP ID %s", record.id)
-                record.onchange_actual_plan_manhour()
-
+                
+            if hasattr(record, '_compute_current_accum_values'):
+                _logger.debug("    Calling _compute_current_accum_values for PP ID %s", record.id)
+                record._compute_current_accum_values()
+                 
             _logger.info("  PP ID %s: Onchange methods completed. Calling generate_report_data...", record.id)
             if hasattr(record, 'generate_report_data'):
                 record.generate_report_data() 
@@ -521,18 +594,24 @@ class ProjectProgress(models.Model):
         for rec in self:
 
             # compute list Purchase paid/ account payment
-            for payment in self.env['account.payment'].search(['&','&',('project', '=', rec.name.id),('state','not in', ['cancelled','draft']),('payment_type', '=', 'outbound'),]):
-                payments = {
-                        'code': 'Purchase Invoice payment',
-                        'payment_date': payment.payment_date,
-                        'name': payment.name,
-                        'amount': payment.amount_untaxed_signed,
-                        'project': payment.project,
-                    }
-                res.append(payments)
+            for payment in self.env['account.payment'].search([
+                '&', '&',
+                ('project', '=', rec.name.id),
+                ('state', 'not in', ['cancelled', 'draft']),
+                ('payment_type', '=', 'outbound'),
+            ]):
+                invoice_names = ", ".join(payment.invoice_ids.mapped('number'))
+                res.append({
+                    'code': 'Purchase Invoice payment',
+                    'payment_date': payment.payment_date,
+                    'name': payment.name + " (" + invoice_names + ")",
+                    'amount': payment.amount_idr_curr,
+                    'project': payment.project,
+                })
+
 
             # compute list BAR paid
-            for payment in self.env['account.payment'].search(['&','&',('project', '=', rec.name.id),('state','not in', ['cancelled','draft']),('payment_type', '=', 'transfer'),]):
+            for payment in self.env['account.payment'].search(['&','&',('project', '=', rec.name.id),('state', 'in', ['posted','reconciled']),('payment_type', '=', 'transfer'),]):
                 payments = {
                         'code': 'BAR - ' + payment.communication,
                         'payment_date': payment.payment_date,
@@ -563,7 +642,7 @@ class ProjectProgress(models.Model):
         res = [] 
         for rec in self:
             # compute list Invoice
-            for inv in self.env['account.invoice'].search(['&','&',('project', '=', rec.name.id),('type', '=', 'out_invoice'),('state', 'in', ['open']),]):
+            for inv in self.env['account.invoice'].search(['&','&',('project', '=', rec.name.id),('type', '=', 'out_invoice'),('state', 'in', ['open','paid']),]):
                 invoices = {
                         'name': inv.number,
                         'created_date': inv.date_invoice,
@@ -593,19 +672,22 @@ class ProjectProgress(models.Model):
     # get list actual Cash In form account payment
     @api.model
     def get_actual_cashin_lines(self):
-        res = [] 
+        res = []
         for rec in self:
-            # compute list Invoice
-            for pay in self.env['account.payment'].search(['&','&',('invoice_ids.project', '=', rec.name.id),('payment_type', '=', 'inbound'),('state', '=', 'posted'),]):
-                invoices = {
-                        'name': pay.name,
-                        'payment_date': pay.payment_date,
-                        'amount': pay.amount_untaxed_signed,
-                        'project': pay.invoice_ids.project,
-                    }
-                res.append(invoices)
-
-        return res 
+            for pay in self.env['account.payment'].search([
+                '&', '&',
+                ('invoice_ids.project', '=', rec.name.id),
+                ('payment_type', '=', 'inbound'),
+                ('state', 'in', ['posted', 'reconciled']),
+            ]):
+                invoice_names = ", ".join(pay.invoice_ids.mapped('number'))
+                res.append({
+                    'name': pay.name + " (" + invoice_names + ")",
+                    'payment_date': pay.payment_date,
+                    'amount': pay.amount_idr_curr,
+                    'project': pay.invoice_ids.project,
+                })
+        return res
 
 
     # get value actual Manhour
@@ -634,32 +716,51 @@ class ProjectProgress(models.Model):
     def get_actual_manhour_lines(self):
         result = {}
         for rec in self:
-            # Compute list of manhour lines grouped by project and month
-            timesheets = self.env['hr_timesheet.sheet'].search([('attendances_ids.project', '=', rec.name.id)])
-            for ts in timesheets:
-                for att in ts.attendances_ids:
-                    if att.project and att.project.id == rec.name.id:  # Ensure correct project
-                        # Extract year and month from check_in date
-                        check_in_date = fields.Date.from_string(att.check_in)
-                        year_month = "{}-{:02d}".format(check_in_date.year, check_in_date.month)
+            project_id = rec.name.id
+            if not project_id:
+                continue
 
-                        total_hours = att.gut_normal_hours + att.gut_class1 + att.gut_class2 + att.gut_class3 + att.gut_class4
+            # Pull attendances directly for this project (field = 'project')
+            attendances = self.env['hr.attendance'].search([('project', '=', project_id)])
 
-                        if att.project.id not in result:
-                            result[att.project.id] = {}
+            for att in attendances:
+                if not att.check_in:
+                    continue
 
-                        if year_month not in result[att.project.id]:
-                            result[att.project.id][year_month] = {
-                                'name': ts.name,
-                                'date_from': ts.date_start,
-                                'date_to': ts.date_end,
-                                'total': 0.0,
-                                'project': att.project.id,
-                                'month': year_month,
-                            }
+                # Extract year-month from check_in
+                check_in_date = fields.Date.from_string(att.check_in)
+                year_month = "{}-{:02d}".format(check_in_date.year, check_in_date.month)
+                
+                month_label = "Timesheet {} {}".format(
+                    calendar.month_name[check_in_date.month],
+                    check_in_date.year
+                )
+                # Total hours = normal + overtime classes
+                total_hours = (
+                    att.gut_normal_hours +
+                    att.gut_class1 +
+                    att.gut_class2 +
+                    att.gut_class3 +
+                    att.gut_class4 +
+                    att.gut_travel
+                )
 
-                        # Aggregate hours by project and month
-                        result[att.project.id][year_month]['total'] += total_hours
+                if project_id not in result:
+                    result[project_id] = {}
+
+                if year_month not in result[project_id]:
+                    result[project_id][year_month] = {
+                        'name': month_label,
+                        'date_from': check_in_date.replace(day=1),
+                        'date_to': (check_in_date.replace(day=28) + relativedelta(days=4)).replace(day=1) - timedelta(days=1),
+                        'total': 0.0,
+                        'project': project_id,
+                        'month': year_month,
+                    }
+
+                # Add to monthly project total
+                result[project_id][year_month]['total'] += total_hours
+
         return result
 
 
@@ -1234,7 +1335,7 @@ class ProjectProgress(models.Model):
     # def _get_expense_advance_count(self):
     #         res = self.env['hr.expense.advance'].search_count(['&', ('project_id', '=', self.name.id), ('state', 'not in', ['draft', 'rejected'])])
     #         self.expense_advance_count = res or 0
-            
+
     # @api.multi
     # @api.depends('expense_advance_count')
     # def _get_expense_advance_amount(self):
@@ -1246,10 +1347,19 @@ class ProjectProgress(models.Model):
 # statinfo PO di Project management
     @api.multi
     def _get_purchase_order_amount(self):
-        data_obj = self.env['purchase.order'].search(['&', ('project', '=', self.name.id), ('state', 'not in', ['draft', 'cancel', 'refuse'])])
-        total_amount = sum(data_obj.mapped('amount_total'))
-        for record in self:
-            record.purchase_order_amount = total_amount or False
+        return
+        # for record in self:
+        #     project_id = record.name.id  # assuming 'name' is Many2one to project.project
+        #     if not project_id:
+        #         record.purchase_order_amount = 0.0
+        #         continue
+        #
+        #     purchase_orders = self.env['purchase.order'].search([
+        #         ('project', '=', project_id),
+        #         ('state', 'not in', ['draft', 'cancel', 'refuse'])
+        #     ])
+        #     total_amount = sum(purchase_orders.mapped('amount_total'))
+        #     record.purchase_order_amount = total_amount or 0.0
 
 
 # open CVR
@@ -1464,64 +1574,35 @@ class ProjectProgress(models.Model):
         _logger.info("<<<< generate_report_data: FINISH for PP ID: %s", self.id)
         return True
 
+
     @api.model
-    def run_project_progress_update_cron(self):
-        _logger.info("CRON (Combined Approach): Starting job.")
-        
-        all_active_projects = self.env['project.progress.plan'].search([('active', '=', True)])
-        records_to_process_tier1 = []
-        _logger.info("CRON: Tier 1 Filter - Checking %s active projects for actual data (amount > 0).", len(all_active_projects))
+    def run_project_progress_update_cron(self, batch_size=100):
+        ProjectProgress = self.env['project.progress']
+        last_id = 0
 
-        for project in all_active_projects:
-            has_positive_actuals = False
-            if any(line.name > 0 for line in project.project_actual_curve_line): has_positive_actuals = True
-            elif any(line.amount > 0 for line in project.project_actual_invoice_line): has_positive_actuals = True
-            elif any(line.amount > 0 for line in project.project_actual_cashout_line): has_positive_actuals = True
-            elif any(line.amount > 0 for line in project.project_actual_cashin_line): has_positive_actuals = True
-            elif any(line.total > 0 for line in project.project_actual_manhour_line): has_positive_actuals = True
-            elif any(line.amount > 0 for line in project.project_actual_cost_line): has_positive_actuals = True
-            
-            if has_positive_actuals:
-                records_to_process_tier1.append(project)
-        
-        total_to_process = len(records_to_process_tier1)
-        _logger.info("CRON: Tier 1 Filter - Found %s projects with positive actuals to process further.", total_to_process)
+        while True:
+            batch = ProjectProgress.search(
+                [('id', '>', last_id)],
+                order='id', limit=batch_size
+            )
+            if not batch:
+                break
 
-        if not records_to_process_tier1:
-            _logger.info("CRON: No records with positive actuals need updating at this time.")
-            return True
-
-        processed_count = 0
-        commit_batch_size = 20 
-
-        for record in records_to_process_tier1:
-            processed_count += 1
-            project_name = record.name.name if record.name else "N/A"
-            _logger.info("CRON: Processing record %s/%s (ID: %s, Name: %s)", 
-                         processed_count, total_to_process, record.id, project_name)
+            _logger.info("Cron: processing batch with IDs > %s", last_id)
             try:
-                # action_update_actual_value will fetch latest actuals into source O2M lines,
-                # then call generate_report_data which has the signature check (Tier 2).
-                if hasattr(record, 'action_update_actual_value'):
-                    record.action_update_actual_value()
-                else:
-                    _logger.warning("CRON: Method 'action_update_actual_value' not found for PP ID: %s", record.id)
-                
-                if processed_count % commit_batch_size == 0:
-                    self.env.cr.commit()
-                    _logger.info("CRON: Committed after processing %s records.", processed_count)
+                # Now calls your bulk-safe method
+                batch.action_update_actual_value()
             except Exception as e:
-                _logger.error("CRON: Error processing project.progress.plan ID %s (Name: %s): %s.", 
-                              record.id, project_name, e)
-                self.env.cr.rollback()
-                self.env.cr.commit() 
-            
-        if total_to_process > 0 and processed_count > 0 and processed_count % commit_batch_size != 0 :
-             self.env.cr.commit()
-             _logger.info("CRON: Final commit made.")
+                _logger.exception(
+                    "Cron batch starting from ID %s failed: %s",
+                    last_id, e
+                )
 
-        _logger.info("CRON: Finished processing %s targeted records.", processed_count)
+            last_id = batch[-1].id
+
+        _logger.info("Cron: all batches processed")
         return True
+
 
     # You still need the _compute_current_accum_values method defined (likely in an inheriting class
     # like ProjectProgressPlanTreeValues from project_progress_export.py, or here if you combine files).
@@ -1584,11 +1665,12 @@ class ProjectProgress(models.Model):
 
 class ProjectPlanCurve(models.Model):
     _name = 'project.plan.curve'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
 
-    name = fields.Float(string='Progress %')
-    seq = fields.Char(string='No', compute="_compute_get_number")
-    date = fields.Date(string='Tanggal')
-    plan_plan_curve_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade')
+    name = fields.Float(string='Progress %', track_visibility='onchange')
+    seq = fields.Char(string='No', compute="_compute_get_number", track_visibility='onchange')
+    date = fields.Date(string='Tanggal', track_visibility='onchange')
+    plan_plan_curve_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade', track_visibility='onchange')
 
     @api.depends('plan_plan_curve_id')
     def _compute_get_number(self):
@@ -1600,11 +1682,12 @@ class ProjectPlanCurve(models.Model):
 
 class ProjectActualCurve(models.Model):
     _name = 'project.actual.curve'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
 
-    name = fields.Float(string='Progress %')
-    seq = fields.Char(string='No', compute="_compute_get_number")
-    date = fields.Date(string='Tanggal')
-    plan_actual_curve_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade')
+    name = fields.Float(string='Progress %', track_visibility='onchange')
+    seq = fields.Char(string='No', compute="_compute_get_number", track_visibility='onchange')
+    date = fields.Date(string='Tanggal', track_visibility='onchange')
+    plan_actual_curve_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade', track_visibility='onchange')
 
 
     @api.depends('plan_actual_curve_id')
@@ -1618,11 +1701,12 @@ class ProjectActualCurve(models.Model):
 
 class ProjectPlanCashout(models.Model):
     _name = 'project.plan.cashout'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
 
-    name = fields.Float(string='Cash Out')
-    seq = fields.Char(string='No', compute="_compute_get_number")
-    date = fields.Date(string='Tanggal',store=True)
-    plan_plan_cashout_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade')
+    name = fields.Float(string='Cash Out', track_visibility='onchange')
+    seq = fields.Char(string='No', compute="_compute_get_number", track_visibility='onchange')
+    date = fields.Date(string='Tanggal',store=True, track_visibility='onchange')
+    plan_plan_cashout_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade', track_visibility='onchange')
 
     @api.depends('plan_plan_cashout_id')
     def _compute_get_number(self):
@@ -1634,36 +1718,39 @@ class ProjectPlanCashout(models.Model):
 
 class ProjectActualCashout(models.Model):
     _name = 'project.actual.cashout'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual cashout '
 
-    name = fields.Char(string='Number')
-    payment_date = fields.Date(string='Payment Date')
-    actual_cashout_line_id = fields.Many2one('project.progress.plan', string='Actual Cashout', ondelete='cascade')
-    code = fields.Char('Source',help="The code that can be used")
-    amount = fields.Float(string="Total", help="Amount of Total PO & CVR")
+    name = fields.Char(string='Number', track_visibility='onchange')
+    payment_date = fields.Date(string='Payment Date', track_visibility='onchange')
+    actual_cashout_line_id = fields.Many2one('project.progress.plan', string='Actual Cashout', ondelete='cascade', track_visibility='onchange')
+    code = fields.Char('Source',help="The code that can be used", track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Amount of Total PO & CVR", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 class ProjectActualCashout(models.Model):
     _name = 'project.actual.cost'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual Cost '
 
-    name = fields.Char(string='Number')
-    created_date = fields.Date(string='Created Date')
-    actual_cost_line_id = fields.Many2one('project.progress.plan', string='Actual Cost', ondelete='cascade')
-    code = fields.Char('Source',help="The code that can be used")
-    amount = fields.Float(string="Total", help="Amount of Total PI & CVR")
+    name = fields.Char(string='Number', track_visibility='onchange')
+    created_date = fields.Date(string='Created Date', track_visibility='onchange')
+    actual_cost_line_id = fields.Many2one('project.progress.plan', string='Actual Cost', ondelete='cascade', track_visibility='onchange')
+    code = fields.Char('Source',help="The code that can be used", track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Amount of Total PI & CVR", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
-    description = fields.Char('Description', help="Keterangan")
-    attachments = fields.Many2many('ir.attachment', string='Attachments')
+    description = fields.Char('Description', help="Keterangan", track_visibility='onchange')
+    attachments = fields.Many2many('ir.attachment', string='Attachments', track_visibility='onchange')
 
 
 class ProjectPlanCashin(models.Model):
     _name = 'project.plan.cashin'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
 
-    name = fields.Float(string='Cash In')
-    seq = fields.Char(string='No', compute="_compute_get_number")
-    date = fields.Date(string='Tanggal')
-    plan_plan_cashin_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade')
+    name = fields.Float(string='Cash In', track_visibility='onchange')
+    seq = fields.Char(string='No', compute="_compute_get_number", track_visibility='onchange')
+    date = fields.Date(string='Tanggal', track_visibility='onchange')
+    plan_plan_cashin_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade', track_visibility='onchange')
 
     @api.depends('plan_plan_cashin_id')
     def _compute_get_number(self):
@@ -1675,23 +1762,25 @@ class ProjectPlanCashin(models.Model):
 
 class ProjectActualCashin(models.Model):
     _name = 'project.actual.cashin'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual Cash In '
 
-    name = fields.Char(string='Number')
-    payment_date = fields.Date(string='Payment Date')
-    actual_cashin_line_id = fields.Many2one('project.progress.plan', string='Actual Cash In ', ondelete='cascade', index=True)
-    amount = fields.Float(string="Total", help="Amount of Total Cash In")
-    currency_id = fields.Many2one('res.currency')
+    name = fields.Char(string='Number', track_visibility='onchange')
+    payment_date = fields.Date(string='Payment Date', track_visibility='onchange')
+    actual_cashin_line_id = fields.Many2one('project.progress.plan', string='Actual Cash In ', ondelete='cascade', index=True, track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Amount of Total Cash In", track_visibility='onchange')
+    currency_id = fields.Many2one('res.currency', track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 
 class ProjectPlanInvoice(models.Model):
     _name = 'project.plan.invoice'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
 
-    name = fields.Float(string='Invoice')
-    seq = fields.Char(string='No', compute="_compute_get_number")
-    date = fields.Date(string='Tanggal')
-    plan_plan_invoice_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade')
+    name = fields.Float(string='Invoice', track_visibility='onchange')
+    seq = fields.Char(string='No', compute="_compute_get_number", track_visibility='onchange')
+    date = fields.Date(string='Tanggal', track_visibility='onchange')
+    plan_plan_invoice_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade', track_visibility='onchange')
 
 
     @api.depends('plan_plan_invoice_id')
@@ -1704,23 +1793,25 @@ class ProjectPlanInvoice(models.Model):
 
 class ProjectActualInvoice(models.Model):
     _name = 'project.actual.invoice'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin']
     _description = 'Actual Invoice '
 
-    name = fields.Char(string='Number')
-    created_date = fields.Date(string='Invoice Date')
-    actual_invoice_line_id = fields.Many2one('project.progress.plan', string='Actual Invoice', ondelete='cascade', index=True)
-    amount = fields.Float(string="Total", help="Amount of Total Invoice")
-    amount_company_signed = fields.Float(string="Total Company Signed", help="Amount of Total Invoice")
-    currency_id = fields.Many2one('res.currency')
+    name = fields.Char(string='Number', track_visibility='onchange')
+    created_date = fields.Date(string='Invoice Date', track_visibility='onchange')
+    actual_invoice_line_id = fields.Many2one('project.progress.plan', string='Actual Invoice', ondelete='cascade', index=True, track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Amount of Total Invoice", track_visibility='onchange')
+    amount_company_signed = fields.Float(string="Total Company Signed", help="Amount of Total Invoice", track_visibility='onchange')
+    currency_id = fields.Many2one('res.currency', track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 class ProjectPlanManhour(models.Model):
     _name = 'project.plan.manhour'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
 
-    name = fields.Float(string='Manhour')
-    seq = fields.Char(string='No', compute="_compute_get_number")
-    date = fields.Date(string='Tanggal')
-    plan_plan_manhour_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade')
+    name = fields.Float(string='Manhour', track_visibility='onchange')
+    seq = fields.Char(string='No', compute="_compute_get_number", track_visibility='onchange')
+    date = fields.Date(string='Tanggal', track_visibility='onchange')
+    plan_plan_manhour_id = fields.Many2one('project.progress.plan', string='Project', ondelete='cascade', track_visibility='onchange')
 
 
     @api.depends('plan_plan_manhour_id')
@@ -1733,109 +1824,156 @@ class ProjectPlanManhour(models.Model):
 
 class ProjectActualManhour(models.Model):
     _name = 'project.actual.manhour'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual Manhour '
 
-    name = fields.Char(string='Name')
-    date_from = fields.Date(string='Date From')
-    date_to = fields.Date(string='Date To')
-    actual_manhour_line_id = fields.Many2one('project.progress.plan', string='Actual Manhour', ondelete='cascade', index=True)
-    total = fields.Integer(string="Total Hours", help="Amount of Total Manhour")
+    name = fields.Char(string='Name', track_visibility='onchange')
+    date_from = fields.Date(string='Date From', track_visibility='onchange')
+    date_to = fields.Date(string='Date To', track_visibility='onchange')
+    actual_manhour_line_id = fields.Many2one('project.progress.plan', string='Actual Manhour', ondelete='cascade', index=True, track_visibility='onchange')
+    total = fields.Integer(string="Total Hours", help="Amount of Total Manhour", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
-    month = fields.Char(string='Month',)
+    month = fields.Char(string='Month', track_visibility='onchange')
 
 class ProjectEstimatedCashout(models.Model):
     _name = 'project.estimated.cashout'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Estimated cashout '
 
-    name = fields.Char(string='Number')
-    created_date = fields.Date(string='Created Date')
-    estimated_cashout_line_id = fields.Many2one('project.progress.plan', string='Actual Cashout', ondelete='cascade', index=True)
-    code = fields.Char('Source',help="The code that can be used")
-    amount = fields.Float(string="Total", help="Amount of Total PO&CVR")
+    name = fields.Char(string='Number', track_visibility='onchange')
+    created_date = fields.Date(string='Created Date', track_visibility='onchange')
+    estimated_cashout_line_id = fields.Many2one('project.progress.plan', string='Actual Cashout', ondelete='cascade', index=True, track_visibility='onchange')
+    code = fields.Char('Source',help="The code that can be used", track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Amount of Total PO&CVR", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 
 class ProjectActualPlanCashout(models.Model):
     _name = 'project.actual.plan.cashout'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual and Plan cashout '
 
-    name = fields.Char(string='Number')
-    payment_date = fields.Date(string='Date')
-    actual_cashout_plan_line_id = fields.Many2one('project.progress.plan', string='Actual Cashout', ondelete='cascade')
-    code = fields.Char('Source',help="The code that can be used")
-    amount = fields.Float(string="Total", help="Amount of Total PO & CVR")
+    name = fields.Char(string='Number', track_visibility='onchange')
+    payment_date = fields.Date(string='Date', track_visibility='onchange')
+    actual_cashout_plan_line_id = fields.Many2one('project.progress.plan', string='Actual Cashout', ondelete='cascade', track_visibility='onchange')
+    code = fields.Char('Source',help="The code that can be used", track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Amount of Total PO & CVR", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 
 class ProjectActualPlanCurve(models.Model):
     _name = 'project.actual.plan.curve'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual and Plan Curve '
 
-    name = fields.Char(string='Number')
-    payment_date = fields.Date(string='Date')
-    actual_curve_plan_line_id = fields.Many2one('project.progress.plan', string='Actual Curve', ondelete='cascade')
-    code = fields.Char('Source', help="Testing")
-    amount = fields.Float(string="Total", help="Testing")
+    name = fields.Char(string='Number', track_visibility='onchange')
+    payment_date = fields.Date(string='Date', track_visibility='onchange')
+    actual_curve_plan_line_id = fields.Many2one('project.progress.plan', string='Actual Curve', ondelete='cascade', track_visibility='onchange')
+    code = fields.Char('Source', help="Testing", track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Testing", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 class ProjectActualPlanCashin(models.Model):
     _name = 'project.actual.plan.cashin'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual and Plan Cashin '
 
-    name = fields.Char(string='Number')
-    payment_date = fields.Date(string='Date')
-    actual_cashin_plan_line_id = fields.Many2one('project.progress.plan', string='Actual Cashin', ondelete='cascade')
-    code = fields.Char('Source',help="The code that can be used")
-    amount = fields.Float(string="Total", help="Amount of Total")
+    name = fields.Char(string='Number', track_visibility='onchange')
+    payment_date = fields.Date(string='Date', track_visibility='onchange')
+    actual_cashin_plan_line_id = fields.Many2one('project.progress.plan', string='Actual Cashin', ondelete='cascade', track_visibility='onchange')
+    code = fields.Char('Source',help="The code that can be used", track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Amount of Total", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 class ProjectActualPlanInvoice(models.Model):
     _name = 'project.actual.plan.invoice'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual and Plan invoice '
 
-    name = fields.Char(string='Number')
-    payment_date = fields.Date(string='Date')
-    actual_invoice_plan_line_id = fields.Many2one('project.progress.plan', string='Actual Invoice', ondelete='cascade')
-    code = fields.Char('Source',help="The code that can be used")
-    amount = fields.Float(string="Total", help="Amount of Total")
+    name = fields.Char(string='Number', track_visibility='onchange')
+    payment_date = fields.Date(string='Date', track_visibility='onchange')
+    actual_invoice_plan_line_id = fields.Many2one('project.progress.plan', string='Actual Invoice', ondelete='cascade', track_visibility='onchange')
+    code = fields.Char('Source',help="The code that can be used", track_visibility='onchange')
+    amount = fields.Float(string="Total", help="Amount of Total", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 class ProjectActualPlanManhour(models.Model):
     _name = 'project.actual.plan.manhour'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Actual and Plan Manhour '
 
-    name = fields.Char(string='Number')
-    date = fields.Date(string='Date')
-    actual_manhour_plan_line_id = fields.Many2one('project.progress.plan', string='Actual manhour', ondelete='cascade')
-    code = fields.Char('Source',help="The code that can be used")
-    total = fields.Float(string="Total", help="Amount of Total")
+    name = fields.Char(string='Number', track_visibility='onchange')
+    date = fields.Date(string='Date', track_visibility='onchange')
+    actual_manhour_plan_line_id = fields.Many2one('project.progress.plan', string='Actual manhour', ondelete='cascade', track_visibility='onchange')
+    code = fields.Char('Source',help="The code that can be used", track_visibility='onchange')
+    total = fields.Float(string="Total", help="Amount of Total", track_visibility='onchange')
     project = fields.Many2one('project.project', string='Project', track_visibility='onchange')
 
 
 class ProjectExecutionExperienceLine(models.Model):
     _name = 'project.execution.experience'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Project Execution Experience Line'
 
-    project_execution_experience_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade')
-    value = fields.Text(string='Project Execution Experience Value')
+    project_execution_experience_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade', track_visibility='onchange')
+    value = fields.Text(string='Project Execution Experience Value', track_visibility='onchange')
 
 class LessonLearnedLine(models.Model):
     _name = 'project.lesson.learned'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Lesson Learned Line'
 
-    lesson_learned_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade')
-    value = fields.Text(string='Lesson Value')
+    lesson_learned_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade', track_visibility='onchange')
+    value = fields.Text(string='Lesson Value', track_visibility='onchange')
 
 class SubconPerformanceServiceLine(models.Model):
     _name = 'project.subcon.performance.service'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Subcon Performance Service Line'
 
-    subcon_performance_service_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade')
-    value = fields.Text(string='Subcon Value')
+    subcon_performance_service_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade', track_visibility='onchange')
+    value = fields.Text(string='Subcon Value', track_visibility='onchange')
 
 class ProcurementRecommendationLine(models.Model):
     _name = 'project.procurement.recommendation'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin', 'child.chatter.mixin'] 
     _description = 'Procurement Recommendation Line'
 
-    procurement_recommendation_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade')
-    value = fields.Text(string='Procurement Value')
+    procurement_recommendation_id = fields.Many2one('project.progress.plan', string='Parent', ondelete='cascade', track_visibility='onchange')
+    value = fields.Text(string='Procurement Value', track_visibility='onchange')
+
+
+
+
+# bypass domain approval di approval PM group company director. can see all record
+class IrActionsActWindow(models.Model):
+    _inherit = 'ir.actions.act_window'
+
+    @api.model
+    def read(self, fields=None, load='_classic_read'):
+        # 1) Fetch all actions as usual
+        actions = super(IrActionsActWindow, self).read(fields=fields, load=load)
+
+        # 2) XML ID of the finance director group
+        finance_group = 'purchase_tripple_approval.group_finance_director'
+        # 3) XML ID of the Purchase Order–PM action
+        po_action_xmlid = 'rnet_project_management.action_purchase_oder_pm'
+
+        # Only tweak for finance directors
+        if self.env.user.has_group(finance_group):
+            po_action = self.env.ref(po_action_xmlid)
+            for rec in actions:
+                if rec.get('id') == po_action.id:
+                    # Build a combined domain:
+                    #   state = finance_approval
+                    # OR
+                    #   (state in [pm_approval,purchase,done]
+                    #    AND project_manager = current user)
+                    rec['domain'] = [
+                        '|', ('state', '=', 'finance_approval'),
+                        '&',
+                            ('state', 'in', ['pm_approval', 'purchase', 'done']),
+                            ('project.project_manager.user_id', '=', self.env.uid),
+                    ]
+        return actions
+

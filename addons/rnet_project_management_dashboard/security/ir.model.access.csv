@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_management_dashboard_pm,access.project.management.dashboard.pm,model_project_management_dashboard,project.group_project_manager,1,0,0,0

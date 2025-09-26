@@ -160,4 +160,4 @@
         action="action_project_task"
         parent="project.menu_main_pm"
         sequence="10"/>
-</odoo> 
+</odoo>

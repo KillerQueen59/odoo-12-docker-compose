@@ -1,0 +1,696 @@
+<odoo>
+	<data>
+        <!-- =================================================================
+        APPROVAL BANNER QWEB TEMPLATE (v3 - Final Layout)
+        ================================================================== -->
+        <template id="approval_banner_template" name="Approval Banner">
+            <div class="o_onboarding_container pm_approval_banner">
+                <div class="o_onboarding_wrap">
+                    <!-- Add the header back in for the title -->
+                    <div class="o_onboarding_header">
+                        <h3 class="o_onboarding_title">Approval</h3>
+                    </div>
+                    <div class="o_onboarding_steps">
+                        <!-- CVR Approval -->
+                        <div class="o_onboarding_step card-cvr" t-if="approval_counts.get('cvr', 0)">
+                            <a type="action" name="rnet_project_management.action_hr_expense_report" class="o_onboarding_step_action">
+                                <div class="o_onboarding_step_icon">
+                                    <i class="fa fa-file-text"/>
+                                </div>
+                                <div class="o_onboarding_step_content">
+                                    <h4 class="o_onboarding_step_title">
+                                        <t t-esc="approval_counts.get('cvr')"/> CVR
+                                    </h4>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- BAR Approval -->
+                        <div class="o_onboarding_step card-bar" t-if="approval_counts.get('bar', 0)">
+                            <a type="action" name="rnet_project_management.action_hr_expense_BAR" class="o_onboarding_step_action">
+                                <div class="o_onboarding_step_icon">
+                                    <i class="fa fa-clipboard"/>
+                                </div>
+                                <div class="o_onboarding_step_content">
+                                    <h4 class="o_onboarding_step_title">
+                                        <t t-esc="approval_counts.get('bar')"/> BAR
+                                    </h4>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Purchase Requisition Approval -->
+                        <div class="o_onboarding_step card-pr" t-if="approval_counts.get('pr', 0)">
+                            <a type="action" name="rnet_project_management.action_material_purchase_requisition" class="o_onboarding_step_action">
+                                <div class="o_onboarding_step_icon">
+                                    <i class="fa fa-list-alt"/>
+                                </div>
+                                <div class="o_onboarding_step_content">
+                                    <h4 class="o_onboarding_step_title">
+                                        <t t-esc="approval_counts.get('pr')"/> Purchase Requisitions
+                                    </h4>
+                                </div>
+                            </a>
+                        </div>
+						
+                        <!-- Purchase Order Approval -->
+                        <div class="o_onboarding_step card-po" t-if="approval_counts.get('po', 0)">
+                            <a type="action" name="rnet_project_management.action_purchase_oder_pm" class="o_onboarding_step_action">
+                                <div class="o_onboarding_step_icon">
+                                    <i class="fa fa-shopping-cart"/>
+                                </div>
+                                <div class="o_onboarding_step_content">
+                                    <h4 class="o_onboarding_step_title">
+                                        <t t-esc="approval_counts.get('po')"/> Purchase Orders
+                                    </h4>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <!-- Asset Receipt Approval -->
+                        <div class="o_onboarding_step card-asset" t-if="approval_counts.get('receipt_asset', 0)">
+                            <a type="action" name="rnet_project_management.open_receipt_asset_pm" class="o_onboarding_step_action">
+                                <div class="o_onboarding_step_icon">
+                                    <i class="fa fa-cubes"/>
+                                </div>
+                                <div class="o_onboarding_step_content">
+                                    <h4 class="o_onboarding_step_title">
+                                        <t t-esc="approval_counts.get('receipt_asset')"/> Asset Receipts
+                                    </h4>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <!-- Inventory Receipt Approval -->
+                        <div class="o_onboarding_step card-inventory" t-if="approval_counts.get('receipt_inventory', 0)">
+                             <a type="action" name="rnet_project_management.open_receipt_inventory_pm" class="o_onboarding_step_action">
+                                <div class="o_onboarding_step_icon">
+                                    <i class="fa fa-archive"/>
+                                </div>
+                                <div class="o_onboarding_step_content">
+                                    <h4 class="o_onboarding_step_title">
+                                        <t t-esc="approval_counts.get('receipt_inventory')"/> Inventory Receipts
+                                    </h4>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="o_onboarding_step card-takeout-asset" t-if="approval_counts.get('takeout_asset', 0)">
+                             <a type="action" name="rnet_project_management.open_takeout_asset_approval_pm" class="o_onboarding_step_action">
+                                <div class="o_onboarding_step_icon">
+                                    <i class="fa fa-sign-out"/>
+                                </div>
+                                <div class="o_onboarding_step_content">
+                                    <h4 class="o_onboarding_step_title">
+                                        <t t-esc="approval_counts.get('takeout_asset')"/> Asset Takeout
+                                    </h4>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="o_onboarding_step card-takeout-inventory" t-if="approval_counts.get('takeout_inventory', 0)">
+                             <a type="action" name="rnet_project_management.open_takeout_inventory_approval_pm" class="o_onboarding_step_action">
+                                <div class="o_onboarding_step_icon">
+                                    <i class="fa fa-sign-out"/>
+                                </div>
+                                <div class="o_onboarding_step_content">
+                                    <h4 class="o_onboarding_step_title">
+                                        <t t-esc="approval_counts.get('takeout_inventory')"/> Inventory Takeout
+                                    </h4>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </template>
+
+
+		<record model="ir.ui.view" id="rnet_project_progress_form">
+			<field name="name">rnet Project Management</field>
+			<field name="model">project.progress.plan</field>
+			<field name="arch" type="xml">
+				<form string="Project Management">
+					<field name="active" invisible="1"/>
+					<field name="show_experience_note" invisible="1"/>
+					<header>
+						<button name="print_actual_plan_curve_report" type="object" string="Print Report" class="btn-primary"/>
+						<button name="create_revision" string="Make a Revision" type="object" attrs="{'invisible':[('active', '=', False)]}"/>
+						<button name="action_update_actual_value" class="btn-primary" string="Update Actual Value" type="object" attrs="{'invisible':[('active', '=', False)]}"/>
+					 	<button name="action_export_progress_to_excel" string="Export Template CSV"  type="object" class="btn-primary"/>
+					 	<button name="action_export_progress_to_excel_v2" string="Export Data By Xlsx/Csv"  type="object" class="btn-primary"/>
+						   <button name="toggle_notebook" string="Experience Note" type="object" class="btn-primary"
+                                attrs="{'invisible': [('show_experience_note', '=', False)]}"/>
+                        <button name="toggle_notebook" string="Experience Note" type="object"
+                                attrs="{'invisible': [('show_experience_note', '=', True)]}"/>
+					</header>
+					<sheet>
+						<div class="oe_button_box" name="button_box">
+							<button type="object" class="oe_stat_button" icon="fa-book" name="open_revision_list" attrs="{'invisible':[('revision_count', '=', 0)]}">
+								<field string="Revision" name="revision_count" widget="statinfo"/>
+							</button>
+							<button type="object" class="oe_stat_button" icon="fa-tasks" string="Schedule Task Gantt" name="action_view_gantt"/>
+							<button type="object" class="oe_stat_button"  string="Actual&amp;Plan Curve" icon="fa-bar-chart"  name="open_actual_plan_curve_chart"></button>
+							<button type="object" class="oe_stat_button"  string="Actual&amp;Plan Cash Out" icon="fa-bar-chart"  name="open_actual_plan_cashout_chart"></button>
+							<button type="object" class="oe_stat_button"  string="Actual&amp;Plan Cash In" icon="fa-pie-chart"  name="open_actual_plan_cashin_chart"></button>
+							<button type="object" class="oe_stat_button"  string="Actual&amp;Plan Invoice" icon="fa-line-chart"  name="open_actual_plan_invoice_chart"></button>
+							<button type="object" class="oe_stat_button"  string="Actual&amp;Plan Manhour" icon="fa-clock-o"  name="open_actual_plan_manhour_chart"></button>
+<!--                    		<button class="oe_stat_button" type="object" icon="fa-file-text" name="open_expense_sheet_project" groups="hr_expense.group_hr_expense_user">-->
+<!--								<field name="expense_sheet_amount" string="CVR" widget="statinfo" groups="hr_expense.group_hr_expense_user" />-->
+<!--							</button>-->
+<!--							<button class="oe_stat_button" type="object" icon="fa-clipboard" name="open_expense_advance_project" groups="hr_expense.group_hr_expense_user">-->
+<!--								<field name="expense_advance_amount" string="BAR" widget="statinfo" groups="hr_expense.group_hr_expense_user" />-->
+<!--							</button>-->
+<!--							<button class="oe_stat_button" type="object" icon="fa-file" name="open_purchase_order_project" groups="project.group_project_manager">-->
+<!--								<field name="purchase_order_amount" string="PO" widget="statinfo" groups="	project.group_project_manager" />-->
+<!--							</button>-->
+						</div>
+						<group>
+							<group>
+								<field name="seq" readonly="1" force_save="1"/>
+								<field name="name" attrs="{'readonly':[('active', '=', False)]}" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+								<field name="project_manager" readonly="1" options="{'no_quick_create': True,'no_open': True, 'no_create_edit' : True}"/>
+							</group>
+							<group>
+								<field name="revision_date"/>
+								<field name="refresh_onchange_actual_value" invisible="1"/>
+							</group>
+						</group>
+						<!-- Experience Note -->
+						<notebook attrs="{'invisible': [('show_experience_note', '=', False)]}">
+							<page string="Experience Notes">
+								<group string="Project Execution Experience">
+									<field name="project_execution_experience_line" nolabel="1">
+										<tree editable="bottom">
+											<field name="value"/>
+										</tree>
+									</field>
+								</group>
+								<group string="Procurement/Logistic Recommendation">
+									<field name="procurement_recommendation_line" nolabel="1">
+										<tree editable="bottom">
+											<field name="value"/>
+										</tree>
+									</field>
+								</group>
+								<group string="Subcon Performance Service">
+									<field name="subcon_performance_service_line" nolabel="1">
+										<tree editable="bottom">
+											<field name="value"/>
+										</tree>
+									</field>
+								</group>
+								<group string="Lesson Learned">
+									<field name="lesson_learned_line" nolabel="1">
+										<tree editable="bottom">
+											<field name="value"/>
+										</tree>
+									</field>
+								</group>
+							</page>
+						</notebook>
+
+						<notebook>
+							<page name="progress_plan_curve" string="Plan S-Curve">
+								<separator string="Plan S-Curve"/>
+                                <field name="project_plan_curve_line" attrs="{'readonly':[('active', '=', False)]}">
+									<tree string="Plan S-Curve" editable="bottom">
+										<field name="seq" />
+										<field name="date" required="1"/>
+										<field name="name" sum="curve"/>
+									</tree>
+                                </field>
+							</page>
+
+                            <page name="progress_plan_cash_out" string="Plan Cash Out">
+                                <separator string="Plan Cash Out"/>
+                                <field name="project_plan_cashout_line" attrs="{'readonly':[('active', '=', False)]}">
+									<tree string="Plan Cash Out" editable="bottom">
+										<field name="seq" />
+										<field name="date" required="1"/>
+										<field name="name" sum="cashout"/>
+									</tree>
+                                </field>
+							</page>
+
+                            <page name="progress_plan_invoice" string="Plan Invoice">
+                                <separator string="Plan Invoice"/>
+                                <field name="project_plan_invoice_line" attrs="{'readonly':[('active', '=', False)]}">
+									<tree string="Plan Invoice" editable="bottom">
+										<field name="seq" />
+										<field name="date" required="1"/>
+										<field name="name" sum="invoice"/>
+									</tree>
+                                </field>
+							</page>
+
+                            <page name="progress_plan_cash_in" string="Plan Cash In">
+                                <separator string="Plan Cash In"/>
+                                <field name="project_plan_cashin_line" attrs="{'readonly':[('active', '=', False)]}">
+									<tree string="Plan Cash In" editable="bottom">
+										<field name="seq" />
+										<field name="date" required="1"/>
+										<field name="name" sum="cashin"/>
+									</tree>
+                                </field>
+							</page>
+
+                            <page name="progress_plan_manhour" string="Plan Manhour">
+                                <separator string="Plan Manhour"/>
+                                <field name="project_plan_manhour_line" attrs="{'readonly':[('active', '=', False)]}">
+									<tree string="Plan Manhour" editable="bottom">
+										<field name="seq" />
+										<field name="date" required="1"/>
+										<field name="name" widget="integer" sum="manhour"/>
+									</tree>
+                                </field>
+							</page>
+
+                            <page name="progress_actual_curve" string="Actual S-Curve">
+								<separator string="Actual S-Curve"/>
+                                <field name="project_actual_curve_line" attrs="{'readonly':[('active', '=', False)]}">
+									<tree string="Actual S-Curve" editable="bottom">
+										<field name="seq" />
+										<field name="date" required="1"/>
+										<field name="name" sum="curve"/>
+									</tree>
+                                </field>
+							</page>
+
+							<page name="progress_estimated_cash_out_id" string="Estimated Cash Out">
+								<separator string="Estimated Cash Out" />
+								<field name="project_estimated_cashout_line" force_save="1" readonly="1">
+									<tree string="Estimated Cash Out" options="{'no_open': True}">
+										<field name="name" string="Number"/>
+										<field name="code"/>
+										<field name="created_date"/>
+										<!-- <field name="project"/> -->
+										<field name="amount" sum="total" widget="monetary"/>          
+									</tree>
+								</field>
+							</page>
+
+							<page name="progress_actual_cost_id" string="Actual Cost">
+								<separator string="Actual Cost" />
+								<field name="project_actual_cost_line" force_save="1" readonly="1">
+									<tree string="Actual Cost" editable="top">
+										<field name="name" string="Number"/>
+										<field name="code"/>
+										<field name="created_date"/>
+										<!-- <field name="project"/> -->
+										<field name="amount" sum="total" widget="monetary"/>          
+									</tree>
+								</field>
+							</page>
+							
+							<page name="progress_actual_cash_out_id" string="Actual Cash Out">
+								<separator string="Actual Cash Out" />
+								<field name="project_actual_cashout_line" force_save="1" readonly="1">
+									<tree string="Actual Cash Out" editable="top">
+										<field name="name" string="Number"/>
+										<field name="code"/>
+										<field name="payment_date"/>
+										<!-- <field name="project"/> -->
+										<field name="amount" sum="total" widget="monetary"/>          
+									</tree>
+								</field>
+							</page>
+
+							<page name="progress_actual_invoice" string="Actual Invoice">
+								<separator string="Actual Invoice" />
+								<field name="project_actual_invoice_line" force_save="1" readonly="1">
+									<tree string="Actual Invoice" editable="top">
+										<field name="name" />
+										<field name="created_date"/>
+										<!-- <field name="project"/> -->
+										<field name="amount" sum="total"/>
+										<!-- <field name="amount_company_signed" string="Total (IDR)" sum="total_currency" widget="monetary"/> -->
+										<field name="currency_id" invisible="1"/>            
+									</tree>
+								</field>
+							</page>
+
+							<page name="progress_actual_cash_in" string="Actual Cash In">
+								<separator string="Actual Cash In" />
+								<field name="project_actual_cashin_line" force_save="1" readonly="1">
+									<tree string="Actual Cash In" editable="top">
+										<field name="name" string="Number"/>
+										<field name="payment_date"/>
+										<!-- <field name="project"/> -->
+										<field name="amount" sum="total" widget="monetary"/>    
+										<field name="currency_id" invisible="1"/>                  
+									</tree>
+								</field>
+							</page>
+							<page name="progress_actual_manhour" string="Actual Manhour">
+								<separator string="Actual Manhour" />
+								<field name="project_actual_manhour_line" force_save="1" readonly="1">
+									<tree string="Actual Manhour" editable="top">
+										<field name="name"/>
+										<field name="date_from" string="Date"/>
+										<!-- <field name="date_to"/> -->
+										<field name="project"/>
+										<field name="total" sum="total_hours"/>       
+									</tree>
+								</field>
+							</page>
+							<page name="gantt_tasks" string="Gantt Tasks">
+								<separator string="Gantt Tasks with Baseline" />
+								<field name="gantt_task_line"
+									attrs="{'readonly':[('active', '=', False)]}">
+									<tree string="Gantt Tasks" editable="bottom" decoration-danger="is_delayed == True">
+										<field name="sequence" widget="handle" />
+										<field name="name" />
+										<field name="project_id" invisible="1" />
+										<field name="supervisor_id" />
+										<field name="task_type" />
+										<field name="actual_start_date" />
+										<field name="actual_end_date" />
+										<field name="actual_duration" />
+										<field name="start_date" />
+										<field name="end_date" />
+										<field name="duration" />
+										<field name="delay_days" attrs="{'invisible': [('is_delayed', '=', False)]}" />
+										<field name="progress" widget="percentage" />
+										<field name="state" />
+										<field name="priority" />
+										<field name="is_delayed" invisible="1" />
+									</tree>
+								</field>
+							</page>
+					</notebook>
+					</sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+				</form>
+			</field>
+		</record>
+
+		<!-- tree view -->
+        <record model="ir.ui.view" id="rnet_project_progress_tree">
+			<field name="name">rnet Project Management tree</field>
+			<field name="model">project.progress.plan</field>
+            <field name="arch" type="xml">
+                <tree string="Project Management" default_order='current_accum_plan_progress desc'>
+					<field name="seq"/>
+                    <field name="name"/>
+                    <!-- % Progress -->
+                    <field name="current_accum_plan_progress" string="Plan Progress (%)"   options="{'current_value': 'current_accum_plan_progress', 'max_value': 100}"/>
+                    <field name="current_accum_actual_progress" string="Actual Progress (%)"   options="{'current_value': 'current_accum_actual_progress', 'max_value': 100}"/>
+
+                    <!-- Cash Out -->
+                    <field name="current_accum_plan_cash_out" string="Plan Cash Out" sum="total" />
+                    <field name="current_accum_actual_cash_out" string="Actual Cash Out" sum="total" />
+                    
+					<!-- Invoice -->
+                    <field name="current_accum_plan_invoice" string="Plan Inv." sum="total"/>
+                    <field name="current_accum_actual_invoice" string="Actual Inv." sum="total" />
+
+					<!-- Cash In -->
+                    <field name="current_accum_plan_cash_in" string="Plan Cash In" sum="total"/>
+                    <field name="current_accum_actual_cash_in" string="Actual Cash In" sum="total" />
+
+                    <!-- Manhour -->
+                    <field name="current_accum_plan_manhour" string="Plan Manhour" sum="total"/>
+                    <field name="current_accum_actual_manhour" string="Actual Manhour" sum="total" />
+					<field name="project_manager"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Inherit the tree view to add the banner route -->
+        <record model="ir.ui.view" id="rnet_project_progress_tree_with_banner">
+            <field name="name">rnet Project Management tree with banner</field>
+            <field name="model">project.progress.plan</field>
+            <field name="inherit_id" ref="rnet_project_management.rnet_project_progress_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="banner_route">/project_management/approval_banner</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+		<!-- view Pivot -->
+		<record model="ir.ui.view" id="view_project_progress_plan_pivot">
+            <field name="name">project.progress.plan.pivot</field>
+            <field name="model">project.progress.plan</field>
+            <field name="arch" type="xml">
+                <pivot string="Project Plan">
+					<field name="name" type="col"/>
+                </pivot>
+            </field>
+        </record>
+		<!--  -->
+
+
+		<!-- search Filter view -->
+        <record model="ir.ui.view" id="view_project_progress_plan_filter">
+            <field name="name">project.progress.plan.filter</field>
+            <field name="model">project.progress.plan</field>
+            <field name="arch" type="xml">
+				<search>
+					<field name="name" string="All"
+					filter_domain="[
+                                '|','|',
+                                ('name', 'ilike', self),
+                                ('project_pm', 'ilike', self),
+                                ('seq', 'ilike', self),
+                                ]"/>
+					<filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+        			<filter name="group_by_project_manager" string="Project Manager" context="{'group_by': 'project_pm'}"/>
+        			<filter name="group_by_order_date" string="Order Date" context="{'group_by': 'order_date'}"/>
+        			<filter name="group_by_location" string="Location" context="{'group_by': 'location'}"/>
+				</search>
+            </field>
+        </record>
+
+		
+
+		<!-- actual cost form view -->
+		<record id="view_project_actual_cost_form" model="ir.ui.view">
+			<field name="name">project.actual.cost.form</field>
+			<field name="model">project.actual.cost</field>
+			<field name="arch" type="xml">
+				<form string="Project Actual Cost">
+					<sheet>
+						<group>
+							<field name="name"/>
+							<field name="created_date"/>
+							<field name="actual_cost_line_id" invisible="1"/>
+							<field name="code"/>
+							<field name="amount"/>
+							<field name="project"/>
+							<field name="attachments" widget="many2many_binary"/>
+						</group>
+						<group>
+							<field name="description"/>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<!-- schedule action cron -->
+		<record id="ir_cron_daily_project_update" model="ir.cron">
+			<field name="name">Project Progress: Update Active Projects Accumulative value PM Daily Project Progress Update</field>
+            <field name="model_id" ref="model_project_progress_plan"/> 
+			<field name="state">code</field>
+			<field name="code">model.run_project_progress_update_cron()</field>
+			<field name="interval_type">days</field>
+			<field name="interval_number">1</field>
+			<field name="numbercall">-1</field>
+			<!--
+				Calculate nextrun = tomorrow at 06:00 local server time.
+				If your Odoo timezone != server timezone, adjust accordingly or set in UI.
+			-->
+			<field name="nextcall"
+             eval="(datetime.utcnow() + relativedelta(days=1))
+                     .replace(hour=23, minute=0, second=0)
+                     .strftime('%Y-%m-%d %H:%M:%S')"/>
+		</record>
+
+
+
+        <record model="ir.actions.act_window" id="act_project_progress">
+            <field name="name">Project Management</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">project.progress.plan</field>
+            <field name="view_type">form</field>
+            <!-- Reference the tree view with the banner -->
+            <field name="view_id" ref="rnet_project_progress_tree_with_banner"/>
+            <field name="view_mode">tree,form,pivot,graph</field>
+            <field name="context"></field>
+			 <field name="search_view_id" ref="view_project_progress_plan_filter"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to start a new Project Management process.
+                </p>
+                <p>
+                    to Progress to procure
+                    a certain quantity of materials services, so that they are
+                    available at a certain point in time.
+                </p>
+            </field>
+        </record>
+		<!--  -->
+
+
+		<menuitem id="menu_project_progress_root" sequence="7" name=".Project Management" web_icon="rnet_project_management,static/description/icon.png" groups="project.group_project_manager"/>
+		<menuitem id="menu_project_progress_analysis" sequence="6" name="Project Management Analysis" parent="menu_project_progress_root"  groups="base.group_erp_manager"/>
+		<menuitem id="menu_project_progress_report" sequence="7" name="Reporting" parent="menu_project_progress_root" groups="project.group_project_manager"/>
+		<menuitem id="menu_project_progress_management" sequence="1" name="Project Management" action="act_project_progress"  parent="menu_project_progress_root" groups="project.group_project_manager"/>
+		
+		<menuitem id="menu_project_progress_report_pl" sequence="1" name="Profit Loss" parent="menu_project_progress_report" action="bi_financial_pdf_reports.bi_financial_pdf_reports_action_profit_loss"  groups="project.group_project_manager"/>
+		<menuitem id="menu_project_progress_report_bs" sequence="2" name="Balance Sheet" parent="menu_project_progress_report" action="bi_financial_pdf_reports.bi_financial_pdf_reports_action_balance_sheet"  groups="project.group_project_manager"/>
+
+        <!-- =================================================================
+        APPROVAL ACTIONS
+        These are the original actions, now used by the banner.
+        ================================================================== -->
+		<!-- open good receipt service dari purchase -->
+<!--		<record model="ir.actions.act_window" id="open_receipt_service_receipt">-->
+<!--            <field name="name">Service / Goods Receipt</field>-->
+<!--            <field name="res_model">stock.picking</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--            <field name="domain">['&amp;', ('picking_type_id.name', 'like', 'Receipt%'), ('product_id.type', '=', 'service'), ('state', 'in', ['waiting','done']),('show_asset_menu', '=', False)]</field>-->
+<!--            <field name="context">{'type': 'receipt', 'is_purchase_service': True, 'is_asset_menu': True, 'is_inventory_menu': False, 'default_show_asset_menu': False, 'search_default_waiting': 1}</field>-->
+<!--        </record>-->
+
+<!--		&lt;!&ndash; open good receipt Inventory untuk PM &ndash;&gt;-->
+<!--		<record model="ir.actions.act_window" id="open_receipt_inventory_pm">-->
+<!--            <field name="name">Inventory / Goods Receipt</field>-->
+<!--            <field name="res_model">stock.picking</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--            <field name="domain">['&amp;', '&amp;',('picking_type_id.name', 'like', 'Receipt%'),('state', 'in', ['waiting','done']),('show_asset_menu', '=', False),'|',('gut_approved_by.user_id','=',uid),('project.project_manager.user_id','in', [uid])]</field>-->
+<!--            <field name="context">{'type': 'receipt', 'is_asset_menu': True, 'is_inventory_menu': False, 'default_show_asset_menu': False, 'search_default_waiting': 1}</field>-->
+<!--        </record>-->
+
+<!--		&lt;!&ndash; open good receipt Asset  untuk PM &ndash;&gt;-->
+<!--		<record model="ir.actions.act_window" id="open_receipt_asset_pm">-->
+<!--            <field name="name">Asset / Goods Receipt</field>-->
+<!--            <field name="res_model">stock.picking</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--            <field name="domain">['&amp;', '&amp;',('picking_type_id.name', 'like', 'Receipt%'), ('state', 'in', ['waiting','done']),('show_asset_menu', '=', True),'|',('gut_approved_by.user_id','=',uid),('project.project_manager.user_id','in', [uid])]</field>-->
+<!--            <field name="context">{'type': 'receipt', 'is_asset_menu': False, 'is_inventory_menu': True, 'default_show_asset_menu': True, 'search_default_waiting': 1}</field>-->
+<!--        </record>-->
+
+<!--		&lt;!&ndash; Approval Takeout Inventory untuk PM &ndash;&gt;-->
+<!--		<record id="open_takeout_inventory_approval_pm" model="ir.actions.act_window" >-->
+<!--            <field name="name">Inventory / Takeout</field>-->
+<!--            <field name="res_model">stock.picking</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', '&amp;',('picking_type_id.name', '=like', 'Take Out%'), ('state', 'in', ['waiting','done']),('show_asset_menu', '=', False),'|',('gut_approved_by.user_id','=',uid),('project.project_manager.user_id','in', [uid])]</field>-->
+<!--            <field name="context">{'type': 'takeout', 'is_asset_menu': True, 'is_inventory_menu': False, 'default_show_asset_menu': False, 'search_default_waiting': 1}</field>-->
+<!--        </record>-->
+
+<!--		&lt;!&ndash; Approval Takeout Asset untuk PM &ndash;&gt;-->
+<!--		<record model="ir.actions.act_window" id="open_takeout_asset_approval_pm">-->
+<!--            <field name="name">Asset / Takeout</field>-->
+<!--            <field name="res_model">stock.picking</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', '&amp;',('picking_type_id.name', '=like', 'Take Out%'),('state', 'in', ['waiting','done']), ('show_asset_menu', '=', True),'|',('gut_approved_by.user_id','=',uid),('project.project_manager.user_id','in', [uid])]</field>-->
+<!--            <field name="context">{'type': 'takeout', 'is_asset_menu': False, 'is_inventory_menu': True, 'default_show_asset_menu': True, 'search_default_waiting': 1}</field>-->
+<!--        </record>-->
+
+<!--		&lt;!&ndash; Approval Purchase Requisition untuk PM &ndash;&gt;-->
+<!--		<record model="ir.actions.act_window" id="action_material_purchase_requisition">-->
+<!--            <field name="name">Purchase Requisitions</field>-->
+<!--            <field name="res_model">material.purchase.requisition</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', ('requisiton_responsible_id.user_id','=',uid), ('state', 'in', ['dept_confirm','stock','partial_process']), ]</field>-->
+<!--       		<field name="context">{'search_default_waiing_approve': 1}</field>-->
+<!--	    </record>-->
+
+<!--		&lt;!&ndash; Approval CVR untuk PM &ndash;&gt;-->
+<!--		<record id="action_hr_expense_report" model="ir.actions.act_window">-->
+<!--			<field name="name">CVR</field>-->
+<!--			<field name="res_model">hr.expense.sheet</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', ('state', 'in', ['submit', 'approve_cost_control','reject_control','post']),'|',('project_manager_id.user_id','=',uid),('site_manager_id.user_id','=',uid)]</field>-->
+<!--			<field name="context">{'search_default_submitted': 1}</field>-->
+<!--		</record>-->
+
+<!--		&lt;!&ndash; Approval BAR untuk PM &ndash;&gt;-->
+<!--		<record id="action_hr_expense_BAR" model="ir.actions.act_window">-->
+<!--			<field name="name">BAR</field>-->
+<!--			<field name="res_model">hr.expense.advance</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', ('state', 'in', ['submitted','paid','partial']),'|',('project_manager.user_id','=',uid),('site_manager.user_id','=',uid)]</field>-->
+<!--			<field name="context">{'search_default_submitted': 1}</field>-->
+<!--		</record>-->
+
+<!--		&lt;!&ndash; Approval PO untuk PM &ndash;&gt;-->
+<!--		<record id="action_purchase_oder_pm" model="ir.actions.act_window">-->
+<!--			<field name="name">Purchase Order</field>-->
+<!--			<field name="res_model">purchase.order</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">['&amp;', ('state', 'in', ['pm_approval','purchase','done']),('project.project_manager.user_id','=',uid)]</field>-->
+<!--			<field name="context">{'search_default_pm_approval': 1}</field>-->
+<!--		</record>-->
+
+<!--		&lt;!&ndash; View Site Employee untuk PM &ndash;&gt;-->
+<!--		<record id="action_site_emplpoyee" model="ir.actions.act_window">-->
+<!--			<field name="name">Local Employee</field>-->
+<!--			<field name="res_model">hr.employee</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">[('status_karyawan.name','=','PKWT Project'), ]</field>-->
+<!--		</record>-->
+
+		<!-- View Site Employee Revoiew untuk PM -->
+<!--		<record id="action_site_employee_review" model="ir.actions.act_window">-->
+<!--			<field name="name">Local Employee Review</field>-->
+<!--			<field name="res_model">hr.employee.review</field>-->
+<!--			<field name="view_mode">tree,form</field>-->
+<!--			<field name="domain">-->
+<!--				['|',('project_id.project_manager.user_id','=',uid),('project_id.site_manager.user_id','=',uid)]-->
+<!--			</field>-->
+<!--		</record>-->
+
+		<!-- mass update on change Project Management-->
+		<record id="Rnet_update_employee_mass" model="ir.actions.server">
+			<field name="name">Update Value(s)</field>
+			<field name="model_id" ref="model_project_progress_plan"/>
+			<field name="binding_model_id" ref="model_project_progress_plan"/>
+			<field name="binding_view_types">list</field>
+			<field name="state">code</field>
+			<field name="code">
+				if records:
+					records.action_update_actual_value()
+			</field>
+		</record>
+
+
+<!--        <menuitem id="menu_project_progress_site_employee_menu"-->
+<!--                  sequence="12"-->
+<!--                  name="Local Employee"-->
+<!--                  parent="menu_project_progress_root"-->
+<!--                  groups="project.group_project_manager"/>-->
+
+<!--        <menuitem id="menu_project_progress_site_employee"-->
+<!--                  sequence="5"-->
+<!--                  name="Local Employees"-->
+<!--                  parent="menu_project_progress_site_employee_menu"-->
+<!--                  action="action_site_emplpoyee"-->
+<!--                  groups="project.group_project_manager"/>-->
+
+<!--        <menuitem id="menu_project_progress_site_employee_review"-->
+<!--                  sequence="6"-->
+<!--                  name="Local Employees Review"-->
+<!--                  parent="menu_project_progress_site_employee_menu"-->
+<!--                  action="action_site_employee_review"-->
+<!--                  groups="project.group_project_manager"/>-->
+
+
+
+	</data>
+</odoo>

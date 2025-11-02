@@ -79,3 +79,4 @@ access_edit_project_procurement_recommendation,access_edit_project_procurement_r
 
 access_gantt_task,access_gantt_task,model_gantt_task,project.group_project_manager,1,1,1,1
 access_gantt_task_link,access_gantt_task_link,model_gantt_task_link,project.group_project_manager,1,1,1,1
+access_gantt_task_delete_wizard,access_gantt_task_delete_wizard,model_gantt_task_delete_wizard,project.group_project_manager,1,1,1,1

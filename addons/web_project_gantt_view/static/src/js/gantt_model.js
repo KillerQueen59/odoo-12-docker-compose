@@ -153,6 +153,9 @@ odoo.define('web_project_gantt_view.GanttModel', function (require) {
             // Add baseline fields for baseline functionality
             fields.push('actual_start_date', 'actual_end_date', 'has_actual', 'is_delayed');
 
+            // Add WBS hierarchy fields
+            fields.push('wbs_code', 'parent_id', 'child_ids');
+
             return _.uniq(fields);
         },
 

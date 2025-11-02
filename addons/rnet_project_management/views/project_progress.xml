@@ -11,6 +11,7 @@
 						<button name="print_actual_plan_curve_report" type="object" string="Print Report" class="btn-primary"/>
 						<button name="create_revision" string="Make a Revision" type="object" attrs="{'invisible':[('active', '=', False)]}"/>
 						<button name="action_update_actual_value" class="btn-primary" string="Update Actual Value" type="object" attrs="{'invisible':[('active', '=', False)]}"/>
+						<button name="action_sync_all_task_dependencies" string="Sync Task Dependencies" type="object" class="btn-secondary" help="Refresh predecessor/successor for all tasks"/>
 					 	<button name="action_export_progress_to_excel" string="Export Template CSV"  type="object" class="btn-primary"/>
 					 	<button name="action_export_progress_to_excel_v2" string="Export Data By Xlsx/Csv"  type="object" class="btn-primary"/>
 						   <button name="toggle_notebook" string="Experience Note" type="object" class="btn-primary"

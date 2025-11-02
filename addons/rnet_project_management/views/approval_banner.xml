@@ -140,6 +140,7 @@
 						<button name="action_update_actual_value" class="btn-primary" string="Update Actual Value" type="object" attrs="{'invisible':[('active', '=', False)]}"/>
 					 	<button name="action_export_progress_to_excel" string="Export Template CSV"  type="object" class="btn-primary"/>
 					 	<button name="action_export_progress_to_excel_v2" string="Export Data By Xlsx/Csv"  type="object" class="btn-primary"/>
+					 	<button name="action_import_tasks_csv" string="Import Tasks from CSV" type="object" class="btn-success" attrs="{'invisible':[('active', '=', False)]}"/>
 						   <button name="toggle_notebook" string="Experience Note" type="object" class="btn-primary"
                                 attrs="{'invisible': [('show_experience_note', '=', False)]}"/>
                         <button name="toggle_notebook" string="Experience Note" type="object"
@@ -357,10 +358,17 @@
 							</page>
 							<page name="gantt_tasks" string="Gantt Tasks">
 								<separator string="Gantt Tasks with Baseline" />
+								<div class="alert alert-info" role="alert" style="margin-bottom: 10px;">
+									<strong>Quick Tip:</strong> You can type predecessor/successor Task IDs directly when creating tasks (e.g., "T001, T002").
+									After saving all tasks, click the "Sync Task Dependencies" button above to create the links.
+								</div>
 								<field name="gantt_task_line"
 									attrs="{'readonly':[('active', '=', False)]}">
 									<tree string="Gantt Tasks" editable="bottom" decoration-danger="is_delayed == True">
 										<field name="sequence" widget="handle" />
+										<field name="task_id" />
+										<field name="wbs_code" />
+										<field name="parent_task_id" readonly="1" />
 										<field name="name" />
 										<field name="project_id" invisible="1" />
 										<field name="supervisor_id" />
@@ -375,6 +383,8 @@
 										<field name="progress" widget="percentage" />
 										<field name="state" />
 										<field name="priority" />
+										<field name="predecessor_ids" placeholder="e.g., T001, T002" class="o_field_char" style="min-width: 120px;" />
+										<field name="successor_ids" placeholder="e.g., T003, T004" class="o_field_char" style="min-width: 120px;" />
 										<field name="is_delayed" invisible="1" />
 									</tree>
 								</field>

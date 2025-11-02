@@ -185,7 +185,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
 
         _onCreateClick: function (event) {
             if (this.activeActions.create) {
-
+                var self = this;
                 var context = _.clone(this.context);
                 var id = event.target.parentElement.attributes.task_id.value;
                 var task = gantt.getTask(id);
@@ -234,7 +234,17 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 new dialogs.FormViewDialog(this, {
                     res_model: this.modelName,
                     context: context,
-                    on_saved: this._reloadWithFilters.bind(this),
+                    on_saved: function() {
+                        // Force a complete reload after form save to ensure parent dates are updated
+                        return self._reloadWithFilters().then(function() {
+                            // Force gantt to clear and re-render after data is loaded
+                            setTimeout(function() {
+                                if (self.renderer && self.renderer.renderAfterDataLoad) {
+                                    self.renderer.renderAfterDataLoad();
+                                }
+                            }, 200);
+                        });
+                    },
                 }).open();
             }
         },
@@ -244,6 +254,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             var success = event.data.success;
             var fail = event.data.fail;
             var fields = this.model.fields;
+            var self = this;
 
             if (fields[this.dateStopField] === undefined) {
                 Dialog.alert(this, _t('You have no date_stop field defined!'));
@@ -278,7 +289,14 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
                 method: 'write',
                 args: [taskId, data],
             })
-                .then(success, fail);
+                .then(function() {
+                    // Reload data to ensure parent dates are updated from server
+                    self._reloadWithFilters().then(function() {
+                        if (success) {
+                            success();
+                        }
+                    });
+                }, fail);
         },
 
         _onTaskCreate: function () {
@@ -326,17 +344,34 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
 
         _onTaskDisplay: function (event) {
             var readonly = !this.activeActions.edit;
+            // Allow editing for leaf tasks (tasks without children) even if edit is disabled
+            // Check if task has children - if not, allow editing
+            var task = event.data;
+            if (task && !task.$has_child && !task.is_group) {
+                readonly = false;  // Force edit mode for leaf tasks
+            }
             this._displayTask(event.data, readonly);
         },
 
         _displayTask: function (task, readonly) {
+            var self = this;
             var taskId = _.isString(task.id) ? parseInt(_.last(task.id.split("_")), 10) : task.id;
             readonly = readonly ? readonly : false;
             new dialogs.FormViewDialog(this, {
                 res_model: this.modelName,
                 res_id: taskId,
                 context: session.user_context,
-                on_saved: this._reloadWithFilters.bind(this),
+                on_saved: function() {
+                    // Force a complete reload after form save to ensure parent dates are updated
+                    return self._reloadWithFilters().then(function() {
+                        // Force gantt to clear and re-render after data is loaded
+                        setTimeout(function() {
+                            if (self.renderer && self.renderer.renderAfterDataLoad) {
+                                self.renderer.renderAfterDataLoad();
+                            }
+                        }, 200);
+                    });
+                },
                 readonly: readonly
             }).open();
         },
@@ -350,6 +385,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
         },
 
         _onNewClick: function (event) {
+            var self = this;
             var context = _.clone(this.context);
             var startDate = moment(new Date()).utc();
             var endDate;
@@ -376,7 +412,17 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             new dialogs.FormViewDialog(this, {
                 res_model: this.modelName,
                 context: context,
-                on_saved: this._reloadWithFilters.bind(this),
+                on_saved: function() {
+                    // Force a complete reload after form save to ensure parent dates are updated
+                    return self._reloadWithFilters().then(function() {
+                        // Force gantt to clear and re-render after data is loaded
+                        setTimeout(function() {
+                            if (self.renderer && self.renderer.renderAfterDataLoad) {
+                                self.renderer.renderAfterDataLoad();
+                            }
+                        }, 200);
+                    });
+                },
             }).open();
         },
 

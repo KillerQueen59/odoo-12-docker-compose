@@ -69,6 +69,16 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             gantt.config.columns = [
                 {
+                    name: "wbs",
+                    label: _lt("WBS"),
+                    width: 60,
+                    align: "center",
+                    template: function(obj) {
+                        return obj.wbs_code || "";
+                    },
+                    tree: false
+                },
+                {
                     name: "text",
                     label: _lt("Gantt View"),
                     tree: true,
@@ -114,9 +124,13 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 if (task.is_delayed) {
                     classes.push("is_delayed");
                 }
-                // Hide actual task bar if no actual dates are provided
-                if (!task.has_actual_dates) {
+                // Hide actual task bar if no actual dates are provided OR if task has children (parent tasks)
+                if (!task.has_actual || task.$has_child) {
                     classes.push("hide_actual_bar");
+                }
+                // Add critical path class if enabled
+                if (gantt.config.highlight_critical_path && gantt.isCriticalTask && gantt.isCriticalTask(task)) {
+                    classes.push('gantt_critical_task');
                 }
                 return classes.join(" ");
             };
@@ -354,10 +368,17 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             });
 
             // Also render baselines after task updates
-            gantt.attachEvent("onAfterTaskUpdate", function () {
+            gantt.attachEvent("onAfterTaskUpdate", function (id, task) {
                 setTimeout(function () {
                     self._renderActualBars();
                 }, 100);
+            });
+
+            // Re-render actual bars after data refresh (when tasks are reloaded from backend)
+            gantt.attachEvent("onParse", function () {
+                setTimeout(function () {
+                    self._renderActualBars();
+                }, 200);
             });
 
             // Add baseline legend after gantt is ready
@@ -409,6 +430,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             var rowHeight = gantt.config.row_height || 50; // Default to 50px if not configured
 
             gantt.eachTask(function (task) {
+                // Skip parent tasks - only show actual bars for leaf tasks (tasks without children)
+                if (task.$has_child) {
+                    return;
+                }
 
                 if (task.has_actual && task.actual_start_date && task.actual_end_date) {
                     var taskElement = gantt.getTaskNode(task.id);
@@ -418,10 +443,28 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         var endPos = gantt.posFromDate(task.actual_end_date);
                         var width = endPos - startPos;
 
-                        // Get the task's row index to calculate proper vertical position
-                        var taskIndex = gantt.getTaskIndex(task.id);
-                        var verticalOffset = taskIndex * rowHeight;
+                        // Get the vertical position from the task element itself
+                        // This ensures it aligns with the task bar regardless of hierarchy changes
+                        var verticalOffset = 0;
+                        var taskPosition = gantt.getTaskPosition(task, task.start_date, task.end_date);
 
+                        if (taskPosition && taskPosition.top !== undefined) {
+                            // Use the gantt API to get the exact vertical position
+                            verticalOffset = taskPosition.top;
+                        } else {
+                            // Fallback: Use the taskElement's offsetTop relative to the timeline
+                            var timelineElement = document.querySelector('.gantt_task');
+                            if (taskElement.offsetParent && timelineElement) {
+                                // Calculate position relative to timeline container
+                                var rect = taskElement.getBoundingClientRect();
+                                var timelineRect = timelineElement.getBoundingClientRect();
+                                verticalOffset = rect.top - timelineRect.top + timelineElement.scrollTop;
+                            } else {
+                                // Last resort: calculate from task index
+                                var taskIndex = gantt.getTaskIndex(task.id);
+                                verticalOffset = taskIndex * rowHeight;
+                            }
+                        }
 
                         if (width > 0) {
                             var baselineBar = document.createElement('div');
@@ -460,11 +503,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                             baselineBar.style.left = startPos + 'px';
                             baselineBar.style.width = width + 'px';
                             baselineBar.style.position = 'absolute';
-                            // Position baseline bar at the bottom of the task row using translateY
-                            baselineBar.style.transform = 'translateY(' + (verticalOffset + rowHeight - 15) + 'px)';
+                            // Position baseline bar at the bottom of the task row
+                            baselineBar.style.top = (verticalOffset + rowHeight - 15) + 'px';
                             baselineBar.style.height = '12px';
                             baselineBar.style.zIndex = '1';
-                            baselineBar.style.top = '0px'; // Start from top of container
 
                             // Add tooltip to show baseline information
                             var tooltipText = 'Actual: ' +
@@ -530,13 +572,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 return self.criticalPathCache.links.has(link.id);
             };
 
-            gantt.templates.task_class = function (start, end, task) {
-                var classes = [];
-                if (gantt.config.highlight_critical_path && gantt.isCriticalTask && gantt.isCriticalTask(task)) {
-                    classes.push('gantt_critical_task');
-                }
-                return classes.join(' ');
-            };
+            // Note: task_class template is already defined above with critical path support merged in
+            // No need to redefine it here
 
             gantt.templates.link_class = function (link) {
                 var classes = [];
@@ -755,6 +792,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
          * Toggle critical path display on/off
          */
         _toggleCriticalPath: function () {
+            var self = this;
             var isEnabled = gantt.config.highlight_critical_path;
             gantt.config.highlight_critical_path = !isEnabled;
 
@@ -779,6 +817,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             gantt.refreshData();
             gantt.refreshLink();
 
+            // Re-render actual bars after refresh to ensure they persist
+            setTimeout(function () {
+                self._renderActualBars();
+            }, 100);
         },
 
         /**
@@ -794,6 +836,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
          * This method should be called by the controller after model data loading completes
          */
         renderAfterDataLoad: function () {
+            var self = this;
 
             // The model's get() method returns the gantt object directly
             if (this.state && this.state.data && this.state.data.length > 0) {
@@ -801,6 +844,12 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                 this._configureGanttEvents(this.state.data, this.state.grouped_by || this.state.groupedBy, this.state.groups);
                 // Re-setup actual rendering events after data reload to ensure actual bars persist after save
                 this._setupActualRendering();
+
+                // Force immediate re-render of actual bars after data load
+                // This ensures child task actual date updates are visible immediately
+                setTimeout(function () {
+                    self._renderActualBars();
+                }, 300);
             }
         },
 
@@ -1043,6 +1092,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     var t = {
                         'id': project_id,
                         'text': group_name,
+                        'wbs_code': '',
                         'is_group': true,
                         'start_date': task.group_start,
                         'duration': gantt.calculateDuration(task.group_start, task.group_stop),
@@ -1073,6 +1123,7 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     gantt_tasks_data.push({
                         'id': "gantt_task_" + task.id,
                         'text': task.display_name || '',
+                        'wbs_code': task.wbs_code || '',
                         'active': task.active || true,
                         'start_date': task.task_start,
                         'end_date': task.task_stop,
@@ -1090,6 +1141,8 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         'actual_end_date': task.actual_end_date,
                         'has_actual': !!(task.actual_start_date && task.actual_end_date),
                         'is_delayed': task.is_delayed || false,
+                        // Store original task id for WBS lookups
+                        'odoo_id': task.id,
                     });
                 }
             };
@@ -1173,19 +1226,41 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
 
             this.gantt_events.push(gantt.attachEvent("onTaskClick", function (id, e) {
+                var task = gantt.getTask(id);
 
-                if (gantt.getTask(id).is_group) {
-                    return true;
+                // Check if click is on tree icon (expand/collapse)
+                if (e && e.target) {
+                    var target = e.target;
+                    // Check if clicked element is tree icon or within tree icon
+                    if (target.classList.contains('gantt_tree_icon') ||
+                        target.classList.contains('gantt_tree_content') ||
+                        target.closest('.gantt_tree_icon')) {
+                        // Let DHtmlXGantt handle the expand/collapse
+                        return true;
+                    }
                 }
+
+                // If clicking on a parent task (not on tree icon), toggle expand/collapse
+                if (task.$has_child || task.is_group) {
+                    // Toggle the task open/close state using DHtmlXGantt API
+                    if (task.$open) {
+                        gantt.close(id);
+                    } else {
+                        gantt.open(id);
+                    }
+                    return false; // Prevent modal from opening on parent tasks
+                }
+
+                // Handle special "unused" task creation
                 if (id.indexOf("unused") >= 0) {
-                    var task = gantt.getTask(id);
                     var key = "default_" + task.create[0];
                     var context = {};
                     context[key] = task.create[1][0];
                     self.trigger_up('task_create', context);
                 }
                 else {
-                    self.trigger_up('task_display', gantt.getTask(id));
+                    // Open modal for leaf tasks only
+                    self.trigger_up('task_display', task);
                 }
                 return true;
             }));
@@ -1195,11 +1270,10 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             }));
 
             this.gantt_events.push(gantt.attachEvent("onBeforeTaskSelected", function (id) {
-                if (gantt.getTask(id).is_group) {
-                    if ($("[task_id=" + id + "] .gantt_tree_icon")) {
-                        $("[task_id=" + id + "] .gantt_tree_icon").click();
-                        return false;
-                    }
+                var task = gantt.getTask(id);
+                // Prevent selection of parent tasks (they should only expand/collapse)
+                if (task.$has_child || task.is_group) {
+                    return false;
                 }
                 return true;
             }));
@@ -1239,6 +1313,13 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
 
             this.gantt_events.push(gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
                 var task = gantt.getTask(id);
+
+                // Prevent dragging of parent tasks (tasks with children)
+                // Only leaf tasks (tasks without children) can be manually dragged
+                if (task.$has_child && !task.is_group) {
+                    return false;
+                }
+
                 task._start_date_original = task.start_date;
                 task._end_date_original = task.end_date;
                 this.lastX = e.pageX;
@@ -1385,14 +1466,20 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             this.gantt_events.push(gantt.attachEvent("onBeforeLinkAdd", function (id, item) {
                 var sourceTask = gantt.getTask(item.source);
                 var targetTask = gantt.getTask(item.target);
-                if (sourceTask.is_group) {
-                    gantt.message({ type: "error", text: "You can't create link task with group." });
+
+                // Prevent linking from/to parent tasks (tasks with children)
+                if (sourceTask.$has_child || sourceTask.is_group) {
+                    gantt.message({ type: "error", text: "You can't create link from a parent task. Only child tasks can have links." });
                     return false;
                 }
-                if (sourceTask.parent != targetTask.parent) {
-                    gantt.message({ type: "error", text: "You can't create link with other project task / parent task." });
+                if (targetTask.$has_child || targetTask.is_group) {
+                    gantt.message({ type: "error", text: "You can't create link to a parent task. Only child tasks can have links." });
                     return false;
                 }
+
+                // Allow links between tasks with different parents
+                // (Removed the parent constraint to enable cross-parent linking)
+
                 return true;
             }));
         },

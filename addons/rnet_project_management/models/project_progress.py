@@ -1040,6 +1040,22 @@ class ProjectProgress(models.Model):
                     'domain': [('project.id', '=', rec.name.id)],
                 }
 
+    @api.multi
+    def action_import_tasks_csv(self):
+        """Open the wizard to import tasks from CSV"""
+        self.ensure_one()
+        return {
+            'name': _('Import Tasks from CSV'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'gantt.task.import.wizard',
+            'view_mode': 'form',
+            'view_id': self.env.ref('rnet_project_management.view_gantt_task_import_wizard_form').id,
+            'target': 'new',
+            'context': {
+                'default_project_id': self.id,
+            }
+        }
+
     @api.model
     def get_details(self):
         query = '''SELECT  COALESCE(SUM(out.name),0) as cashout, count(plan_plan_cashout_id)

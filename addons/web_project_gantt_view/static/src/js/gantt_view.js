@@ -74,6 +74,7 @@ odoo.define('web_project_gantt_view.GanttView', function (require) {
             this.loadParams.showLinks = arch.attrs.show_links;
             this.loadParams.roundDndDates = arch.attrs.round_dnd_dates;
             this.loadParams.linkModel = this.arch.attrs.link_model;
+            this.loadParams.parentField = arch.attrs.parent_field;
 
 
             this.rendererParams.dateStartField = arch.attrs.date_start;
@@ -86,6 +87,7 @@ odoo.define('web_project_gantt_view.GanttView', function (require) {
             this.rendererParams.showLinks = arch.attrs.show_links;
             this.rendererParams.roundDndDates = arch.attrs.round_dnd_dates;
             this.rendererParams.linkModel = this.arch.attrs.link_model;
+            this.rendererParams.parentField = this.arch.attrs.parent_field;
         },
     });
 

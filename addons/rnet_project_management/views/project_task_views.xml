@@ -7,20 +7,23 @@
         <field name="type">ganttview</field>
         <field name="arch" type="xml">
             <ganttview
-                date_start="start_date"
-                date_stop="end_date"
-                progress="progress"
-                default_group_by="project_id"
-                string="Tasks Gantt"
-                show_links="true"
-                link_model="gantt.task.link"
-                task_type="task_type"
-                actual_start="start_date"
-                actual_end="end_date"
-                round_dnd_dates="false"
-                default_scale="month"
-                highlight_critical_path="true">
-            </ganttview>
+            date_start="start_date"
+            date_stop="end_date"
+            progress="progress"
+            default_group_by="project_id"
+            string="Tasks Gantt"
+            show_links="true"
+            link_model="gantt.task.link"
+            task_type="task_type"
+            actual_start="actual_start_date"
+            actual_end="actual_end_date"
+            baseline_start="start_date"
+            baseline_end="end_date"
+            parent_field="parent_id"
+            round_dnd_dates="false"
+            default_scale="month"
+            highlight_critical_path="true">
+        </ganttview>
         </field>
     </record>
 
@@ -29,21 +32,28 @@
         <field name="model">gantt.task</field>
         <field name="arch" type="xml">
             <tree string="Tasks" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancelled' or is_delayed == True">
-                <field name="sequence" widget="handle"/>
-                <field name="name"/>
-                <field name="project_id"/>
-                <field name="supervisor_id"/>
-                <field name="actual_start_date"/>
-                <field name="actual_end_date"/>
-                <field name="start_date"/>
-                <field name="end_date"/>
-                <field name="duration"/>
-                <field name="actual_duration"/>
-                <field name="delay_days"/>
-				<field name="progress" widget="percentage" />
-                <field name="state"/>
-                <field name="is_delayed" invisible="1"/>
-            </tree>
+            <field name="sequence" widget="handle"/>
+            <field name="task_id"/>
+            <field name="parent_task_id"/>
+            <field name="wbs_code"/>
+            <field name="name"/>
+            <field name="parent_id" invisible="1"/>
+            <field name="project_id"/>
+            <field name="task_type"/>
+            <field name="supervisor_id"/>
+            <field name="actual_start_date"/>
+            <field name="actual_end_date"/>
+            <field name="start_date"/>
+            <field name="end_date"/>
+            <field name="duration"/>
+            <field name="actual_duration"/>
+            <field name="delay_days"/>
+            <field name="progress" widget="percentage" />
+            <field name="state"/>
+            <field name="predecessor_ids"/>
+            <field name="successor_ids"/>
+            <field name="is_delayed" invisible="1"/>
+        </tree>
         </field>
     </record>
 
@@ -51,58 +61,131 @@
         <field name="name">gantt.task.form</field>
         <field name="model">gantt.task</field>
         <field name="arch" type="xml">
-            <form string="Task">
-                <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
-                </header>
-                <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" placeholder="Task Name"/>
-                        </h1>
-                    </div>
-                    <div class="alert alert-warning" attrs="{'invisible': [('is_delayed', '=', False)]}">
-                        <strong>Delayed Task:</strong> This task is <field name="delay_days"/> days behind baseline schedule.
-                    </div>
-                    <group>
-                        <group string="Baseline (Original Plan)">
-                            <field name="start_date" on_change="1"/>
-                            <field name="end_date"/>
-                            <field name="duration"/>
-                        </group>
-                        <group string="Actual (Current Plan)">
-                            <field name="actual_start_date" placeholder="Optional - Leave blank to use baseline" on_change="1"/>
-                            <field name="actual_end_date" placeholder="Optional - Leave blank to use baseline"/>
-                            <field name="actual_duration"/>
-                        </group>
+             <form string="Task">
+            <header>
+                <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                <button name="action_delete_with_children" string="Delete with Sub-tasks"
+                        type="object" class="btn-danger"
+                        attrs="{'invisible': [('child_ids', '=', [])]}"/>
+            </header>
+            <sheet>
+                <div class="oe_title">
+                    <label for="wbs_code" class="oe_edit_only"/>
+                    <h2>
+                        <field name="wbs_code" class="oe_inline" readonly="1"/>
+                    </h2>
+                    <h1>
+                        <field name="name" placeholder="Task Name"/>
+                    </h1>
+                </div>
+                <div class="alert alert-warning" attrs="{'invisible': [('is_delayed', '=', False)]}">
+                    <strong>Delayed Task:</strong> This task is <field name="delay_days"/> days behind baseline schedule.
+                </div>
+                <group>
+                    <group string="Task Information">
+                        <field name="project_id"/>
+                        <field name="task_id" placeholder="e.g., T001, TASK-001"/>
+                        <field name="parent_task_id" placeholder="Enter parent's Task ID (optional)"/>
+                        <field name="parent_id"
+                               domain="[('project_id', '=', project_id), ('id', '!=', id), ('task_type', '!=', 'milestone')]"
+                               options="{'no_create': True}"
+                               attrs="{'readonly': [('parent_task_id', '!=', False)]}"/>
+                        <field name="level" invisible="1"/>
+                        <field name="task_type"/>
+                        <field name="supervisor_id"/>
+                        <field name="priority"/>
+                        <field name="deadline"/>
                     </group>
                     <group>
-                        <group>
-                            <field name="project_id"/>
-                            <field name="supervisor_id"/>
-                            <field name="task_type"/>
-                            <field name="priority"/>
-                            <field name="deadline"/>
-                        </group>
-                        <group>
-                            <field name="progress" widget="percentage"/>
-                            <field name="sequence"/>
-                            <field name="color"/>
-                            <field name="is_delayed" invisible="1"/>
-                        </group>
+                        <field name="progress" widget="percentage"/>
+                        <field name="sequence"/>
+                        <field name="color"/>
+                        <field name="is_delayed" invisible="1"/>
                     </group>
-                    <notebook>
-                        <page string="Task Links">
-                            <field name="task_link_ids">
-                                <tree editable="bottom">
-                                    <field name="target_task_id" domain="[('project_id', '=', parent.project_id)]"/>
-                                    <field name="link_type"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
+                </group>
+                <group>
+                    <group string="Baseline (Original Plan)" attrs="{'invisible': [('child_ids', '!=', [])]}">
+                        <field name="start_date" on_change="1" force_save="1"/>
+                        <field name="end_date" force_save="1"/>
+                        <field name="duration" readonly="1"/>
+                    </group>
+                    <group string="Actual (Current Plan)" attrs="{'invisible': [('child_ids', '!=', [])]}">
+                        <field name="actual_start_date" placeholder="Optional - Leave blank to use baseline" on_change="1" force_save="1"/>
+                        <field name="actual_end_date" placeholder="Optional - Leave blank to use baseline" force_save="1"/>
+                        <field name="actual_duration" readonly="1"/>
+                    </group>
+
+                    <!-- Show auto-calculated dates for parent tasks -->
+                    <group string="Baseline (Auto-calculated from children)" attrs="{'invisible': [('child_ids', '=', [])]}">
+                        <field name="start_date" readonly="1" force_save="1"/>
+                        <field name="end_date" readonly="1" force_save="1"/>
+                        <field name="duration" readonly="1"/>
+                    </group>
+                    <group string="Actual (Auto-calculated from children)" attrs="{'invisible': [('child_ids', '=', [])]}">
+                        <field name="actual_start_date" readonly="1" force_save="1"/>
+                        <field name="actual_end_date" readonly="1" force_save="1"/>
+                        <field name="actual_duration" readonly="1"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Sub-tasks" attrs="{'invisible': [('task_type', '=', 'milestone')]}">
+                        <field name="child_ids" context="{'default_project_id': project_id, 'default_parent_id': id}">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="task_id"/>
+                                <field name="wbs_code"/>
+                                <field name="name"/>
+                                <field name="project_id" invisible="1"/>
+                                <field name="task_type"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="actual_start_date"/>
+                                <field name="actual_end_date"/>
+                                <field name="progress" widget="progressbar"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Task Links &amp; Dependencies" attrs="{'invisible': [('child_ids', '!=', [])]}">
+                        <group>
+                            <group string="Dependencies (Auto-computed from Links)">
+                                <field name="predecessor_ids" readonly="1" placeholder="No predecessors"/>
+                                <field name="successor_ids" readonly="1" placeholder="No successors"/>
+                            </group>
+                            <group string="Actions">
+                                <button name="action_create_missing_links"
+                                        string="Create Missing Links"
+                                        type="object"
+                                        class="btn-success"
+                                        help="Create task links based on predecessor/successor text fields"/>
+                                <button name="action_sync_predecessor_successor"
+                                        string="Refresh Display"
+                                        type="object"
+                                        class="btn-primary"
+                                        help="Refresh predecessor/successor fields from existing links"/>
+                            </group>
+                        </group>
+                        <separator string="Task Links"/>
+                        <field name="task_link_ids">
+                            <tree editable="bottom">
+                                <field name="target_task_id" domain="[('project_id', '=', parent.project_id), ('child_ids', '=', [])]"/>
+                                <field name="link_type"/>
+                            </tree>
+                        </field>
+                        <div class="alert alert-info" role="alert">
+                            <strong>How it works:</strong>
+                            <ul>
+                                <li><strong>In Tree View:</strong> You can type predecessor/successor Task IDs directly (e.g., "T001, T002")</li>
+                                <li><strong>Order doesn't matter:</strong> Create tasks in any order, then click "Create Missing Links"</li>
+                                <li><strong>Auto-sync in Gantt:</strong> Links created in Gantt view automatically update these fields</li>
+                                <li><strong>Manual Links:</strong> You can also create links manually in the "Task Links" table below</li>
+                            </ul>
+                            <p><strong>Tip:</strong> When creating multiple tasks at once with predecessors/successors, save all tasks first, then click "Create Missing Links" button in the project header or task form.</p>
+                        </div>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
         </field>
     </record>
 

@@ -78,3 +78,24 @@
 .o_content .pm_approval_banner .card-takeout-asset { background-color: #fdf4d4 !important; color: #856404 !important; }
 .o_content .pm_approval_banner .card-takeout-inventory { background-color: #e2e3e5 !important; color: #6c757d !important; }
 /* ------------------------------------ */
+
+/* --- PURPLE BUTTON FOR IMPORT CSV --- */
+.btn-purple {
+    background-color: #7c3aed !important;
+    border-color: #7c3aed !important;
+    color: white !important;
+}
+
+.btn-purple:hover {
+    background-color: #6d28d9 !important;
+    border-color: #6d28d9 !important;
+    color: white !important;
+}
+
+.btn-purple:focus,
+.btn-purple:active {
+    background-color: #5b21b6 !important;
+    border-color: #5b21b6 !important;
+    color: white !important;
+}
+/* ------------------------------------ */

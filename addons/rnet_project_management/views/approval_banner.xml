@@ -140,7 +140,7 @@
 						<button name="action_update_actual_value" class="btn-primary" string="Update Actual Value" type="object" attrs="{'invisible':[('active', '=', False)]}"/>
 					 	<button name="action_export_progress_to_excel" string="Export Template CSV"  type="object" class="btn-primary"/>
 					 	<button name="action_export_progress_to_excel_v2" string="Export Data By Xlsx/Csv"  type="object" class="btn-primary"/>
-					 	<button name="action_import_tasks_csv" string="Import Tasks from CSV" type="object" class="btn-success" attrs="{'invisible':[('active', '=', False)]}"/>
+					 	<button name="action_import_tasks_csv" string="Import Tasks from CSV" type="object" class="btn-purple" attrs="{'invisible':[('active', '=', False)]}"/>
 						   <button name="toggle_notebook" string="Experience Note" type="object" class="btn-primary"
                                 attrs="{'invisible': [('show_experience_note', '=', False)]}"/>
                         <button name="toggle_notebook" string="Experience Note" type="object"

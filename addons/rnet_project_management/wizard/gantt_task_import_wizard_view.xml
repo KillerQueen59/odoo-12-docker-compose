@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Gantt Task Import Wizard Form View -->
+        <record id="view_gantt_task_import_wizard_form" model="ir.ui.view">
+            <field name="name">gantt.task.import.wizard.form</field>
+            <field name="model">gantt.task.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import Gantt Tasks from CSV">
+                    <sheet>
+                        <group>
+                            <field name="state" invisible="1"/>
+                            <field name="has_errors" invisible="1"/>
+
+                            <!-- Upload State -->
+                            <group attrs="{'invisible': [('state', '!=', 'draft')]}">
+                                <div class="oe_title">
+                                    <h1>Import Gantt Tasks from CSV</h1>
+                                    <p>Upload a CSV file to import tasks into this project.</p>
+                                </div>
+
+                                <field name="project_id" readonly="1"/>
+                                <field name="filename" invisible="1"/>
+                                <field name="csv_file" filename="filename"/>
+                            </group>
+
+                            <!-- CSV Format Requirements - Full Width -->
+                            <div attrs="{'invisible': [('state', '!=', 'draft')]}" style="padding: 0 15px; margin-bottom: 10px;">
+                                <div class="alert alert-info" role="alert" style="margin-bottom: 0px;">
+                                    <h4>CSV Format Requirements:</h4>
+                                    <ul style="margin-bottom: 10px; columns: 2; -webkit-columns: 2; -moz-columns: 2;">
+                                        <li><strong>task_id:</strong> Unique identifier (required)</li>
+                                        <li><strong>wbs_code:</strong> WBS code (optional, e.g., 1, 1.1, 1.2)</li>
+                                        <li><strong>name:</strong> Task name (required)</li>
+                                        <li><strong>supervisor_id:</strong> Supervisor username/name (optional)</li>
+                                        <li><strong>task_type:</strong> task, milestone, group, or project (required)</li>
+                                        <li><strong>actual_start_date:</strong> YYYY-MM-DD (optional)</li>
+                                        <li><strong>actual_end_date:</strong> YYYY-MM-DD (optional)</li>
+                                        <li><strong>start_date:</strong> Baseline start, YYYY-MM-DD (required)</li>
+                                        <li><strong>end_date:</strong> Baseline end, YYYY-MM-DD (required)</li>
+                                        <li><strong>progress:</strong> 0-100 (optional, default: 0)</li>
+                                        <li><strong>state:</strong> draft, in_progress, done, cancelled (optional)</li>
+                                        <li><strong>priority:</strong> 0=Low, 1=Normal, 2=High, 3=Very High (optional)</li>
+                                        <li><strong>predecessor_ids:</strong> Comma-separated task IDs (optional)</li>
+                                        <li><strong>successor_ids:</strong> Comma-separated task IDs (optional)</li>
+                                    </ul>
+                                    <p style="margin-bottom: 0;"><em>Note: Parent-child relationships auto-resolved based on WBS codes.</em></p>
+                                </div>
+                            </div>
+
+                            <!-- Validation State -->
+                            <group attrs="{'invisible': [('state', '!=', 'validate')]}">
+                                <div class="oe_title">
+                                    <h1>Validation Results</h1>
+                                </div>
+
+                                <group col="4">
+                                    <field name="total_rows" readonly="1"/>
+                                    <field name="valid_rows" readonly="1"/>
+                                    <field name="error_rows" readonly="1"/>
+                                </group>
+
+                                <separator string="Validation Details"/>
+                                <field name="validation_message" widget="html" nolabel="1" style="max-width: 100%; overflow-x: auto;"/>
+                            </group>
+
+                            <!-- Done State -->
+                            <group attrs="{'invisible': [('state', '!=', 'done')]}">
+                                <div class="oe_title">
+                                    <h1>✅ Import Complete!</h1>
+                                    <p>Tasks have been successfully imported into the project.</p>
+                                </div>
+                                <group>
+                                    <field name="total_rows" readonly="1" string="Tasks Imported"/>
+                                </group>
+                            </group>
+                        </group>
+                    </sheet>
+
+                    <footer>
+                        <!-- Draft state buttons -->
+                        <button string="Validate"
+                                name="action_validate_csv"
+                                type="object"
+                                class="btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+
+                        <button string="Cancel"
+                                class="btn-secondary"
+                                special="cancel"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+
+                        <!-- Validation state buttons -->
+                        <button string="Back"
+                                name="action_back_to_upload"
+                                type="object"
+                                class="btn-secondary"
+                                attrs="{'invisible': [('state', '!=', 'validate')]}"/>
+
+                        <button string="Import Tasks"
+                                name="action_import_tasks"
+                                type="object"
+                                class="btn-primary"
+                                attrs="{'invisible': ['|', ('state', '!=', 'validate'), ('has_errors', '=', True)]}"
+                                data-hotkey="shift+i"/>
+
+                        <button string="Close"
+                                class="btn-secondary"
+                                special="cancel"
+                                attrs="{'invisible': [('state', '!=', 'validate')]}"/>
+
+                        <!-- Done state buttons -->
+                        <button string="Close"
+                                class="btn-primary"
+                                special="cancel"
+                                attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action to open the wizard -->
+        <record id="action_gantt_task_import_wizard" model="ir.actions.act_window">
+            <field name="name">Import Tasks from CSV</field>
+            <field name="res_model">gantt.task.import.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_gantt_task_import_wizard_form"/>
+        </record>
+    </data>
+</odoo>

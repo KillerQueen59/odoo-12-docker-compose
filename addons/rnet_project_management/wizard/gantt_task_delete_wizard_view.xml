@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gantt_task_delete_wizard_form" model="ir.ui.view">
+        <field name="name">gantt.task.delete.wizard.form</field>
+        <field name="model">gantt.task.delete.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Cascade Delete">
+                <sheet>
+                    <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">Warning: Cascade Delete</h4>
+                        <p>You are about to delete a parent task along with ALL its sub-tasks.</p>
+                    </div>
+
+                    <group>
+                        <field name="task_id" readonly="1"/>
+                        <field name="task_count" readonly="1"/>
+                    </group>
+
+                    <group string="Tasks to be deleted:">
+                        <field name="task_tree" widget="text" readonly="1" nolabel="1"/>
+                    </group>
+
+                    <group>
+                        <field name="confirm"/>
+                        <label for="confirm" string="I understand this action cannot be undone and all tasks listed above will be permanently deleted."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Confirm Delete" name="action_confirm_delete" type="object"
+                            class="btn-danger" attrs="{'invisible': [('confirm', '=', False)]}"/>
+                    <button string="Cancel" name="action_cancel" type="object" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

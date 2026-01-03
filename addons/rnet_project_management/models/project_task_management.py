@@ -335,8 +335,14 @@ class GanttTask(models.Model):
             super(GanttTask, task).unlink()
 
     # ADD THIS METHOD TO AUTO-UPDATE PARENT DATES
-    def _update_parent_dates(self):
-        """Recursively update parent task dates (both BASELINE and ACTUAL) based on children"""
+    def _update_parent_dates(self, auto_expand_only=False):
+        """
+        Update parent task dates based on children.
+
+        Args:
+            auto_expand_only (bool): If True, only EXPAND parent dates to encompass children
+                                     (never shrink). If False, recalculate from scratch.
+        """
         for task in self:
             if task.parent_id:
                 parent = task.parent_id
@@ -353,16 +359,44 @@ class GanttTask(models.Model):
 
                     # Update parent dates - BOTH BASELINE AND ACTUAL
                     vals = {}
-                    if baseline_starts:
-                        vals['start_date'] = min(baseline_starts)
-                    if baseline_ends:
-                        vals['end_date'] = max(baseline_ends)
 
-                    # Update actual dates from children
-                    if actual_starts:
-                        vals['actual_start_date'] = min(actual_starts)
-                    if actual_ends:
-                        vals['actual_end_date'] = max(actual_ends)
+                    # BASELINE DATE UPDATE LOGIC
+                    if baseline_starts or baseline_ends:
+                        if auto_expand_only:
+                            # EXPAND-ONLY MODE: Only extend parent dates if children exceed them
+                            if baseline_starts:
+                                child_min_start = min(baseline_starts)
+                                if not parent.start_date or child_min_start < parent.start_date:
+                                    vals['start_date'] = child_min_start
+
+                            if baseline_ends:
+                                child_max_end = max(baseline_ends)
+                                if not parent.end_date or child_max_end > parent.end_date:
+                                    vals['end_date'] = child_max_end
+                        else:
+                            # FULL RECALCULATION MODE: Set parent dates to exact min/max
+                            if baseline_starts:
+                                vals['start_date'] = min(baseline_starts)
+                            if baseline_ends:
+                                vals['end_date'] = max(baseline_ends)
+
+                    # ACTUAL DATE UPDATE LOGIC (same pattern)
+                    if actual_starts or actual_ends:
+                        if auto_expand_only:
+                            if actual_starts:
+                                child_min_actual_start = min(actual_starts)
+                                if not parent.actual_start_date or child_min_actual_start < parent.actual_start_date:
+                                    vals['actual_start_date'] = child_min_actual_start
+
+                            if actual_ends:
+                                child_max_actual_end = max(actual_ends)
+                                if not parent.actual_end_date or child_max_actual_end > parent.actual_end_date:
+                                    vals['actual_end_date'] = child_max_actual_end
+                        else:
+                            if actual_starts:
+                                vals['actual_start_date'] = min(actual_starts)
+                            if actual_ends:
+                                vals['actual_end_date'] = max(actual_ends)
 
                     # Calculate average progress
                     avg_progress = sum(c.progress for c in children) / len(children)
@@ -373,9 +407,49 @@ class GanttTask(models.Model):
                         vals['task_type'] = 'group'
 
                     if vals:
-                        # Use sudo to avoid recursion issues
-                        parent.sudo().write(vals)
-                        parent._update_parent_dates()  # Recursive update
+                        # Use sudo and context flag to avoid recursion and constraint issues during auto-update
+                        parent.with_context(auto_updating_parent=True).sudo().write(vals)
+                        # Recursive update up the hierarchy
+                        parent._update_parent_dates(auto_expand_only=auto_expand_only)
+
+    def update_children_dates_recursive(self, start_delta_days, end_delta_days):
+        """
+        Recursively update all descendant task dates when parent is dragged.
+        This shifts all children by the same time delta as the parent.
+
+        Args:
+            start_delta_days (int): Number of days to shift start dates
+            end_delta_days (int): Number of days to shift end dates
+        """
+        self.ensure_one()
+
+        for child in self.child_ids:
+            child_vals = {}
+
+            # Update baseline dates
+            if child.start_date:
+                new_start = fields.Date.from_string(child.start_date) + timedelta(days=start_delta_days)
+                child_vals['start_date'] = fields.Date.to_string(new_start)
+
+            if child.end_date:
+                new_end = fields.Date.from_string(child.end_date) + timedelta(days=end_delta_days)
+                child_vals['end_date'] = fields.Date.to_string(new_end)
+
+            # Update actual dates
+            if child.actual_start_date:
+                new_actual_start = fields.Date.from_string(child.actual_start_date) + timedelta(days=start_delta_days)
+                child_vals['actual_start_date'] = fields.Date.to_string(new_actual_start)
+
+            if child.actual_end_date:
+                new_actual_end = fields.Date.from_string(child.actual_end_date) + timedelta(days=end_delta_days)
+                child_vals['actual_end_date'] = fields.Date.to_string(new_actual_end)
+
+            if child_vals:
+                # Use context flag to prevent triggering parent updates during batch operation
+                child.with_context(batch_updating_children=True).write(child_vals)
+
+                # Recursively update grandchildren
+                child.update_children_dates_recursive(start_delta_days, end_delta_days)
 
     @api.model
     def search_read_links(self, domain=None):
@@ -410,21 +484,94 @@ class GanttTask(models.Model):
             })
         return result
 
-    @api.constrains('start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'child_ids')
+    @api.constrains('start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'child_ids', 'parent_id')
     def _check_dates(self):
+        """
+        Enhanced date validation with flexible parent-child rules:
+        1. Leaf tasks: Baseline dates are REQUIRED
+        2. All tasks: start_date must be <= end_date
+        3. Parent tasks: Can have dates OUTSIDE child range, but:
+           - Parent start CANNOT be AFTER earliest child start
+           - Parent end CANNOT be BEFORE latest child end
+        """
         for task in self:
-            # Baseline dates are required ONLY for leaf tasks (tasks without children)
+            # Rule 1: Leaf tasks MUST have baseline dates
             if not task.child_ids:
                 if not (task.start_date and task.end_date):
-                    raise ValidationError(_('Baseline dates (Start Date & End Date) are required for tasks without sub-tasks'))
+                    raise ValidationError(
+                        _('Baseline dates (Start Date & End Date) are required for tasks without sub-tasks')
+                    )
 
-            # Check baseline dates consistency (if provided)
+            # Rule 2: Check baseline date consistency
             if task.start_date and task.end_date and task.start_date > task.end_date:
-                raise ValidationError(_('Baseline start date must be before baseline end date'))
+                raise ValidationError(
+                    _('Baseline start date (%s) must be before or equal to baseline end date (%s)') %
+                    (task.start_date, task.end_date)
+                )
 
-            # Check actual dates consistency only if both are provided
+            # Rule 3: Check actual date consistency
             if task.actual_start_date and task.actual_end_date and task.actual_start_date > task.actual_end_date:
-                raise ValidationError(_('Actual start date must be before actual end date'))
+                raise ValidationError(
+                    _('Actual start date (%s) must be before or equal to actual end date (%s)') %
+                    (task.actual_start_date, task.actual_end_date)
+                )
+
+            # Rule 4: Parent-child baseline date validation (if parent has children)
+            if task.child_ids:
+                children_with_baseline = task.child_ids.filtered(lambda c: c.start_date and c.end_date)
+
+                if children_with_baseline:
+                    earliest_child_start = min(children_with_baseline.mapped('start_date'))
+                    latest_child_end = max(children_with_baseline.mapped('end_date'))
+
+                    # Parent start cannot be AFTER earliest child start
+                    if task.start_date and task.start_date > earliest_child_start:
+                        raise ValidationError(
+                            _('Parent task baseline start date (%s) cannot be after the earliest child start date (%s).\n'
+                              'Parent dates must encompass all children.') %
+                            (task.start_date, earliest_child_start)
+                        )
+
+                    # Parent end cannot be BEFORE latest child end
+                    if task.end_date and task.end_date < latest_child_end:
+                        raise ValidationError(
+                            _('Parent task baseline end date (%s) cannot be before the latest child end date (%s).\n'
+                              'Parent dates must encompass all children.') %
+                            (task.end_date, latest_child_end)
+                        )
+
+            # Rule 5: Parent-child actual date validation (if parent has children)
+            if task.child_ids:
+                children_with_actual = task.child_ids.filtered(lambda c: c.actual_start_date and c.actual_end_date)
+
+                if children_with_actual:
+                    earliest_child_actual_start = min(children_with_actual.mapped('actual_start_date'))
+                    latest_child_actual_end = max(children_with_actual.mapped('actual_end_date'))
+
+                    # Parent actual start cannot be AFTER earliest child actual start
+                    if task.actual_start_date and task.actual_start_date > earliest_child_actual_start:
+                        raise ValidationError(
+                            _('Parent task actual start date (%s) cannot be after the earliest child actual start date (%s).\n'
+                              'Parent dates must encompass all children.') %
+                            (task.actual_start_date, earliest_child_actual_start)
+                        )
+
+                    # Parent actual end cannot be BEFORE latest child actual end
+                    if task.actual_end_date and task.actual_end_date < latest_child_actual_end:
+                        raise ValidationError(
+                            _('Parent task actual end date (%s) cannot be before the latest child actual end date (%s).\n'
+                              'Parent dates must encompass all children.') %
+                            (task.actual_end_date, latest_child_actual_end)
+                        )
+
+    @api.constrains('progress')
+    def _check_progress(self):
+        """Validate that progress is between 0 and 100"""
+        for task in self:
+            if task.progress < 0 or task.progress > 100:
+                raise ValidationError(
+                    _('Progress must be between 0 and 100 percent. Current value: %.2f%%') % task.progress
+                )
 
     @api.depends('start_date', 'end_date')
     def _compute_duration(self):
@@ -673,6 +820,20 @@ class GanttTask(models.Model):
                 )
 
     def write(self, vals):
+        # Track if this is a manual parent date edit
+        manual_parent_date_edit = False
+        is_auto_update = self.env.context.get('auto_updating_parent', False)
+        is_batch_update = self.env.context.get('batch_updating_children', False)
+
+        # Check if this is a manual edit of a parent task's dates
+        if not is_auto_update and not is_batch_update:
+            for task in self:
+                if task.child_ids:
+                    date_fields_edited = {'start_date', 'end_date', 'actual_start_date', 'actual_end_date'}
+                    if any(field in vals for field in date_fields_edited):
+                        manual_parent_date_edit = True
+                        break
+
         # Resolve wbs_code to parent_id before write (takes priority)
         if 'wbs_code' in vals and vals['wbs_code']:
             for task in self:
@@ -722,10 +883,19 @@ class GanttTask(models.Model):
         # Note: Links are now allowed for both parent and leaf tasks
         # No automatic link removal when a task becomes a parent
 
-        # Update parent dates if any date fields were changed
+        # POST-WRITE PARENT DATE UPDATE LOGIC
         date_fields_changed = {'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'progress'}
         if any(field in vals for field in date_fields_changed):
-            self._update_parent_dates()
+            if manual_parent_date_edit:
+                # Manual parent edit: Don't auto-update, let validation handle it
+                # The constraint will ensure parent encompasses children
+                pass
+            elif is_batch_update:
+                # Batch update from parent drag: Don't trigger parent updates
+                pass
+            else:
+                # Child date edit: Auto-expand parent dates to encompass the child
+                self._update_parent_dates(auto_expand_only=True)
 
         return result
 
@@ -849,6 +1019,25 @@ class GanttTask(models.Model):
         """Auto-fill actual end date when actual start date is selected"""
         if self.actual_start_date and not self.actual_end_date:
             self.actual_end_date = self.actual_start_date
+
+    @api.onchange('progress')
+    def _onchange_progress(self):
+        """Provide immediate feedback for invalid progress values"""
+        if self.progress:
+            if self.progress < 0:
+                return {
+                    'warning': {
+                        'title': _('Invalid Progress'),
+                        'message': _('Progress cannot be negative. Please enter a value between 0 and 100.')
+                    }
+                }
+            elif self.progress > 100:
+                return {
+                    'warning': {
+                        'title': _('Invalid Progress'),
+                        'message': _('Progress cannot exceed 100%%. Current value: %.2f%%. Please enter a value between 0 and 100.') % self.progress
+                    }
+                }
 
     def action_sync_predecessor_successor(self):
         """Manually trigger recompute of predecessor/successor fields

@@ -253,6 +253,7 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
             var taskObj = event.data.task;
             var success = event.data.success;
             var fail = event.data.fail;
+            var isChildOfParent = event.data.is_child_of_parent || false;
             var fields = this.model.fields;
             var self = this;
 
@@ -284,18 +285,33 @@ odoo.define('web_project_gantt_view.GanttController', function (require) {
 
             var taskId = parseInt(taskObj.id.split("gantt_task_").slice(1)[0], 10);
 
+            // Merge context flag with existing context
+            var writeContext = _.extend({}, this.context || {}, {
+                batch_updating_children: isChildOfParent
+            });
+
             this._rpc({
                 model: this.model.modelName,
                 method: 'write',
                 args: [taskId, data],
+                kwargs: {
+                    context: writeContext
+                }
             })
                 .then(function() {
-                    // Reload data to ensure parent dates are updated from server
-                    self._reloadWithFilters().then(function() {
+                    // Only reload ONCE after all tasks are updated (not for each child)
+                    if (!isChildOfParent) {
+                        self._reloadWithFilters().then(function() {
+                            if (success) {
+                                success();
+                            }
+                        });
+                    } else {
+                        // Child update - just call success without reload
                         if (success) {
                             success();
                         }
-                    });
+                    }
                 }, fail);
         },
 

@@ -380,7 +380,7 @@
 										<field name="end_date" />
 										<field name="duration" />
 										<field name="delay_days" attrs="{'invisible': [('is_delayed', '=', False)]}" />
-										<field name="progress" widget="percentage" />
+										<field name="progress" string="Progress (%)" />
 										<field name="state" />
 										<field name="priority" />
 										<field name="predecessor_ids" placeholder="e.g., T001, T002" class="o_field_char" style="min-width: 120px;" />

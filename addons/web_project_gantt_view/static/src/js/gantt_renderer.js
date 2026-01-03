@@ -1314,16 +1314,48 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
             this.gantt_events.push(gantt.attachEvent("onBeforeTaskDrag", function (id, mode, e) {
                 var task = gantt.getTask(id);
 
-                // Prevent dragging of parent tasks (tasks with children)
-                // Only leaf tasks (tasks without children) can be manually dragged
-                if (task.$has_child && !task.is_group) {
-                    return false;
-                }
-
+                // Store original dates for ALL tasks (parent or leaf)
                 task._start_date_original = task.start_date;
                 task._end_date_original = task.end_date;
+
+                // Store original actual dates if they exist
+                if (task.actual_start_date) {
+                    task._actual_start_date_original = task.actual_start_date;
+                }
+                if (task.actual_end_date) {
+                    task._actual_end_date_original = task.actual_end_date;
+                }
+
                 this.lastX = e.pageX;
 
+                // If this is a parent task (has children), prepare to drag all children together
+                if (task.$has_child && !task.is_group) {
+                    // Collect all child IDs recursively
+                    var collectChildIds = function(parentId) {
+                        var children = [];
+                        gantt.eachTask(function(childTask) {
+                            children.push(childTask.id);
+                        }, parentId);
+                        return children;
+                    };
+
+                    this.drag_children = collectChildIds(id);
+
+                    // Store original dates for all children
+                    _.each(this.drag_children, function (child_id) {
+                        var child = gantt.getTask(child_id);
+                        child._start_date_original = child.start_date;
+                        child._end_date_original = child.end_date;
+                        if (child.actual_start_date) {
+                            child._actual_start_date_original = child.actual_start_date;
+                        }
+                        if (child.actual_end_date) {
+                            child._actual_end_date_original = child.actual_end_date;
+                        }
+                    });
+                }
+
+                // Handle special 'is_group' tasks (existing logic for consolidated groups)
                 if (task.is_group) {
                     var attr = e.target.attributes.getNamedItem("consolidation_ids");
                     if (attr) {
@@ -1336,10 +1368,12 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                         });
                     }
                 }
-                return true;
+
+                return true; // Allow dragging for ALL tasks (parents and children)
             }));
 
             this.gantt_events.push(gantt.attachEvent("onTaskDrag", function (id, mode, task, original, e) {
+                // Handle special 'is_group' tasks (existing logic)
                 if (gantt.getTask(id).is_group) {
                     var day;
                     if (self.state.scale === "year") {
@@ -1382,34 +1416,94 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     gantt.updateTask(task.id);
                     return false;
                 }
+
+                // NEW: Handle parent task with children drag
+                if (task.$has_child && this.drag_children) {
+                    // Calculate time delta based on current drag position vs original
+                    var startDelta = task.start_date - task._start_date_original;
+                    var endDelta = task.end_date - task._end_date_original;
+
+                    // Update all children by the same delta
+                    _.each(this.drag_children, function (child_id) {
+                        var child = gantt.getTask(child_id);
+
+                        // Shift baseline dates
+                        if (child._start_date_original) {
+                            child.start_date = new Date(child._start_date_original.getTime() + startDelta);
+                        }
+                        if (child._end_date_original) {
+                            child.end_date = new Date(child._end_date_original.getTime() + endDelta);
+                        }
+
+                        // Shift actual dates (if they exist)
+                        if (child._actual_start_date_original) {
+                            child.actual_start_date = new Date(child._actual_start_date_original.getTime() + startDelta);
+                        }
+                        if (child._actual_end_date_original) {
+                            child.actual_end_date = new Date(child._actual_end_date_original.getTime() + endDelta);
+                        }
+
+                        // Update the gantt display for this child
+                        gantt.updateTask(child.id);
+                    });
+                }
+
+                // Existing parent date update logic
                 parent_date_update(id);
                 return true;
             }));
 
             this.gantt_events.push(gantt.attachEvent("onAfterTaskDrag", function (id) {
-                var update_task = function (task_id) {
+                var self_gantt = this;
+
+                // Function to update a single task
+                var update_task = function (task_id, is_child_of_dragged_parent) {
                     var task = gantt.getTask(task_id);
+
                     self.trigger_up('task_update', {
                         task: task,
+                        is_child_of_parent: is_child_of_dragged_parent || false,
                         success: function () {
+                            // Clean up temporary properties
+                            delete task._start_date_original;
+                            delete task._end_date_original;
+                            delete task._actual_start_date_original;
+                            delete task._actual_end_date_original;
+
+                            // Update parent dates
                             parent_date_update(task_id);
-                            // Update baseline status after successful task drag
+
+                            // Update baseline status
                             self._updateActualStatus(task_id);
+
                             // Recalculate critical path if enabled
                             if (gantt.config.highlight_critical_path) {
                                 self._calculateCriticalPath();
                             }
                         },
                         fail: function () {
+                            // Revert to original dates
                             task.start_date = task._start_date_original;
                             task.end_date = task._end_date_original;
+
+                            if (task._actual_start_date_original) {
+                                task.actual_start_date = task._actual_start_date_original;
+                            }
+                            if (task._actual_end_date_original) {
+                                task.actual_end_date = task._actual_end_date_original;
+                            }
+
                             gantt.updateTask(task_id);
+
+                            // Clean up
                             delete task._start_date_original;
                             delete task._end_date_original;
+                            delete task._actual_start_date_original;
+                            delete task._actual_end_date_original;
+
                             parent_date_update(task_id);
-                            // Update baseline status after task revert
                             self._updateActualStatus(task_id);
-                            // Recalculate critical path if enabled
+
                             if (gantt.config.highlight_critical_path) {
                                 self._calculateCriticalPath();
                             }
@@ -1417,12 +1511,26 @@ odoo.define('web_project_gantt_view.GanttRenderer', function (require) {
                     });
                 };
 
-                if (gantt.getTask(id).is_group && this.drag_child) {
-                    _.each(this.drag_child, function (child_id) {
-                        update_task(child_id);
+                // Handle 'is_group' special case (existing logic)
+                if (gantt.getTask(id).is_group && self_gantt.drag_child) {
+                    _.each(self_gantt.drag_child, function (child_id) {
+                        update_task(child_id, false);
                     });
+                    self_gantt.drag_child = null;
                 }
-                update_task(id);
+                // NEW: Handle parent task with children
+                else if (gantt.getTask(id).$has_child && self_gantt.drag_children) {
+                    // Update all children first
+                    _.each(self_gantt.drag_children, function (child_id) {
+                        update_task(child_id, true);
+                    });
+
+                    // Clean up drag state
+                    self_gantt.drag_children = null;
+                }
+
+                // Update the parent/main task last
+                update_task(id, false);
             }));
 
             this.gantt_events.push(gantt.attachEvent("onAfterLinkAdd", function (id, item) {

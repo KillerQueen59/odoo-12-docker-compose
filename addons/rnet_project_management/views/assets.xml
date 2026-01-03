@@ -3,6 +3,7 @@
         <template id="rnet_project_management_assets" name="RNET - Project Management assets" inherit_id="web.assets_backend">
             <xpath expr="." position="inside">
                 <link rel="stylesheet" type="text/scss" href="/rnet_project_management/static/src/scss/approval_banner.scss"/>
+                <link rel="stylesheet" type="text/css" href="/rnet_project_management/static/src/css/gantt_custom.css"/>
                 <script type="text/javascript" src="/rnet_project_management/static/src/js/import_wizard.js"/>
             </xpath>
         </template>

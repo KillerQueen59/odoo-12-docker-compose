@@ -31,13 +31,19 @@
         <field name="name">gantt.task.tree</field>
         <field name="model">gantt.task</field>
         <field name="arch" type="xml">
-            <tree string="Tasks" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancelled' or is_delayed == True">
+            <tree string="Tasks"
+                  decoration-success="state == 'done'"
+                  decoration-info="state == 'in_progress'"
+                  decoration-warning="state == 'draft'"
+                  decoration-danger="state == 'cancelled' or is_delayed == True"
+                  decoration-bf="child_ids != []">
             <field name="sequence" widget="handle"/>
             <field name="task_id"/>
             <field name="parent_task_id"/>
             <field name="wbs_code"/>
             <field name="name"/>
             <field name="parent_id" invisible="1"/>
+            <field name="child_ids" invisible="1"/>
             <field name="project_id"/>
             <field name="task_type"/>
             <field name="supervisor_id"/>
@@ -48,7 +54,7 @@
             <field name="duration"/>
             <field name="actual_duration"/>
             <field name="delay_days"/>
-            <field name="progress" widget="percentage" />
+            <field name="progress" string="Progress (%)" />
             <field name="state"/>
             <field name="predecessor_ids"/>
             <field name="successor_ids"/>
@@ -97,34 +103,34 @@
                         <field name="deadline"/>
                     </group>
                     <group>
-                        <field name="progress" widget="percentage"/>
+                        <field name="progress" string="Progress (%)" placeholder="Enter 0-100"/>
                         <field name="sequence"/>
                         <field name="color"/>
                         <field name="is_delayed" invisible="1"/>
                     </group>
                 </group>
                 <group>
-                    <group string="Baseline (Original Plan)" attrs="{'invisible': [('child_ids', '!=', [])]}">
-                        <field name="start_date" on_change="1" force_save="1"/>
-                        <field name="end_date" force_save="1"/>
+                    <group string="Baseline (Original Plan)">
+                        <field name="start_date" on_change="1" force_save="1" attrs="{'required': [('child_ids', '=', [])]}"/>
+                        <field name="end_date" force_save="1" attrs="{'required': [('child_ids', '=', [])]}"/>
                         <field name="duration" readonly="1"/>
+                        <!-- Helper text for parent tasks -->
+                        <div class="alert alert-info" attrs="{'invisible': [('child_ids', '=', [])]}">
+                            <i class="fa fa-info-circle"/>
+                            <strong>Parent Task:</strong> Dates can be set outside children's range.
+                            They will auto-expand if children exceed them.
+                        </div>
                     </group>
-                    <group string="Actual (Current Plan)" attrs="{'invisible': [('child_ids', '!=', [])]}">
+                    <group string="Actual (Current Plan)">
                         <field name="actual_start_date" placeholder="Optional - Leave blank to use baseline" on_change="1" force_save="1"/>
                         <field name="actual_end_date" placeholder="Optional - Leave blank to use baseline" force_save="1"/>
                         <field name="actual_duration" readonly="1"/>
-                    </group>
-
-                    <!-- Show auto-calculated dates for parent tasks -->
-                    <group string="Baseline (Auto-calculated from children)" attrs="{'invisible': [('child_ids', '=', [])]}">
-                        <field name="start_date" readonly="1" force_save="1"/>
-                        <field name="end_date" readonly="1" force_save="1"/>
-                        <field name="duration" readonly="1"/>
-                    </group>
-                    <group string="Actual (Auto-calculated from children)" attrs="{'invisible': [('child_ids', '=', [])]}">
-                        <field name="actual_start_date" readonly="1" force_save="1"/>
-                        <field name="actual_end_date" readonly="1" force_save="1"/>
-                        <field name="actual_duration" readonly="1"/>
+                        <!-- Helper text for parent tasks -->
+                        <div class="alert alert-info" attrs="{'invisible': [('child_ids', '=', [])]}">
+                            <i class="fa fa-info-circle"/>
+                            <strong>Parent Task:</strong> Dates can be set outside children's range.
+                            They will auto-expand if children exceed them.
+                        </div>
                     </group>
                 </group>
                 <notebook>

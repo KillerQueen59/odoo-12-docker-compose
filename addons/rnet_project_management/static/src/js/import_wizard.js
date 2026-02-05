@@ -10,7 +10,8 @@ var core = require('web.core');
 var ImportCompleteAction = AbstractAction.extend({
     start: function () {
         var self = this;
-        var params = this.action_manager.action_stack[this.action_manager.action_stack.length - 1].params;
+        // Access params from the action object directly (Odoo 12 compatible)
+        var params = (this.action && this.action.params) || {};
 
         // Show notification
         if (params && params.notification) {
@@ -22,16 +23,8 @@ var ImportCompleteAction = AbstractAction.extend({
             );
         }
 
-        // Close the dialog/wizard
-        this.do_action({'type': 'ir.actions.act_window_close'});
-
-        // Reload the parent view
-        if (this.action_manager && this.action_manager.inner_action) {
-            var controller = this.action_manager.inner_action.controller;
-            if (controller && controller.reload) {
-                controller.reload();
-            }
-        }
+        // Close the wizard dialog - use history_back to return to previous view
+        this.trigger_up('history_back');
 
         return this._super.apply(this, arguments);
     },

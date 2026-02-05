@@ -1,0 +1,6 @@
+task_id,wbs_code,name,supervisor_id,task_type,actual_start_date,actual_end_date,start_date,end_date,progress,state,priority,predecessor_ids,successor_ids
+IMPORT-001,1.0,Project Planning Phase,,group,,,2025-01-15,2025-02-15,0,draft,1,,
+IMPORT-002,1.1,Requirements Analysis,,task,,,2025-01-15,2025-01-31,25,in_progress,2,,IMPORT-003
+IMPORT-003,1.2,System Design,,task,,,2025-02-01,2025-02-10,0,draft,2,IMPORT-002,IMPORT-004
+IMPORT-004,1.3,Implementation Start,,milestone,,,2025-02-11,2025-02-11,0,draft,3,IMPORT-003,
+IMPORT-005,2.0,Development Phase,,group,,,2025-02-11,2025-03-31,0,draft,1,,

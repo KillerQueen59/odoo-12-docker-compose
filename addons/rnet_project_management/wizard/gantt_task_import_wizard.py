@@ -13,8 +13,13 @@ class GanttTaskImportWizard(models.TransientModel):
     _description = 'Import Gantt Tasks from CSV'
 
     project_id = fields.Many2one('project.progress.plan', string='Project', required=True)
-    csv_file = fields.Binary(string='CSV File', required=True, help='Upload CSV file to import tasks', attachment=False)
+    csv_file = fields.Binary(string='CSV File', help='Upload CSV file to import tasks', attachment=False)
     filename = fields.Char(string='Filename')
+    date_format = fields.Selection([
+        ('ymd', 'YYYY-MM-DD (Year-Month-Day)'),
+        ('ydm', 'YYYY-DD-MM (Year-Day-Month)'),
+    ], default='ymd', string='Date Format in CSV', required=True,
+        help='Select the date format used in your CSV file')
     state = fields.Selection([
         ('draft', 'Upload File'),
         ('validate', 'Validation Results'),
@@ -27,6 +32,25 @@ class GanttTaskImportWizard(models.TransientModel):
     total_rows = fields.Integer(string='Total Rows', readonly=True)
     valid_rows = fields.Integer(string='Valid Rows', readonly=True)
     error_rows = fields.Integer(string='Error Rows', readonly=True)
+
+    def _parse_date(self, date_str):
+        """Parse date string according to selected format and return date object"""
+        if not date_str:
+            return None
+        date_str = date_str.strip()
+        if not date_str:
+            return None
+
+        try:
+            if self.date_format == 'ydm':
+                # YYYY-DD-MM format - parse and convert
+                parsed = datetime.strptime(date_str, '%Y-%d-%m').date()
+            else:
+                # YYYY-MM-DD format (default)
+                parsed = datetime.strptime(date_str, '%Y-%m-%d').date()
+            return parsed
+        except ValueError:
+            return None
 
     @api.multi
     def action_validate_csv(self):
@@ -142,17 +166,18 @@ class GanttTaskImportWizard(models.TransientModel):
             elif task_type not in valid_task_types:
                 row_errors.append('task_type must be one of: {}'.format(", ".join(valid_task_types)))
 
-            # 6. Validate dates (format YYYY-MM-DD)
+            # 6. Validate dates based on selected format
             date_fields = ['actual_start_date', 'actual_end_date', 'start_date', 'end_date']
             parsed_dates = {}
+            date_format_label = 'YYYY-DD-MM' if self.date_format == 'ydm' else 'YYYY-MM-DD'
             for date_field in date_fields:
                 date_str = row.get(date_field, '').strip()
                 if date_str:
-                    try:
-                        parsed_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                    parsed_date = self._parse_date(date_str)
+                    if parsed_date:
                         parsed_dates[date_field] = parsed_date
-                    except ValueError:
-                        row_errors.append('{} must be in format YYYY-MM-DD, got: {}'.format(date_field, date_str))
+                    else:
+                        row_errors.append('{} must be in format {}, got: {}'.format(date_field, date_format_label, date_str))
 
             # 7. Validate date logic
             if 'start_date' in parsed_dates and 'end_date' in parsed_dates:
@@ -351,14 +376,13 @@ class GanttTaskImportWizard(models.TransientModel):
                 if supervisor:
                     vals['supervisor_id'] = supervisor.id
 
-            # Dates
+            # Dates - use selected format
             for date_field in ['actual_start_date', 'actual_end_date', 'start_date', 'end_date']:
                 date_str = row.get(date_field, '').strip()
                 if date_str:
-                    try:
-                        vals[date_field] = datetime.strptime(date_str, '%Y-%m-%d').date()
-                    except:
-                        pass
+                    parsed_date = self._parse_date(date_str)
+                    if parsed_date:
+                        vals[date_field] = parsed_date
 
             # Progress
             progress_str = row.get('progress', '').strip()
@@ -514,25 +538,36 @@ class GanttTaskImportWizard(models.TransientModel):
                         else:
                             link_errors.append('Successor task {} not found for task {}'.format(succ_id, task_id))
 
-        # Build success message
-        success_message = _('%s tasks imported successfully!') % len(created_tasks)
-        if link_errors:
-            success_message += '\n\nWarnings:\n' + '\n'.join(link_errors[:10])
-            if len(link_errors) > 10:
-                success_message += '\n... and {} more warnings'.format(len(link_errors) - 10)
+        # Build success message HTML
+        success_html = '<div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">'
+        success_html += '<h2 style="color: green;">&#10004; Import Complete</h2>'
+        success_html += '<p style="font-size: 18px;"><strong>{}</strong> tasks imported successfully!</p>'.format(len(created_tasks))
 
-        # Use custom client action to show notification, close wizard, and reload parent view
+        if link_errors:
+            success_html += '<h4 style="color: orange;">Warnings:</h4>'
+            success_html += '<ul style="text-align: left; color: orange;">'
+            for error in link_errors[:10]:
+                success_html += '<li>{}</li>'.format(error)
+            if len(link_errors) > 10:
+                success_html += '<li>... and {} more warnings</li>'.format(len(link_errors) - 10)
+            success_html += '</ul>'
+
+        success_html += '<p style="margin-top: 20px; color: #666;">Click <strong>Close</strong> to return to the project view.</p>'
+        success_html += '</div>'
+
+        # Update wizard to show done state
+        self.write({
+            'state': 'done',
+            'validation_message': success_html,
+        })
+
         return {
-            'type': 'ir.actions.client',
-            'tag': 'import_complete_action',
-            'params': {
-                'notification': {
-                    'title': _('Import Complete'),
-                    'message': success_message,
-                    'type': 'warning' if link_errors else 'success',
-                    'sticky': False,
-                }
-            }
+            'type': 'ir.actions.act_window',
+            'res_model': 'gantt.task.import.wizard',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+            'context': self.env.context
         }
 
     @api.multi
@@ -558,72 +593,10 @@ class GanttTaskImportWizard(models.TransientModel):
 
     @api.model
     def action_download_template(self):
-        """Generate and download a CSV template - can be called without wizard instance"""
-        # This is a model method (not multi) so it doesn't require form validation
-        # CSV file is not required for downloading template
-
-        # Create CSV template
-        output = io.StringIO()
-        writer = csv.writer(output)
-
-        # Header row
-        headers = [
-            'task_id', 'wbs_code', 'name', 'supervisor_id', 'task_type',
-            'actual_start_date', 'actual_end_date', 'start_date', 'end_date',
-            'progress', 'state', 'priority', 'predecessor_ids', 'successor_ids'
-        ]
-        writer.writerow(headers)
-
-        # Info row (indicating required vs optional fields)
-        info_row = [
-            '(Required)', '(Optional)', '(Required)', '(Optional)', '(Required)',
-            '(Optional)', '(Optional)', '(Required)', '(Required)',
-            '(Optional)', '(Optional)', '(Optional)', '(Optional)', '(Optional)'
-        ]
-        writer.writerow(info_row)
-
-        # Example rows
-        writer.writerow([
-            'TASK-001', '1', 'Project Phase 1', 'admin', 'group',
-            '2025-01-01', '2025-03-31', '2025-01-01', '2025-03-31',
-            '0', 'draft', '1', '', ''
-        ])
-        writer.writerow([
-            'TASK-002', '1.1', 'Design Phase', 'admin', 'task',
-            '2025-01-01', '2025-01-31', '2025-01-01', '2025-01-31',
-            '50', 'in_progress', '2', '', 'TASK-003'
-        ])
-        writer.writerow([
-            'TASK-003', '1.2', 'Development Phase', 'admin', 'task',
-            '2025-02-01', '2025-02-28', '2025-02-01', '2025-02-28',
-            '0', 'draft', '2', 'TASK-002', 'TASK-004'
-        ])
-        writer.writerow([
-            'TASK-004', '1.3', 'Testing Milestone', 'admin', 'milestone',
-            '2025-03-01', '2025-03-01', '2025-03-01', '2025-03-01',
-            '0', 'draft', '3', 'TASK-003', ''
-        ])
-        writer.writerow([
-            'TASK-005', '', 'Simple Task without links', '', 'task',
-            '', '', '2025-03-15', '2025-03-20',
-            '', '', '', '', ''
-        ])
-
-        # Convert to base64
-        csv_data = output.getvalue()
-        csv_base64 = base64.b64encode(csv_data.encode('utf-8'))
-
-        # Create attachment
-        attachment = self.env['ir.attachment'].create({
-            'name': 'gantt_tasks_import_template.csv',
-            'datas': csv_base64,
-            'datas_fname': 'gantt_tasks_import_template.csv',
-            'type': 'binary',
-        })
-
-        # Return download action
+        """Download the static CSV template file"""
+        # Return URL to static CSV template file
         return {
             'type': 'ir.actions.act_url',
-            'url': '/web/content/%s?download=true' % attachment.id,
-            'target': 'new',
+            'url': '/rnet_project_management/static/csv/gantt_tasks_import_template.csv',
+            'target': 'self',
         }
